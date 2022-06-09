@@ -1,17 +1,14 @@
 package com.example.single_recyclerview_manual_pagination.repository
 
-import android.provider.SyncStateContract
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
+import com.example.single_recyclerview_manual_pagination.models.Category
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.sql.Wrapper
 
 class Repository private constructor() {
 
@@ -23,8 +20,12 @@ class Repository private constructor() {
         }
     }
 
-    private var _categories = MutableLiveData<StickerPacks>()
-    val categories = _categories
+    private var _stickerPacks = MutableLiveData<StickerPacks>()
+    val stickerPacks = _stickerPacks
+
+    private var _categoryList = MutableLiveData<List<Category>>()
+    val categoryList = _categoryList
+
     private var _count = MutableLiveData<Int>()
     val count = _count
     private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
@@ -34,31 +35,66 @@ class Repository private constructor() {
     private var _tabPosition = MutableLiveData<Int>()
     val tabPosition = _tabPosition
 
+
     fun getStickerPacks() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val category = NetworkLayer.retrofitService.getStickerPacks()
 //                Log.i("repostiory", "${category.stickerPacks.size}")
-                category.stickerPacks.removeIf { it.id == 405 }
-
+//                category.stickerPacks.removeIf { it.id == 405 }
                 getCount(category)
-                categories.postValue(category)
+                stickerPacks.postValue(category)
             } catch (e: Exception) {
                 Log.i("shubham", "Exception $e")
             }
         }
     }
 
+    suspend fun mapResponse(category: StickerPacks) {
+//        val c =BaseClass()
+        val listOfCategory = mutableListOf<Category>()
+        for (cat in category.stickerPacks) {
+            listOfCategory.add(
+                Category(
+                    id = cat.id,
+                    name = cat.name!!,
+                    isViewMoreVisible = false,
+                    initialCount = category.stickerPacks.size,
+                    itemList = getStickers(cat.id)
+                )
+            )
+        }
+        categoryList.postValue(listOfCategory)
+    }
+
+    suspend fun getStickers(id: Int): List<Sticker> {
+        val itemList = NetworkLayer.retrofitService.getStickers(id = id)
+        return itemList.items
+    }
+
     suspend fun getCount(category: StickerPacks) {
         var total = 0
+        val listOfCategory = mutableListOf<Category>()
+
         for (c in category.stickerPacks) {
 //            if(c.id==405)continue
             val cnt = NetworkLayer.retrofitService.getStickers(id = c.id)
             Log.i("repository", "$cnt")
-            c.total = (cnt.items.size - 1)
-            tempHashMap.put(c.name!!, cnt.items.size - 1)
+            c.total = (cnt.items.size)
+            tempHashMap.put(c.name!!, cnt.items.size)
             total += cnt.items.size
+
+            listOfCategory.add(
+                Category(
+                    id = c.id,
+                    name = c.name!!,
+                    isViewMoreVisible = false,
+                    initialCount = category.stickerPacks.size,
+                    itemList = cnt.items
+                )
+            )
         }
+        categoryList.postValue(listOfCategory)
         individualCount.postValue(tempHashMap)
         count.postValue(total)
     }

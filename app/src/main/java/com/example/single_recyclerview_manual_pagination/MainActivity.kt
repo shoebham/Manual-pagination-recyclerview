@@ -15,6 +15,7 @@ import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
+import com.example.single_recyclerview_manual_pagination.models.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.flow.collectLatest
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var countMap: LinkedHashMap<String, Int>
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
+    private lateinit var baseClass: BaseClass
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -41,9 +43,7 @@ class MainActivity : AppCompatActivity() {
             itemList.add("Item $i");
         }
 
-        adapter = CustomAdapter(itemList)
         initUi()
-        initRecyclerView()
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -59,8 +59,13 @@ class MainActivity : AppCompatActivity() {
             }
             countMap = LinkedHashMap<String, Int>()
             getCount()
+
+            baseClass = BaseClass(viewModel.getCategoryList().value!!)
+            initRecyclerView()
             initTabLayout()
             initMediator()
+
+
         })
     }
 
@@ -103,6 +108,8 @@ class MainActivity : AppCompatActivity() {
      *
      */
     private fun initRecyclerView() {
+        adapter = CustomAdapter(baseClass)
+        adapter.setHasStableIds(true)
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -110,12 +117,8 @@ class MainActivity : AppCompatActivity() {
             override fun getSpanSize(position: Int): Int {
                 if (position == adapter.itemCount)
                     return 3
-                return if (adapter.getItemViewType(position) == 1) 3 else if (adapter.getItemViewType(
-                        position
-                    ) == 2
-                ) 3
-                else
-                    1
+                return if (adapter.getItemViewType(position) < 0) 3
+                else 1
             }
         })
         binding.recyclerview.itemAnimator = null
