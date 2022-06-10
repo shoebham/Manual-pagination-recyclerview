@@ -10,9 +10,6 @@ object InjectorUtils {
      */
     fun provideMainActivityViewModelFactory(application: Application): MainActivityViewModelFactory {
         val repository = Repository.getInstance()
-        val count = repository.count
-        val countMap = repository.individualCount
-        val position = repository.tabPosition
         return MainActivityViewModelFactory(repository, application)
     }
 }

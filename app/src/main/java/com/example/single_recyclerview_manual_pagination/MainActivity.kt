@@ -1,5 +1,6 @@
 package com.example.single_recyclerview_manual_pagination
 
+import android.content.ClipData
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,7 @@ import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivity
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.models.BaseClass
+import com.example.single_recyclerview_manual_pagination.models.Category
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.flow.collectLatest
@@ -39,11 +41,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        for( i in 1..1000){
+        for (i in 1..1000) {
             itemList.add("Item $i");
         }
-
         initUi()
+        val emptyListOfCategory = Category()
+        val tempList = mutableListOf<Category>(emptyListOfCategory)
+        baseClass = BaseClass(tempList)
+        adapter = CustomAdapter(baseClass)
+
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -51,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             .get(MainActivityViewModel::class.java)
         indicesList = HashMap<Int, Int>()
 
-        viewModel.getCategories().observe(this, Observer { item ->
+        viewModel.stickerPacks.observe(this, Observer { item ->
             categoryList = item
 
             for ((i, stickerpack) in categoryList.stickerPacks.withIndex()) {
@@ -59,19 +65,27 @@ class MainActivity : AppCompatActivity() {
             }
             countMap = LinkedHashMap<String, Int>()
             getCount()
-
-            baseClass = BaseClass(viewModel.getCategoryList().value!!)
             initRecyclerView()
+
+            viewModel.categoryList.observe(this) {
+                baseClass = BaseClass(it)
+//                adapter.dataSet=baseClass
+                adapter.submitList(it)
+            }
             initTabLayout()
             initMediator()
-
-
         })
+
+
     }
 
     fun getCount() {
-        countOfStickers = viewModel.getCount().value!!
-        countMap.putAll(viewModel.getIndividualCount().value!!)
+        viewModel.count.observe(this, Observer { it ->
+            countOfStickers = it
+        })
+        viewModel.individualCount.observe(this) {
+            countMap.putAll(it)
+        }
         Log.i("mainactivityy", "countofstickers${countOfStickers} ${countMap.size}")
         for (key in countMap.keys) {
             Log.i("countmap", "key:${key} value:${countMap.get(key)}")
@@ -89,15 +103,15 @@ class MainActivity : AppCompatActivity() {
                 binding.tabs.addTab(binding.tabs.newTab().setText(category.name))
             }
         }
-        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                val position = tab.position
-                viewModel.getTabPosition().postValue(position)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+//        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabSelected(tab: TabLayout.Tab) {
+//                val position = tab.position
+//                viewModel.getTabPosition().postValue(position)
+//            }
+//
+//            override fun onTabUnselected(tab: TabLayout.Tab) {}
+//            override fun onTabReselected(tab: TabLayout.Tab) {}
+//        })
     }
 
 

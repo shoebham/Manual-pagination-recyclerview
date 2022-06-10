@@ -40,10 +40,10 @@ class BaseClass(var categoryList: List<Category>) {
 //        if(itemPositionToReturn==0) header
 //        if(itemPositionToReturn==-1) loadmore
 //        currentCategory=categoryList[i]
-        Log.i(
-            "shubham",
-            "count:${counter} itemPositionToReturn:$itemPositionToReturn itemPosition:$itemPosition"
-        )
+//        Log.i(
+//            "shubham",
+//            "count:${counter} itemPositionToReturn:$itemPositionToReturn itemPosition:$itemPosition"
+//        )
         return itemPositionToReturn
     }
 

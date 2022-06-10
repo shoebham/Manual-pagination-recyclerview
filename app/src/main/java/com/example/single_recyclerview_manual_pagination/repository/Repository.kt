@@ -20,39 +20,26 @@ class Repository private constructor() {
         }
     }
 
-    private var _stickerPacks = MutableLiveData<StickerPacks>()
-    val stickerPacks = _stickerPacks
+//    private var _stickerPacks = MutableLiveData<StickerPacks>()
+//    val stickerPacks = _stickerPacks
+//
+//    private var _categoryList = MutableLiveData<List<Category>>()
+//    val categoryList = _categoryList
+//
+//    private var _count = MutableLiveData<Int>()
+//    val count = _count
+//    private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
+//    val individualCount = _individualCount
+//
+val tempHashMap = LinkedHashMap<String, Int>()
+    val listOfCategory = ArrayList<Category>(10)
 
-    private var _categoryList = MutableLiveData<List<Category>>()
-    val categoryList = _categoryList
-
-    private var _count = MutableLiveData<Int>()
-    val count = _count
-    private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
-    val individualCount = _individualCount
-
-    val tempHashMap = LinkedHashMap<String, Int>()
-    private var _tabPosition = MutableLiveData<Int>()
-    val tabPosition = _tabPosition
+//    private var _tabPosition = MutableLiveData<Int>()
+//    val tabPosition = _tabPosition
 
 
-    fun getStickerPacks() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val category = NetworkLayer.retrofitService.getStickerPacks()
-//                Log.i("repostiory", "${category.stickerPacks.size}")
-//                category.stickerPacks.removeIf { it.id == 405 }
-                getCount(category)
-                stickerPacks.postValue(category)
-            } catch (e: Exception) {
-                Log.i("shubham", "Exception $e")
-            }
-        }
-    }
-
-    suspend fun mapResponse(category: StickerPacks) {
-//        val c =BaseClass()
-        val listOfCategory = mutableListOf<Category>()
+    suspend fun getStickerPacks(): StickerPacks {
+        val category = NetworkLayer.retrofitService.getStickerPacks()
         for (cat in category.stickerPacks) {
             listOfCategory.add(
                 Category(
@@ -60,47 +47,65 @@ class Repository private constructor() {
                     name = cat.name!!,
                     isViewMoreVisible = false,
                     initialCount = category.stickerPacks.size,
-                    itemList = getStickers(cat.id)
                 )
             )
         }
-        categoryList.postValue(listOfCategory)
+//                Log.i("repostiory", "${category.stickerPacks.size}")
+//                category.stickerPacks.removeIf { it.id == 405 }
+//                stickerPacks.postValue(category)
+        return category
     }
+
+//    suspend fun mapResponse(category: StickerPacks):List<Category> {
+////        val c =BaseClass()
+////        for (cat in category.stickerPacks) {
+////            listOfCategory.add(
+////                Category(
+////                    id = cat.id,
+////                    name = cat.name!!,
+////                    isViewMoreVisible = false,
+////                    initialCount = category.stickerPacks.size,
+////                    itemList = getStickers(cat.id)
+////                )
+////            )
+////        }
+//        return listOfCategory
+////        categoryList.postValue(listOfCategory)
+//    }
 
     suspend fun getStickers(id: Int): List<Sticker> {
         val itemList = NetworkLayer.retrofitService.getStickers(id = id)
         return itemList.items
     }
 
-    suspend fun getCount(category: StickerPacks) {
+    suspend fun getCount(category: StickerPacks): Int {
         var total = 0
-        val listOfCategory = mutableListOf<Category>()
-
-        for (c in category.stickerPacks) {
+        for ((i, c) in category.stickerPacks.withIndex()) {
 //            if(c.id==405)continue
             val cnt = NetworkLayer.retrofitService.getStickers(id = c.id)
             Log.i("repository", "$cnt")
             c.total = (cnt.items.size)
             tempHashMap.put(c.name!!, cnt.items.size)
             total += cnt.items.size
-
-            listOfCategory.add(
-                Category(
-                    id = c.id,
-                    name = c.name!!,
-                    isViewMoreVisible = false,
-                    initialCount = category.stickerPacks.size,
-                    itemList = cnt.items
-                )
-            )
+            listOfCategory[i].itemList = cnt.items
+//            listOfCategory.add(
+//                Category(
+//                    id = c.id,
+//                    name = c.name!!,
+//                    isViewMoreVisible = false,
+//                    initialCount = category.stickerPacks.size,
+//                    itemList = getStickers(c.id)
+//
         }
-        categoryList.postValue(listOfCategory)
-        individualCount.postValue(tempHashMap)
-        count.postValue(total)
+//        categoryList.postValue(listOfCategory)
+//        individualCount.postValue(tempHashMap)
+//        count.postValue(total)
+        return total
     }
 
-    init {
-        getStickerPacks()
-    }
+//    init {
+//        getStickerPacks()
+//        getCount(stickerPacks.value)
+//    }
 
 }
