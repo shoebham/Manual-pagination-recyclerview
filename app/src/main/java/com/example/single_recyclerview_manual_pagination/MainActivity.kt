@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initRecyclerView() {
         adapter = CustomAdapter(baseClass)
-        adapter.setHasStableIds(true)
+//        adapter.setHasStableIds(true)
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -121,13 +121,6 @@ class MainActivity : AppCompatActivity() {
                 else 1
             }
         })
-        binding.recyclerview.itemAnimator = null
-        val pool = RecyclerView.RecycledViewPool()
-        pool.setMaxRecycledViews(1, 100000)
-        pool.setMaxRecycledViews(0, 100000)
-        binding.recyclerview.setRecycledViewPool(pool)
-        binding.recyclerview.setHasFixedSize(true)
-
     }
 
     /**

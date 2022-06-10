@@ -24,6 +24,7 @@ class BaseClass(var categoryList: List<Category>) {
 
     fun getAt(itemPosition: Int): Int {
 //        if(itemPosition==0)return 0
+
         var i = 0
         var totalTillNow = categoryList[i].itemList.size + 1
         var itemPositionToReturn = itemPosition
