@@ -54,7 +54,7 @@ class CustomAdapter(var dataSet: BaseClass) :
 ////            if(oldItem is StickerUiModel.StickerItem&&newItem is StickerUiModel.StickerItem)
 ////                Log.i("diffutil", "areContentsTheSame${toreturn} ${(oldItem as StickerUiModel.StickerItem).sticker.id} ${(newItem as StickerUiModel.StickerItem).sticker.id} ");
 ////            else
-//            Log.i("diffutil", "areContentsTheSame${toreturn}");
+            Log.i("diffutil", "areContentsTheSame");
 //            return toreturn
             return oldItem == newItem
         }
@@ -143,7 +143,7 @@ class CustomAdapter(var dataSet: BaseClass) :
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = currentList().size
+    override fun getItemCount() = dataSet.getSize()
 
     override fun getItemViewType(position: Int): Int {
         // Use peek over getItem to avoid triggering page fetch / drops, since

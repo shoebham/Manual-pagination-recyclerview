@@ -24,7 +24,6 @@ class BaseClass(var categoryList: List<Category>) {
         var i = 0
         var totalTillNow = categoryList[i].itemList.size + 1
         var itemPositionToReturn = itemPosition
-        var curr: Category = currentCategory
         while (i < categoryList.size - 1 && itemPositionToReturn >= totalTillNow) {
             itemPositionToReturn -= totalTillNow
             i++;

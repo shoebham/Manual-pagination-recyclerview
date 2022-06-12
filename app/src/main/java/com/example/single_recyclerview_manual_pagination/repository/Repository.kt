@@ -51,10 +51,11 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
                         id = cat.id,
                         name = cat.name!!,
                         isViewMoreVisible = false,
-                        initialCount = 10
+                        initialCount = 20
                     )
                     )
         }
+        listOfCategory.value!!.removeIf { it.id == null }
 //                Log.i("repostiory", "${category.stickerPacks.size}")
 //                category.stickerPacks.removeIf { it.id == 405 }
 //                stickerPacks.postValue(category)
