@@ -18,19 +18,15 @@ class BaseClass(var categoryList: List<Category>) {
         Log.i("shubham", "counter$counter")
         return categoryList[counter]
     }
-//    fun getCurrentCategory():Category{
-//        return currentCategory
-//    }
 
-    fun getAt(itemPosition: Int): Int {
+    fun getAt(itemPosition: Int): StickerUiModel {
 //        if(itemPosition==0)return 0
-
         var i = 0
         var totalTillNow = categoryList[i].itemList.size + 1
         var itemPositionToReturn = itemPosition
         var curr: Category = currentCategory
         while (i < categoryList.size - 1 && itemPositionToReturn >= totalTillNow) {
-            itemPositionToReturn = itemPositionToReturn - totalTillNow
+            itemPositionToReturn -= totalTillNow
             i++;
             totalTillNow = (categoryList[i].itemList.size + 1)
 //            currentCategory=categoryList[i]
@@ -44,7 +40,8 @@ class BaseClass(var categoryList: List<Category>) {
 //            "shubham",
 //            "count:${counter} itemPositionToReturn:$itemPositionToReturn itemPosition:$itemPosition"
 //        )
-        return itemPositionToReturn
+        if (itemPositionToReturn < 0) return StickerUiModel.StickerHeader(categoryList[counter].name)
+        return StickerUiModel.StickerItem(categoryList[counter].itemList[itemPositionToReturn])
     }
 
     fun getSize():Int{

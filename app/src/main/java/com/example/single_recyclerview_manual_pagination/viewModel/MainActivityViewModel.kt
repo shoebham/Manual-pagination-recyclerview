@@ -26,11 +26,7 @@ class MainActivityViewModel(
     }
 
     private var _categoryList = MutableLiveData<List<Category>>()
-    val categoryList: LiveData<List<Category>> = liveData {
-        emit(
-            repository.listOfCategory
-        )
-    }
+    val categoryList: MutableLiveData<MutableList<Category>> = repository.listOfCategory
 
     private var _count = MutableLiveData<Int>()
     val count: LiveData<Int> = liveData {
@@ -38,9 +34,7 @@ class MainActivityViewModel(
     }
 
     private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
-    val individualCount: LiveData<LinkedHashMap<String, Int>> = liveData {
-        emit(repository.tempHashMap)
-    }
+    val individualCount: LiveData<LinkedHashMap<String, Int>> = repository.tempHashMap
 
     val tempHashMap = LinkedHashMap<String, Int>()
     private var _tabPosition = MutableLiveData<Int>()

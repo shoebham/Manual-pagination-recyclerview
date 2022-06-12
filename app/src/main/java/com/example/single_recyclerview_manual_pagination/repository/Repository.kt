@@ -3,6 +3,7 @@ package com.example.single_recyclerview_manual_pagination.repository
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
 import com.example.single_recyclerview_manual_pagination.models.Category
@@ -31,24 +32,28 @@ class Repository private constructor() {
 //    private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
 //    val individualCount = _individualCount
 //
-val tempHashMap = LinkedHashMap<String, Int>()
-    val listOfCategory = ArrayList<Category>(10)
+val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
+    val listOfCategory = MutableLiveData<MutableList<Category>>()
 
+    init {
+        listOfCategory.postValue(MutableList(10) { Category() })
+        tempHashMap.postValue(LinkedHashMap<String, Int>())
+    }
 //    private var _tabPosition = MutableLiveData<Int>()
 //    val tabPosition = _tabPosition
 
 
     suspend fun getStickerPacks(): StickerPacks {
         val category = NetworkLayer.retrofitService.getStickerPacks()
-        for (cat in category.stickerPacks) {
-            listOfCategory.add(
-                Category(
-                    id = cat.id,
-                    name = cat.name!!,
-                    isViewMoreVisible = false,
-                    initialCount = category.stickerPacks.size,
-                )
-            )
+        for ((i, cat) in category.stickerPacks.withIndex()) {
+            listOfCategory.value!![i] = (
+                    Category(
+                        id = cat.id,
+                        name = cat.name!!,
+                        isViewMoreVisible = false,
+                        initialCount = 10
+                    )
+                    )
         }
 //                Log.i("repostiory", "${category.stickerPacks.size}")
 //                category.stickerPacks.removeIf { it.id == 405 }
@@ -85,9 +90,14 @@ val tempHashMap = LinkedHashMap<String, Int>()
             val cnt = NetworkLayer.retrofitService.getStickers(id = c.id)
             Log.i("repository", "$cnt")
             c.total = (cnt.items.size)
-            tempHashMap.put(c.name!!, cnt.items.size)
+            tempHashMap.value!!.put(c.name!!, cnt.items.size)
+            tempHashMap.postValue(tempHashMap.value)
             total += cnt.items.size
-            listOfCategory[i].itemList = cnt.items
+            listOfCategory.value!![i].itemList = cnt.items
+            listOfCategory.value!![i].currentCount = cnt.items.size
+            listOfCategory.value!![i].initialCount = cnt.items.size
+            listOfCategory.postValue(listOfCategory.value!!)
+            Log.i("repository", "${listOfCategory.value}")
 //            listOfCategory.add(
 //                Category(
 //                    id = c.id,
@@ -103,6 +113,9 @@ val tempHashMap = LinkedHashMap<String, Int>()
         return total
     }
 
+//    fun getListOfCategory():List<Category>{
+//        return listOfCategory
+//    }
 //    init {
 //        getStickerPacks()
 //        getCount(stickerPacks.value)

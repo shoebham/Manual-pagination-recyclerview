@@ -31,12 +31,34 @@ class CustomAdapter(var dataSet: BaseClass) :
 
     private class DiffCallBack : DiffUtil.ItemCallback<Category>() {
         override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
-            return oldItem.initialCount == newItem.initialCount
+
+//            return (oldItem is CatUiModel.CatItem && newItem is CatUiModel.CatItem && oldItem.catImage.url == newItem.catImage.url)
+//            val toreturn = (
+//                    (oldItem is StickerUiModel.StickerItem && newItem is StickerUiModel.StickerItem && oldItem.sticker?.id == newItem.sticker?.id) ||
+//                            (oldItem is StickerUiModel.StickerHeader && newItem is StickerUiModel.StickerHeader && oldItem.text == newItem.text)
+//                    )
+////            if(oldItem is StickerUiModel.StickerItem&&newItem is StickerUiModel.StickerItem)
+////                Log.i("diffutil", "areItemsTheSame${toreturn} ${(oldItem as StickerUiModel.StickerItem).sticker.id} ${(newItem as StickerUiModel.StickerItem).sticker.id} ");
+            Log.i("diffutil", "areItemsTheSame${oldItem.id == newItem.id} ");
+//
+//            return toreturn
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
-            return oldItem.itemList == newItem.itemList
+//            val toreturn = (
+//                    (oldItem is StickerUiModel.StickerItem && newItem is StickerUiModel.StickerItem && oldItem.sticker?.id == newItem.sticker?.id) ||
+//                            (oldItem is StickerUiModel.StickerHeader && newItem is StickerUiModel.StickerHeader && oldItem.text == newItem.text)
+//                    )
+//
+////            if(oldItem is StickerUiModel.StickerItem&&newItem is StickerUiModel.StickerItem)
+////                Log.i("diffutil", "areContentsTheSame${toreturn} ${(oldItem as StickerUiModel.StickerItem).sticker.id} ${(newItem as StickerUiModel.StickerItem).sticker.id} ");
+////            else
+//            Log.i("diffutil", "areContentsTheSame${toreturn}");
+//            return toreturn
+            return oldItem == newItem
         }
+
 
     }
 
@@ -91,10 +113,11 @@ class CustomAdapter(var dataSet: BaseClass) :
     }
 
     fun submitList(list: List<Category>) {
+        dataSet.categoryList = list
         differ.submitList(list)
     }
 
-    fun currentList(): List<Category> {
+    private fun currentList(): List<Category> {
         return differ.currentList
     }
 
@@ -110,28 +133,25 @@ class CustomAdapter(var dataSet: BaseClass) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-
-        val item = getItemViewType(position)
+        val item = dataSet.getAt(position)
         Log.i("shubham", "onbind count ${bindCount.incrementAndGet()} position$position item$item")
-        if (item == -1) {
-            (holder as StickerHeaderViewHolder).bind(stickerHeader = dataSet.getCategory().name)
+        if (item is StickerUiModel.StickerHeader) {
+            (holder as StickerHeaderViewHolder).bind(stickerHeader = item.text)
         } else {
-
-            (holder as StickerViewHolder).bind(sticker = dataSet.getCategory().itemList[item])
+            (holder as StickerViewHolder).bind(sticker = (item as StickerUiModel.StickerItem).sticker)
         }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = dataSet.getSize()
+    override fun getItemCount() = currentList().size
 
     override fun getItemViewType(position: Int): Int {
         // Use peek over getItem to avoid triggering page fetch / drops, since
         // recycling views is not indicative of the user's current scroll position.
-        val item = dataSet.getAt(position)
-        if (item < 0)
-            return -1
-        else return item
-
+        return when (dataSet.getAt(position)) {
+            is StickerUiModel.StickerHeader -> -1
+            else -> 1
+        }
     }
 
 

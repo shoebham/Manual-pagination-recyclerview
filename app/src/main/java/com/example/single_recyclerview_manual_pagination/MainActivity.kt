@@ -19,6 +19,7 @@ import com.example.single_recyclerview_manual_pagination.databinding.ActivityMai
 import com.example.single_recyclerview_manual_pagination.models.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.Category
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
+import com.example.single_recyclerview_manual_pagination.models.StickerUiModel
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -45,11 +46,14 @@ class MainActivity : AppCompatActivity() {
             itemList.add("Item $i");
         }
         initUi()
+
+
         val emptyListOfCategory = Category()
-        val tempList = mutableListOf<Category>(emptyListOfCategory)
+        val tempList = MutableList(10) { emptyListOfCategory }
         baseClass = BaseClass(tempList)
         adapter = CustomAdapter(baseClass)
-
+//        val templist2 = mutableListOf<StickerUiModel>()
+        adapter.submitList(baseClass.categoryList)
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -68,9 +72,20 @@ class MainActivity : AppCompatActivity() {
             initRecyclerView()
 
             viewModel.categoryList.observe(this) {
+                Log.i("shubham", "data received")
                 baseClass = BaseClass(it)
+                val templist = mutableListOf<StickerUiModel>()
+                var total = 0
+//                for((i,cat) in it.withIndex()){
+//                    templist.add(baseClass.getAt(total+i))
+//                    for ((j, _) in cat.itemList.withIndex())
+//                        templist.add(baseClass.getAt(total+j+1))
+//                    total+=cat.itemList.size
+//                }
+                val newList: MutableList<Category> = it
+                adapter.submitList(newList)
 //                adapter.dataSet=baseClass
-                adapter.submitList(it)
+
             }
             initTabLayout()
             initMediator()
@@ -135,6 +150,7 @@ class MainActivity : AppCompatActivity() {
                 else 1
             }
         })
+        binding.recyclerview.itemAnimator = null
     }
 
     /**
