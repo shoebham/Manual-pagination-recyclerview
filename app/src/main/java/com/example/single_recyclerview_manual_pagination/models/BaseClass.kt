@@ -3,23 +3,16 @@ package com.example.single_recyclerview_manual_pagination.models
 import android.util.Log
 
 
-class BaseClass(var categoryList: List<Category>) {
+class BaseClass<T>(var categoryList: List<Category<T>>) {
 
-    init {
-//        for(category in categoryList){
-//            category.currentCount+=1
-//            if(category.isViewMoreVisible)category.currentCount+=1
-//        }
-    }
-
-    var currentCategory: Category = categoryList[0]
+    var currentCategory: Category<T> = categoryList[0]
     var counter = 0
-    fun getCategory(): Category {
+    fun getCategory(): Category<T> {
         Log.i("shubham", "counter$counter")
         return categoryList[counter]
     }
 
-    fun getAt(itemPosition: Int): StickerUiModel {
+    fun getAt(itemPosition: Int): UiModel {
 //        if(itemPosition==0)return 0
         var i = 0
         var totalTillNow = categoryList[i].itemList.size + 1
@@ -39,8 +32,8 @@ class BaseClass(var categoryList: List<Category>) {
 //            "shubham",
 //            "count:${counter} itemPositionToReturn:$itemPositionToReturn itemPosition:$itemPosition"
 //        )
-        if (itemPositionToReturn < 0) return StickerUiModel.StickerHeader(categoryList[counter].name)
-        return StickerUiModel.StickerItem(categoryList[counter].itemList[itemPositionToReturn])
+        if (itemPositionToReturn < 0) return UiModel.Header(categoryList[counter].name)
+        return UiModel.Item(categoryList[counter].itemList[itemPositionToReturn])
     }
 
     fun getSize():Int{

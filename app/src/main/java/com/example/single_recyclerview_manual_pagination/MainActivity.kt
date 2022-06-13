@@ -1,32 +1,22 @@
 package com.example.single_recyclerview_manual_pagination
 
-import android.content.ClipData
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.***REMOVED***_vertical_scroll_stickers.tabSync.TabbedListMediator
 import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
+import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
-import com.example.single_recyclerview_manual_pagination.models.BaseClass
-import com.example.single_recyclerview_manual_pagination.models.Category
-import com.example.single_recyclerview_manual_pagination.models.StickerPacks
-import com.example.single_recyclerview_manual_pagination.models.StickerUiModel
-import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.example.single_recyclerview_manual_pagination.models.*
 
 class MainActivity : AppCompatActivity() {
     private var itemList = mutableListOf<String>()
-    private lateinit var adapter:CustomAdapter
+    private lateinit var adapter: CustomAdapter<Sticker>
     private lateinit var binding: ActivityMainBinding
     private lateinit var factory: MainActivityViewModelFactory
     private lateinit var viewModel: MainActivityViewModel
@@ -36,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var countMap: LinkedHashMap<String, Int>
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
-    private lateinit var baseClass: BaseClass
+    private lateinit var baseClass: BaseClass<Sticker>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -48,12 +38,12 @@ class MainActivity : AppCompatActivity() {
         initUi()
 
 
-        val emptyListOfCategory = Category()
+        val emptyListOfCategory = Category<Sticker>()
         val tempList = MutableList(10) { emptyListOfCategory }
         baseClass = BaseClass(tempList)
         adapter = CustomAdapter(baseClass)
 //        val templist2 = mutableListOf<StickerUiModel>()
-        adapter.submitList(baseClass.categoryList)
+        adapter.submitList(baseClass.categoryList.toList())
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -71,10 +61,10 @@ class MainActivity : AppCompatActivity() {
             getCount()
             initRecyclerView()
 
-            viewModel.categoryList.observe(this) {
+            viewModel.categoryList.observe(this) { it ->
                 Log.i("shubham", "data received")
-                baseClass = BaseClass(it)
-                val templist = mutableListOf<StickerUiModel>()
+                baseClass = BaseClass<Sticker>(it)
+                val templist = mutableListOf<UiModel>()
                 var total = 0
 //                for((i,cat) in it.withIndex()){
 //                    templist.add(baseClass.getAt(total+i))
@@ -82,8 +72,21 @@ class MainActivity : AppCompatActivity() {
 //                        templist.add(baseClass.getAt(total+j+1))
 //                    total+=cat.itemList.size
 //                }
-                val newList: MutableList<Category> = it
-                adapter.submitList(newList)
+                val newList = mutableListOf<Category<Sticker>>()
+                it.forEach { it ->
+                    newList.add(
+                        Category<Sticker>(
+                            id = it.id,
+                            name = it.name,
+                            initialCount = it.initialCount,
+                            itemList = it.itemList,
+                            currentCount = it.currentCount,
+                            isViewMoreVisible = it.isViewMoreVisible
+                        )
+                    )
+                }
+
+                adapter.submitList(newList.toList())
 //                adapter.dataSet=baseClass
 
             }
@@ -137,7 +140,7 @@ class MainActivity : AppCompatActivity() {
      *
      */
     private fun initRecyclerView() {
-        adapter = CustomAdapter(baseClass)
+//        adapter = CustomAdapter(baseClass)
 //        adapter.setHasStableIds(true)
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
@@ -150,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                 else 1
             }
         })
-        binding.recyclerview.itemAnimator = null
+//        binding.recyclerview.itemAnimator = null
     }
 
     /**

@@ -1,8 +1,10 @@
 package com.example.single_recyclerview_manual_pagination.repository
 
+import android.os.Build
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
@@ -33,7 +35,7 @@ class Repository private constructor() {
 //    val individualCount = _individualCount
 //
 val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
-    val listOfCategory = MutableLiveData<MutableList<Category>>()
+    val listOfCategory = MutableLiveData<MutableList<Category<Sticker>>>()
 
     init {
         listOfCategory.postValue(MutableList(10) { Category() })
@@ -43,6 +45,7 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
 //    val tabPosition = _tabPosition
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     suspend fun getStickerPacks(): StickerPacks {
         val category = NetworkLayer.retrofitService.getStickerPacks()
         for ((i, cat) in category.stickerPacks.withIndex()) {

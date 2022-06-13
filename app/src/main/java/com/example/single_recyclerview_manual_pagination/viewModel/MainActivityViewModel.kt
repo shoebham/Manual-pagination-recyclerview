@@ -1,8 +1,11 @@
 package com.example.***REMOVED***_vertical_scroll_stickers.viewModel
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.single_recyclerview_manual_pagination.models.Category
+import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import com.example.single_recyclerview_manual_pagination.repository.Repository
 import kotlinx.coroutines.launch
@@ -21,12 +24,14 @@ class MainActivityViewModel(
 
 
     private var _stickerPacks = MutableLiveData<StickerPacks>()
+
+    @RequiresApi(Build.VERSION_CODES.N)
     val stickerPacks: LiveData<StickerPacks> = liveData {
         emit(repository.getStickerPacks())
     }
 
-    private var _categoryList = MutableLiveData<List<Category>>()
-    val categoryList: MutableLiveData<MutableList<Category>> = repository.listOfCategory
+    private var _categoryList = MutableLiveData<List<Category<Sticker>>>()
+    val categoryList: MutableLiveData<MutableList<Category<Sticker>>> = repository.listOfCategory
 
     private var _count = MutableLiveData<Int>()
     val count: LiveData<Int> = liveData {

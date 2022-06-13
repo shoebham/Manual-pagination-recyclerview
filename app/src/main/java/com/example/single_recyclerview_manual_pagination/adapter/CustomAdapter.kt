@@ -1,6 +1,5 @@
-package com.example.single_recyclerview_manual_pagination
+package com.example.single_recyclerview_manual_pagination.adapter
 
-import android.content.ClipData
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,57 +8,25 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.models.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.Category
 import com.example.single_recyclerview_manual_pagination.models.Sticker
-import com.example.single_recyclerview_manual_pagination.models.StickerUiModel
+import com.example.single_recyclerview_manual_pagination.models.UiModel
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class CustomAdapter(var dataSet: BaseClass) :
+class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val differ: AsyncListDiffer<Category> = AsyncListDiffer(this, DiffCallBack())
+    private val differ: AsyncListDiffer<Category<T>> = AsyncListDiffer(this, DiffCallBack())
 
     companion object {
         private val HEADER = 0
         private val ITEM = 1
         private val bindCount = AtomicInteger(0)
-    }
-
-    private class DiffCallBack : DiffUtil.ItemCallback<Category>() {
-        override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
-
-//            return (oldItem is CatUiModel.CatItem && newItem is CatUiModel.CatItem && oldItem.catImage.url == newItem.catImage.url)
-//            val toreturn = (
-//                    (oldItem is StickerUiModel.StickerItem && newItem is StickerUiModel.StickerItem && oldItem.sticker?.id == newItem.sticker?.id) ||
-//                            (oldItem is StickerUiModel.StickerHeader && newItem is StickerUiModel.StickerHeader && oldItem.text == newItem.text)
-//                    )
-////            if(oldItem is StickerUiModel.StickerItem&&newItem is StickerUiModel.StickerItem)
-////                Log.i("diffutil", "areItemsTheSame${toreturn} ${(oldItem as StickerUiModel.StickerItem).sticker.id} ${(newItem as StickerUiModel.StickerItem).sticker.id} ");
-            Log.i("diffutil", "areItemsTheSame${oldItem.id == newItem.id} ");
-//
-//            return toreturn
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
-//            val toreturn = (
-//                    (oldItem is StickerUiModel.StickerItem && newItem is StickerUiModel.StickerItem && oldItem.sticker?.id == newItem.sticker?.id) ||
-//                            (oldItem is StickerUiModel.StickerHeader && newItem is StickerUiModel.StickerHeader && oldItem.text == newItem.text)
-//                    )
-//
-////            if(oldItem is StickerUiModel.StickerItem&&newItem is StickerUiModel.StickerItem)
-////                Log.i("diffutil", "areContentsTheSame${toreturn} ${(oldItem as StickerUiModel.StickerItem).sticker.id} ${(newItem as StickerUiModel.StickerItem).sticker.id} ");
-////            else
-            Log.i("diffutil", "areContentsTheSame");
-//            return toreturn
-            return oldItem == newItem
-        }
-
-
     }
 
     class StickerViewHolder(private val binding: ItemsBinding) :
@@ -112,13 +79,33 @@ class CustomAdapter(var dataSet: BaseClass) :
         }
     }
 
-    fun submitList(list: List<Category>) {
+
+    fun submitList(list: List<Category<T>>) {
         dataSet.categoryList = list
         differ.submitList(list)
     }
 
-    private fun currentList(): List<Category> {
+    private fun currentList(): List<Category<T>> {
         return differ.currentList
+    }
+
+    private class DiffCallBack<T> : DiffUtil.ItemCallback<Category<T>>() {
+        override fun areItemsTheSame(oldItem: Category<T>, newItem: Category<T>): Boolean {
+            Log.i("diffutil", "areItemsTheSame ${oldItem.id == newItem.id} ");
+            return oldItem.id == newItem.id
+
+        }
+
+        override fun areContentsTheSame(oldItem: Category<T>, newItem: Category<T>): Boolean {
+            Log.i("diffutil", "areContentsTheSame ${oldItem.id == newItem.id}");
+            return oldItem == newItem
+        }
+
+        override fun getChangePayload(oldItem: Category<T>, newItem: Category<T>): Any? {
+            Log.i("diffutil", "getChangePayload()");
+            return if (oldItem.initialCount != newItem.initialCount) newItem else null
+//            return super.getChangePayload(oldItem, newItem)
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -135,21 +122,23 @@ class CustomAdapter(var dataSet: BaseClass) :
         // contents of the view with that element
         val item = dataSet.getAt(position)
         Log.i("shubham", "onbind count ${bindCount.incrementAndGet()} position$position item$item")
-        if (item is StickerUiModel.StickerHeader) {
+        if (item is UiModel.Header) {
             (holder as StickerHeaderViewHolder).bind(stickerHeader = item.text)
         } else {
-            (holder as StickerViewHolder).bind(sticker = (item as StickerUiModel.StickerItem).sticker)
+            (holder as StickerViewHolder).bind(sticker = (item as UiModel.Item<*>).item as Sticker?)
         }
     }
 
+
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.getSize()
+
 
     override fun getItemViewType(position: Int): Int {
         // Use peek over getItem to avoid triggering page fetch / drops, since
         // recycling views is not indicative of the user's current scroll position.
         return when (dataSet.getAt(position)) {
-            is StickerUiModel.StickerHeader -> -1
+            is UiModel.Header -> -1
             else -> 1
         }
     }
