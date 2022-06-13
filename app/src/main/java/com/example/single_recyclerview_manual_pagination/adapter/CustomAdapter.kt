@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val differ: AsyncListDiffer<Category<T>> = AsyncListDiffer(this, DiffCallBack())
+    private val differ: AsyncListDiffer<UiModel> = AsyncListDiffer(this, DiffCallBack())
 
     companion object {
         private val HEADER = 0
@@ -39,8 +39,8 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
             }
         }
 
-        fun bind(sticker: Sticker?) {
-            if (sticker == null) {
+        fun bind(sticker: UiModel.Item) {
+            if (sticker.item == null) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
@@ -50,7 +50,7 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
 
                 binding.itemImageView.setColorFilter(color)
             } else {
-                Glide.with(binding.root.context).load(sticker.fixedWidthFull?.png?.url)
+                Glide.with(binding.root.context).load(sticker.item.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
 
@@ -80,31 +80,36 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     }
 
 
-    fun submitList(list: List<Category<T>>) {
-        dataSet.categoryList = list
+    fun submitList(list: List<UiModel>) {
         differ.submitList(list)
     }
 
-    private fun currentList(): List<Category<T>> {
+    private fun currentList(): List<UiModel> {
         return differ.currentList
     }
 
-    private class DiffCallBack<T> : DiffUtil.ItemCallback<Category<T>>() {
-        override fun areItemsTheSame(oldItem: Category<T>, newItem: Category<T>): Boolean {
-            Log.i("diffutil", "areItemsTheSame ${oldItem.id == newItem.id} ");
-            return oldItem.id == newItem.id
+    private class DiffCallBack : DiffUtil.ItemCallback<UiModel>() {
+        override fun areItemsTheSame(oldItem: UiModel, newItem: UiModel): Boolean {
+            val returnValue =
+                (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.item?.id == newItem.item?.id) ||
+                        (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
+            Log.i("diffutil", "areItemsTheSame() ${returnValue}");
+            return returnValue
+//            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: UiModel, newItem: UiModel): Boolean {
+            val returnValue =
+                (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.item?.id == newItem.item?.id) ||
+                        (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
+            Log.i("diffutil", "areContentsTheSame() ${returnValue}");
+            return returnValue
 
         }
 
-        override fun areContentsTheSame(oldItem: Category<T>, newItem: Category<T>): Boolean {
-            Log.i("diffutil", "areContentsTheSame ${oldItem.id == newItem.id}");
-            return oldItem == newItem
-        }
-
-        override fun getChangePayload(oldItem: Category<T>, newItem: Category<T>): Any? {
+        override fun getChangePayload(oldItem: UiModel, newItem: UiModel): Any? {
             Log.i("diffutil", "getChangePayload()");
-            return if (oldItem.initialCount != newItem.initialCount) newItem else null
-//            return super.getChangePayload(oldItem, newItem)
+            return super.getChangePayload(oldItem, newItem)
         }
     }
 
@@ -120,24 +125,28 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        val item = dataSet.getAt(position)
-        Log.i("shubham", "onbind count ${bindCount.incrementAndGet()} position$position item$item")
+        val item = currentList()[position]
+        Log.i(
+            "shubham",
+            "onbind count ${bindCount.incrementAndGet()} position$position item${item}"
+        )
         if (item is UiModel.Header) {
+            Log.i("shubham", "onbind count ${bindCount.get()} position$position item${item.text}")
             (holder as StickerHeaderViewHolder).bind(stickerHeader = item.text)
-        } else {
-            (holder as StickerViewHolder).bind(sticker = (item as UiModel.Item<*>).item as Sticker?)
+        } else if (item is UiModel.Item) {
+            (holder as StickerViewHolder).bind(sticker = item)
         }
     }
 
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = dataSet.getSize()
+    override fun getItemCount() = currentList().size
 
 
     override fun getItemViewType(position: Int): Int {
         // Use peek over getItem to avoid triggering page fetch / drops, since
         // recycling views is not indicative of the user's current scroll position.
-        return when (dataSet.getAt(position)) {
+        return when (currentList().get(position)) {
             is UiModel.Header -> -1
             else -> 1
         }

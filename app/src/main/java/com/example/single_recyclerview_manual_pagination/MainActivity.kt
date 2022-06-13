@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.***REMOVED***_vertical_scroll_stickers.tabSync.TabbedListMediator
 import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
@@ -13,6 +14,11 @@ import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivity
 import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.models.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity() {
     private var itemList = mutableListOf<String>()
@@ -43,7 +49,8 @@ class MainActivity : AppCompatActivity() {
         baseClass = BaseClass(tempList)
         adapter = CustomAdapter(baseClass)
 //        val templist2 = mutableListOf<StickerUiModel>()
-        adapter.submitList(baseClass.categoryList.toList())
+        val temp = baseClass.convertToUiModelList(tempList)
+        adapter.submitList(temp)
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -75,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                 val newList = mutableListOf<Category<Sticker>>()
                 it.forEach { it ->
                     newList.add(
-                        Category<Sticker>(
+                        Category(
                             id = it.id,
                             name = it.name,
                             initialCount = it.initialCount,
@@ -86,7 +93,11 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
 
-                adapter.submitList(newList.toList())
+                val newTempList = baseClass.convertToUiModelList(newList)
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    delay(1000)
+//                }
+                adapter.submitList(newTempList)
 //                adapter.dataSet=baseClass
 
             }
@@ -142,6 +153,8 @@ class MainActivity : AppCompatActivity() {
     private fun initRecyclerView() {
 //        adapter = CustomAdapter(baseClass)
 //        adapter.setHasStableIds(true)
+        adapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -153,7 +166,9 @@ class MainActivity : AppCompatActivity() {
                 else 1
             }
         })
-//        binding.recyclerview.itemAnimator = null
+        binding.recyclerview.itemAnimator = null
+
+
     }
 
     /**

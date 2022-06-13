@@ -31,7 +31,7 @@ class MainActivityViewModel(
     }
 
     private var _categoryList = MutableLiveData<List<Category<Sticker>>>()
-    val categoryList: MutableLiveData<MutableList<Category<Sticker>>> = repository.listOfCategory
+    val categoryList: MutableLiveData<MutableList<Category<Sticker>>> = (repository.getlist())
 
     private var _count = MutableLiveData<Int>()
     val count: LiveData<Int> = liveData {

@@ -1,6 +1,8 @@
 package com.example.single_recyclerview_manual_pagination.models
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 
 
 class BaseClass<T>(var categoryList: List<Category<T>>) {
@@ -10,6 +12,18 @@ class BaseClass<T>(var categoryList: List<Category<T>>) {
     fun getCategory(): Category<T> {
         Log.i("shubham", "counter$counter")
         return categoryList[counter]
+    }
+
+    fun convertToUiModelList(categoryList: List<Category<T>>): List<UiModel> {
+
+        val uiModelList = mutableListOf<UiModel>()
+        for (category in categoryList) {
+            uiModelList.add(UiModel.Header(category.name))
+            for (item in category.itemList) {
+                uiModelList.add(UiModel.Item(item as Sticker?))
+            }
+        }
+        return uiModelList
     }
 
     fun getAt(itemPosition: Int): UiModel {
@@ -33,7 +47,7 @@ class BaseClass<T>(var categoryList: List<Category<T>>) {
 //            "count:${counter} itemPositionToReturn:$itemPositionToReturn itemPosition:$itemPosition"
 //        )
         if (itemPositionToReturn < 0) return UiModel.Header(categoryList[counter].name)
-        return UiModel.Item(categoryList[counter].itemList[itemPositionToReturn])
+        return UiModel.Item(categoryList[counter].itemList[itemPositionToReturn] as Sticker)
     }
 
     fun getSize():Int{

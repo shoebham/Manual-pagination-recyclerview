@@ -11,6 +11,7 @@ import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
 import com.example.single_recyclerview_manual_pagination.models.Category
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class Repository private constructor() {
@@ -36,6 +37,11 @@ class Repository private constructor() {
 //
 val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
     val listOfCategory = MutableLiveData<MutableList<Category<Sticker>>>()
+
+    fun getlist(): MutableLiveData<MutableList<Category<Sticker>>> {
+
+        return listOfCategory
+    }
 
     init {
         listOfCategory.postValue(MutableList(10) { Category() })
