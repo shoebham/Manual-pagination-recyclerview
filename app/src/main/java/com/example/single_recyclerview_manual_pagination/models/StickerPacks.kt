@@ -8,7 +8,7 @@ data class StickerPacks(
 
 data class StickerPack(
     var id: Int,
-    var name: String? = null,
+    var name: String = "",
     
     
     

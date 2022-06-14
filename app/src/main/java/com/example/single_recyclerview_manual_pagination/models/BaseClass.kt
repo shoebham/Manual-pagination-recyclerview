@@ -16,11 +16,6 @@ class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), 
     var listWrapper = mutableListOf<Any>()
     override val size: Int = listWrapper.size
     val lastAccessedPosition: Int = 0
-
-    init {
-
-    }
-
     enum class Item_type {
         BANNER, ITEM, AD
     }
@@ -42,7 +37,6 @@ class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), 
         }
         listWrapper = wrapper
         mainList = modelList
-
     }
 
     //    var currentCategory: Category<T> = categoryList[0]

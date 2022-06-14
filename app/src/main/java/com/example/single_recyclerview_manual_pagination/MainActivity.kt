@@ -1,10 +1,12 @@
 package com.example.single_recyclerview_manual_pagination
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.***REMOVED***_vertical_scroll_stickers.tabSync.TabbedListMediator
@@ -12,9 +14,11 @@ import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
+import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
 import com.example.single_recyclerview_manual_pagination.adapter.listContainer
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.models.*
+
 
 class MainActivity : AppCompatActivity() {
     private var itemList = mutableListOf<String>()
@@ -29,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
     private lateinit var baseClass: BaseClass<Sticker>
+    private lateinit var differ: AsyncListDiffer<UiModel<Sticker>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -47,10 +52,14 @@ class MainActivity : AppCompatActivity() {
         baseClass = BaseClass(tempList)
         baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
         adapter = CustomAdapter(baseClass)
+        differ = AsyncListDiffer(adapter, DiffCallBack())
+        adapter.differ = differ
 
 //        val templist2 = mutableListOf<StickerUiModel>()
 //        val temp = baseClass.convertToUiModelList(tempList)
+
         adapter.submitList(baseClass.mainList)
+
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -68,37 +77,36 @@ class MainActivity : AppCompatActivity() {
             getCount()
             initRecyclerView()
 
+//            binding.recyclerview.layoutManager.
             viewModel.categoryList.observe(this) { it ->
                 Log.i("shubham", "data received")
                 baseClass = BaseClass<Sticker>(it)
                 val templist = mutableListOf<UiModel<Sticker>>()
                 var total = 0
-//                for((i,cat) in it.withIndex()){
-//                    templist.add(baseClass.getAt(total+i))
-//                    for ((j, _) in cat.itemList.withIndex())
-//                        templist.add(baseClass.getAt(total+j+1))
-//                    total+=cat.itemList.size
-//                }
                 val newList = mutableListOf<Category<Sticker>>()
-                it.forEach { it ->
+                it.forEach { it2 ->
                     newList.add(
                         Category(
-                            id = it.id,
-                            name = it.name,
-                            initialCount = it.initialCount,
-                            itemList = it.itemList,
-                            currentCount = it.currentCount,
-                            isViewMoreVisible = it.isViewMoreVisible
+                            id = it2.id,
+                            name = it2.name,
+                            initialCount = it2.initialCount,
+                            itemList = it2.itemList,
+                            currentCount = it2.currentCount,
+                            isViewMoreVisible = it2.isViewMoreVisible
                         )
                     )
                 }
                 val listContainer = listContainer<Sticker>()
                 listContainer.listOfItems = newList
-                val newTempList = baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
+                baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
 //                CoroutineScope(Dispatchers.IO).launch {
 //                    delay(1000)
 //                }
+
+
                 adapter.submitList(baseClass.mainList)
+
+
 //                adapter.dataSet=baseClass
 
             }

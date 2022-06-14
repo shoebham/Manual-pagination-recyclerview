@@ -17,9 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private val differ: AsyncListDiffer<UiModel<Sticker>> = AsyncListDiffer(this, DiffCallBack<T>())
-
+    lateinit var differ: AsyncListDiffer<UiModel<T>>
     companion object {
         private val HEADER = 0
         private val ITEM = 1
@@ -37,7 +35,7 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
         }
 
         fun bind(sticker: UiModel.Item<Sticker>) {
-            if (sticker.baseModelOfItem == null) {
+            if (sticker.baseModelOfItem?.item == null) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
@@ -48,7 +46,7 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
                 binding.itemImageView.setColorFilter(color)
             } else {
                 Glide.with(binding.root.context)
-                    .load(sticker.baseModelOfItem.item.fixedWidthFull?.png?.url)
+                    .load(sticker.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
 
@@ -67,61 +65,28 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
         }
 
         fun bind(stickerHeader: String?) {
-            if (stickerHeader == null) {
-                binding.textitem.text = "loading"
-            } else {
-                binding.textitem.text = stickerHeader
-                binding.textitem.setOnClickListener {
-                }
-            }
+
+            binding.textitem.text = stickerHeader
+
+
         }
     }
 
 
-    fun submitList(list: List<UiModel<Sticker>>) {
+    fun submitList(list: List<UiModel<T>>) {
         differ.submitList(list)
     }
 
-    private fun currentList(): List<UiModel<Sticker>> {
+    private fun currentList(): List<UiModel<T>> {
         return differ.currentList
     }
 
-    private class DiffCallBack<T> : DiffUtil.ItemCallback<UiModel<Sticker>>() {
-        override fun areItemsTheSame(
-            oldItem: UiModel<Sticker>,
-            newItem: UiModel<Sticker>
-        ): Boolean {
-            val returnValue =
-                (oldItem is UiModel.Item<Sticker> && newItem is UiModel.Item<Sticker> && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
-                        (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
-            Log.i("diffutil", "areItemsTheSame() ${returnValue}");
-            return returnValue
-//            return oldItem == newItem
-        }
-
-        override fun areContentsTheSame(
-            oldItem: UiModel<Sticker>,
-            newItem: UiModel<Sticker>
-        ): Boolean {
-            val returnValue =
-                (oldItem is UiModel.Item<Sticker> && newItem is UiModel.Item<Sticker> && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
-                        (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
-            Log.i("diffutil", "areContentsTheSame() ${returnValue}");
-            return returnValue
-
-        }
-
-        override fun getChangePayload(oldItem: UiModel<Sticker>, newItem: UiModel<Sticker>): Any? {
-            Log.i("diffutil", "getChangePayload()");
-            return super.getChangePayload(oldItem, newItem)
-        }
-    }
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            -1 -> StickerHeaderViewHolder.from(parent)
-            else -> StickerViewHolder.from(parent)
+            -1 -> CustomAdapter.StickerHeaderViewHolder.from(parent)
+            else -> CustomAdapter.StickerViewHolder.from(parent)
         }
     }
 

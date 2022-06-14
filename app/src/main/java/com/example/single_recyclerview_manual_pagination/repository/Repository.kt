@@ -58,7 +58,7 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
             listOfCategory.value!![i] = (
                     Category(
                         id = cat.id,
-                        name = cat.name!!,
+                        name = cat.name,
                         isViewMoreVisible = false,
                         initialCount = 20
                     )
@@ -79,13 +79,18 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
         for ((i, c) in category.stickerPacks.withIndex()) {
 //            if(c.id==405)continue
             val cnt = NetworkLayer.retrofitService.getStickers(id = c.id)
+//            delay(3000)
+
             Log.i("repository", "$cnt")
+
             c.total = (cnt.items.size)
-            tempHashMap.value!!.put(c.name!!, cnt.items.size)
+            tempHashMap.value!!.put(c.name, cnt.items.size)
             tempHashMap.postValue(tempHashMap.value)
             total += cnt.items.size
+
             val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
             cnt.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
+
             listOfCategory.value!![i].itemList = tempBaseModelItemList
             listOfCategory.value!![i].currentCount = cnt.items.size
             listOfCategory.value!![i].initialCount = cnt.items.size
