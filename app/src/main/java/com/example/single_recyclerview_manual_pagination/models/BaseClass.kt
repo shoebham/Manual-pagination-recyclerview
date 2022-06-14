@@ -7,40 +7,40 @@ import kotlinx.coroutines.delay
 
 abstract class Wrapper<T>() {
     abstract var listOfItems: List<Category<T>>
+    abstract var listOfBanner: List<Banner>
 }
 
 class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), List<Any> {
-
-
-    var mainList = listOf<UiModel<T>>()
-    var listWrapper = mutableListOf<Any>()
-    override val size: Int = listWrapper.size
-    val lastAccessedPosition: Int = 0
     enum class Item_type {
         BANNER, ITEM, AD
     }
 
+    override var listOfBanner: List<Banner> = emptyList()
+    var mainList = listOf<UiModel<T>>()
+    var listWrapper = mutableListOf<Any>()
+    override val size: Int = listWrapper.size
+
+
     fun submitList(list: Wrapper<T>, itemType: Item_type) {
         val modelList = mutableListOf<UiModel<T>>()
         val wrapper = mutableListOf<Any>()
-        if (itemType == Item_type.ITEM) {
-            for (items in list.listOfItems) {
-                modelList.add(UiModel.Header(items.name))
-                wrapper.add(items)
-                for (item in items.itemList) {
-                    modelList.add(UiModel.Item(item))
-                    if (item != null) {
-                        wrapper.add(item)
-                    }
-                }
+        for ((i, items) in list.listOfItems.withIndex()) {
+            if (itemType == Item_type.BANNER && i < list.listOfBanner.size) {
+                modelList.add(UiModel.Banner(list.listOfBanner[i].url))
+                wrapper.add(list.listOfBanner[i])
             }
+            modelList.add(UiModel.Header(items.name))
+            wrapper.add(items)
+            for (item in items.itemList) {
+                modelList.add(UiModel.Item(item))
+                wrapper.add(item)
+            }
+            modelList.add(UiModel.LoadMore(items.isViewMoreVisible))
         }
         listWrapper = wrapper
         mainList = modelList
     }
 
-    //    var currentCategory: Category<T> = categoryList[0]
-    var counter = 0
 
 //    fun convertToUiModelList(categoryList: List<Category<T>>): List<UiModel> {
 //        val uiModelList = mutableListOf<UiModel>()

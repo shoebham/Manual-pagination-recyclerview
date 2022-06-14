@@ -1,7 +1,6 @@
 package com.example.single_recyclerview_manual_pagination
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -15,7 +14,6 @@ import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivity
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
 import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
-import com.example.single_recyclerview_manual_pagination.adapter.listContainer
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.models.*
 
@@ -96,13 +94,17 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                 }
+                val bannerList = listOf<Banner>(
+                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
+                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
+                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg")
+                )
                 val listContainer = listContainer<Sticker>()
                 listContainer.listOfItems = newList
                 baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    delay(1000)
-//                }
 
+//                listContainer.listOfBanner=bannerList
+//                baseClass.submitList(listContainer,BaseClass.Item_type.BANNER)
 
                 adapter.submitList(baseClass.mainList)
 
@@ -171,7 +173,7 @@ class MainActivity : AppCompatActivity() {
             override fun getSpanSize(position: Int): Int {
                 if (position == adapter.itemCount)
                     return 3
-                return if (adapter.getItemViewType(position) < 0) 3
+                return if (adapter.getItemViewType(position) <= 0) 3
                 else 1
             }
         })
