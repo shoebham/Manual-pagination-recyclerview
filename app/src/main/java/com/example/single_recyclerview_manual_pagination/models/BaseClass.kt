@@ -16,6 +16,7 @@ class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), 
     }
 
     override var listOfBanner: List<Banner> = emptyList()
+
     var mainList = listOf<UiModel<T>>()
     var listWrapper = mutableListOf<Any>()
     override val size: Int = listWrapper.size

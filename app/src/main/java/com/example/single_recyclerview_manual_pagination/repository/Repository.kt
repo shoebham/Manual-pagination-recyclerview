@@ -1,18 +1,13 @@
 package com.example.single_recyclerview_manual_pagination.repository
 
 import android.os.Build
-import com.example.single_recyclerview_manual_pagination.models.Sticker
-import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
-import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItem
-import com.example.single_recyclerview_manual_pagination.models.Category
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.single_recyclerview_manual_pagination.models.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class Repository private constructor() {
 
@@ -39,7 +34,6 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
     val listOfCategory = MutableLiveData<MutableList<Category<Sticker>>>()
 
     fun getlist(): MutableLiveData<MutableList<Category<Sticker>>> {
-
         return listOfCategory
     }
 
@@ -65,13 +59,35 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
                     )
         }
         listOfCategory.value!!.removeIf { it.id == null }
+        listOfCategory.postValue(listOfCategory.value!!)
 
+        Log.i("shubham", "Testing")
         return category
     }
 
-    suspend fun getStickers(id: Int): List<Sticker> {
-        val itemList = NetworkLayer.retrofitService.getStickers(id = id)
-        return itemList.items
+    suspend fun getStickersInitially(item: Category<Sticker>): Flow<List<BaseModelOfItem<Sticker>>> {
+        return flow {
+            val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
+//            for(item in list){
+            val res = getStickersWithOffset(id = item.id!!, "1", item.initialCount)
+            res.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
+//            }
+            emit(tempBaseModelItemList)
+        }
+
+//        return itemList.items
+    }
+
+    suspend fun getStickersWithOffset(id: Int, offset: String?, limit: Int?): Stickers {
+        val res = NetworkLayer.retrofitService.getStickers(id = id, limit = limit, offset = offset)
+
+//
+//        listOfCategory.value!!.find {it.id==id }?.itemList = tempBaseModelItemList
+//        listOfCategory.value!!.find {it.id==id }?.currentCount = res.items.size
+//        listOfCategory.value!!.find {it.id==id }?.initialCount = res.items.size
+//        listOfCategory.postValue(listOfCategory.value!!)
+//        Log.i("repository", "${listOfCategory.value}")
+        return res
     }
 
     suspend fun getCount(category: StickerPacks): Int {
@@ -88,14 +104,6 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
             tempHashMap.postValue(tempHashMap.value)
             total += cnt.items.size
 
-            val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
-            cnt.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
-
-            listOfCategory.value!![i].itemList = tempBaseModelItemList
-            listOfCategory.value!![i].currentCount = cnt.items.size
-            listOfCategory.value!![i].initialCount = cnt.items.size
-            listOfCategory.postValue(listOfCategory.value!!)
-            Log.i("repository", "${listOfCategory.value}")
 //            listOfCategory.add(
 //                Category(
 //                    id = c.id,

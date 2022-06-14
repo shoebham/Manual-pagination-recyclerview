@@ -37,21 +37,21 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
         }
 
         fun bind(sticker: UiModel.Item<Sticker>) {
-            if (sticker.baseModelOfItem?.item == null) {
+            if (sticker.baseModelOfItem.item == null) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
                     .into(binding.itemImageView)
                 val rnd = Random()
                 val color = Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255))
-
                 binding.itemImageView.setColorFilter(color)
+                sticker.baseModelOfItem.state = State.LOADING
             } else {
                 Glide.with(binding.root.context)
                     .load(sticker.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
-
+                sticker.baseModelOfItem.state = State.LOADED
             }
         }
 
@@ -90,11 +90,9 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
                 return LoadMoreViewHolder(binding)
             }
         }
-
         fun bind(loadMore: UiModel.LoadMore<Sticker>) {
             binding.loadMore.isVisible = loadMore.visible
         }
-
     }
 
     fun submitList(list: List<UiModel<T>>) {

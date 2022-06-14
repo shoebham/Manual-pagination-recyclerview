@@ -6,5 +6,6 @@ class BaseModelOfItem<T>(
     val category: String? = null,
     val categoryBasedPosition: Int? = null,
     val continuousPosition: Int? = null,
-    val isLastItem: Boolean = false
+    val isLastItem: Boolean = false,
+    var state: State = State.NOT_LOADING
 )

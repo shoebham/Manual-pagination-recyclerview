@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,8 @@ import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
 import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.models.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
@@ -74,49 +77,65 @@ class MainActivity : AppCompatActivity() {
             countMap = LinkedHashMap<String, Int>()
             getCount()
             initRecyclerView()
-
-//            binding.recyclerview.layoutManager.
-            viewModel.categoryList.observe(this) { it ->
-                Log.i("shubham", "data received")
-                baseClass = BaseClass<Sticker>(it)
-                val templist = mutableListOf<UiModel<Sticker>>()
-                var total = 0
-                val newList = mutableListOf<Category<Sticker>>()
-                it.forEach { it2 ->
-                    newList.add(
-                        Category(
-                            id = it2.id,
-                            name = it2.name,
-                            initialCount = it2.initialCount,
-                            itemList = it2.itemList,
-                            currentCount = it2.currentCount,
-                            isViewMoreVisible = it2.isViewMoreVisible
-                        )
-                    )
-                }
-                val bannerList = listOf<Banner>(
-                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
-                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
-                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg")
-                )
-                val listContainer = listContainer<Sticker>()
-                listContainer.listOfItems = newList
-                baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-
-//                listContainer.listOfBanner=bannerList
-//                baseClass.submitList(listContainer,BaseClass.Item_type.BANNER)
-
-                adapter.submitList(baseClass.mainList)
-
-
-//                adapter.dataSet=baseClass
-
-            }
+            initItems()
             initTabLayout()
             initMediator()
+//            binding.recyclerview.layoutManager.
+//            viewModel.categoryList.observe(this) { it ->
+//                Log.i("shubham", "data received")
+//                baseClass = BaseClass<Sticker>(it)
+//                val templist = mutableListOf<UiModel<Sticker>>()
+//                var total = 0
+//                val newList = mutableListOf<Category<Sticker>>()
+//                it.forEach { it2 ->
+//                    newList.add(
+//                        Category(
+//                            id = it2.id,
+//                            name = it2.name,
+//                            initialCount = it2.initialCount,
+//                            itemList = it2.itemList,
+//                            currentCount = it2.currentCount,
+//                            isViewMoreVisible = it2.isViewMoreVisible
+//                        )
+//                    )
+//                }
+////                val bannerList = listOf<Banner>(
+////                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
+////                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
+////                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg")
+////                )
+//
+//                val listContainer = listContainer<Sticker>()
+//                listContainer.listOfItems = newList
+//                baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
+////                listContainer.listOfBanner=bannerList
+////                baseClass.submitList(listContainer,BaseClass.Item_type.BANNER)
+//
+//                adapter.submitList(baseClass.mainList)
+//
+//
+////                adapter.dataSet=baseClass
+//
+//            }
         })
 
 
+    }
+
+    fun convertToBaseModel(stickers: Stickers): List<BaseModelOfItem<Sticker>> {
+        val baseModelList = mutableListOf<BaseModelOfItem<Sticker>>()
+        stickers.items.forEach {
+            baseModelList.add(BaseModelOfItem(it))
+        }
+        return baseModelList
+    }
+
+    fun initItems() {
+        lifecycleScope.launch {
+            viewModel.getStickers(baseClass).collectLatest {
+                adapter.submitList(baseClass.mainList)
+            }
+        }
     }
 
     fun getCount() {

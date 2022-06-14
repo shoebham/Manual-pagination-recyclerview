@@ -4,10 +4,12 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
-import com.example.single_recyclerview_manual_pagination.models.Category
-import com.example.single_recyclerview_manual_pagination.models.Sticker
-import com.example.single_recyclerview_manual_pagination.models.StickerPacks
+import com.example.single_recyclerview_manual_pagination.listContainer
+import com.example.single_recyclerview_manual_pagination.models.*
 import com.example.single_recyclerview_manual_pagination.repository.Repository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -44,6 +46,41 @@ class MainActivityViewModel(
     val tempHashMap = LinkedHashMap<String, Int>()
     private var _tabPosition = MutableLiveData<Int>()
     val tabPosition = _tabPosition
+
+    suspend fun getStickers(baseClass: BaseClass<Sticker>): Flow<BaseClass<Sticker>> {
+        return flow {
+            val tempCategory = mutableListOf<Category<Sticker>>()
+            for (item in repository.listOfCategory.value!!) {
+                repository.getStickersInitially(item).collectLatest {
+                    tempCategory.add(
+                        Category(
+                            id = item.id,
+                            name = item.name,
+                            itemList = it,
+                            initialCount = 20,
+                            currentCount = it.size
+                        )
+                    )
+                }
+            }
+            val listContainer = listContainer<Sticker>()
+            listContainer.listOfItems = tempCategory
+            baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
+            emit(baseClass)
+        }
+    }
+//    suspend fun getStickersWithOffset(id: Int, offset: String?, limit: Int?):Stickers{
+//        val stickers=repository.getStickersWithOffset(id,offset,limit)
+//        convertToBaseModel(stickers)
+//    }
+
+    fun convertToBaseModel(stickers: Stickers): List<BaseModelOfItem<Sticker>> {
+        val baseModelList = mutableListOf<BaseModelOfItem<Sticker>>()
+        stickers.items.forEach {
+            baseModelList.add(BaseModelOfItem(it))
+        }
+        return baseModelList
+    }
 
 
 //    suspend fun getCategories(){
