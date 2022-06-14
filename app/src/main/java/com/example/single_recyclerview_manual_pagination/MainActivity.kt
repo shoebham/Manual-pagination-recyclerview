@@ -12,13 +12,9 @@ import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
+import com.example.single_recyclerview_manual_pagination.adapter.listContainer
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.models.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity() {
     private var itemList = mutableListOf<String>()
@@ -46,11 +42,15 @@ class MainActivity : AppCompatActivity() {
 
         val emptyListOfCategory = Category<Sticker>()
         val tempList = MutableList(10) { emptyListOfCategory }
+        val listContainer = listContainer<Sticker>()
+        listContainer.listOfItems = tempList
         baseClass = BaseClass(tempList)
+        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
         adapter = CustomAdapter(baseClass)
+
 //        val templist2 = mutableListOf<StickerUiModel>()
-        val temp = baseClass.convertToUiModelList(tempList)
-        adapter.submitList(temp)
+//        val temp = baseClass.convertToUiModelList(tempList)
+        adapter.submitList(baseClass.mainList)
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.categoryList.observe(this) { it ->
                 Log.i("shubham", "data received")
                 baseClass = BaseClass<Sticker>(it)
-                val templist = mutableListOf<UiModel>()
+                val templist = mutableListOf<UiModel<Sticker>>()
                 var total = 0
 //                for((i,cat) in it.withIndex()){
 //                    templist.add(baseClass.getAt(total+i))
@@ -92,12 +92,13 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                 }
-
-                val newTempList = baseClass.convertToUiModelList(newList)
+                val listContainer = listContainer<Sticker>()
+                listContainer.listOfItems = newList
+                val newTempList = baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
 //                CoroutineScope(Dispatchers.IO).launch {
 //                    delay(1000)
 //                }
-                adapter.submitList(newTempList)
+                adapter.submitList(baseClass.mainList)
 //                adapter.dataSet=baseClass
 
             }

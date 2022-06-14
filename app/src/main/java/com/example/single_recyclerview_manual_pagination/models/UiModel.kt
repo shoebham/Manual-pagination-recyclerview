@@ -1,7 +1,7 @@
 package com.example.single_recyclerview_manual_pagination.models
 
 
-sealed class UiModel {
-    class Item(val item: Sticker?) : UiModel()
-    class Header(val text: String?) : UiModel()
+sealed class UiModel<T> {
+    class Item<T>(val baseModelOfItem: BaseModelOfItem<T>?) : UiModel<T>()
+    class Header<T>(val text: String?) : UiModel<T>()
 }

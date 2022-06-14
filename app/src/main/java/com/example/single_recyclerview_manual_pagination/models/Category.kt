@@ -5,7 +5,7 @@ data class Category<T>(
     val name: String? = null,
     var isViewMoreVisible: Boolean = false,
     var initialCount: Int = 10,
-    var itemList: List<T?> = MutableList(initialCount) {
+    var itemList: List<BaseModelOfItem<T>?> = MutableList(initialCount) {
         null
     },
     var currentCount: Int = itemList.size

@@ -11,17 +11,14 @@ import com.bumptech.glide.Glide
 import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
-import com.example.single_recyclerview_manual_pagination.models.BaseClass
-import com.example.single_recyclerview_manual_pagination.models.Category
-import com.example.single_recyclerview_manual_pagination.models.Sticker
-import com.example.single_recyclerview_manual_pagination.models.UiModel
+import com.example.single_recyclerview_manual_pagination.models.*
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val differ: AsyncListDiffer<UiModel> = AsyncListDiffer(this, DiffCallBack())
+    private val differ: AsyncListDiffer<UiModel<Sticker>> = AsyncListDiffer(this, DiffCallBack<T>())
 
     companion object {
         private val HEADER = 0
@@ -39,8 +36,8 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
             }
         }
 
-        fun bind(sticker: UiModel.Item) {
-            if (sticker.item == null) {
+        fun bind(sticker: UiModel.Item<Sticker>) {
+            if (sticker.baseModelOfItem == null) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
@@ -50,7 +47,8 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
 
                 binding.itemImageView.setColorFilter(color)
             } else {
-                Glide.with(binding.root.context).load(sticker.item.fixedWidthFull?.png?.url)
+                Glide.with(binding.root.context)
+                    .load(sticker.baseModelOfItem.item.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
 
@@ -80,34 +78,40 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     }
 
 
-    fun submitList(list: List<UiModel>) {
+    fun submitList(list: List<UiModel<Sticker>>) {
         differ.submitList(list)
     }
 
-    private fun currentList(): List<UiModel> {
+    private fun currentList(): List<UiModel<Sticker>> {
         return differ.currentList
     }
 
-    private class DiffCallBack : DiffUtil.ItemCallback<UiModel>() {
-        override fun areItemsTheSame(oldItem: UiModel, newItem: UiModel): Boolean {
+    private class DiffCallBack<T> : DiffUtil.ItemCallback<UiModel<Sticker>>() {
+        override fun areItemsTheSame(
+            oldItem: UiModel<Sticker>,
+            newItem: UiModel<Sticker>
+        ): Boolean {
             val returnValue =
-                (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.item?.id == newItem.item?.id) ||
+                (oldItem is UiModel.Item<Sticker> && newItem is UiModel.Item<Sticker> && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
                         (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
             Log.i("diffutil", "areItemsTheSame() ${returnValue}");
             return returnValue
 //            return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: UiModel, newItem: UiModel): Boolean {
+        override fun areContentsTheSame(
+            oldItem: UiModel<Sticker>,
+            newItem: UiModel<Sticker>
+        ): Boolean {
             val returnValue =
-                (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.item?.id == newItem.item?.id) ||
+                (oldItem is UiModel.Item<Sticker> && newItem is UiModel.Item<Sticker> && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
                         (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
             Log.i("diffutil", "areContentsTheSame() ${returnValue}");
             return returnValue
 
         }
 
-        override fun getChangePayload(oldItem: UiModel, newItem: UiModel): Any? {
+        override fun getChangePayload(oldItem: UiModel<Sticker>, newItem: UiModel<Sticker>): Any? {
             Log.i("diffutil", "getChangePayload()");
             return super.getChangePayload(oldItem, newItem)
         }
@@ -133,8 +137,8 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
         if (item is UiModel.Header) {
             Log.i("shubham", "onbind count ${bindCount.get()} position$position item${item.text}")
             (holder as StickerHeaderViewHolder).bind(stickerHeader = item.text)
-        } else if (item is UiModel.Item) {
-            (holder as StickerViewHolder).bind(sticker = item)
+        } else if (item is UiModel.Item<*>) {
+            (holder as StickerViewHolder).bind(sticker = item as UiModel.Item<Sticker>)
         }
     }
 

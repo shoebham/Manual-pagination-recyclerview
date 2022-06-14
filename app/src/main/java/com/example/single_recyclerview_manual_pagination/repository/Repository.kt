@@ -5,9 +5,9 @@ import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.StickerPacks
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
+import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItem
 import com.example.single_recyclerview_manual_pagination.models.Category
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,28 +65,9 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
                     )
         }
         listOfCategory.value!!.removeIf { it.id == null }
-//                Log.i("repostiory", "${category.stickerPacks.size}")
-//                category.stickerPacks.removeIf { it.id == 405 }
-//                stickerPacks.postValue(category)
+
         return category
     }
-
-//    suspend fun mapResponse(category: StickerPacks):List<Category> {
-////        val c =BaseClass()
-////        for (cat in category.stickerPacks) {
-////            listOfCategory.add(
-////                Category(
-////                    id = cat.id,
-////                    name = cat.name!!,
-////                    isViewMoreVisible = false,
-////                    initialCount = category.stickerPacks.size,
-////                    itemList = getStickers(cat.id)
-////                )
-////            )
-////        }
-//        return listOfCategory
-////        categoryList.postValue(listOfCategory)
-//    }
 
     suspend fun getStickers(id: Int): List<Sticker> {
         val itemList = NetworkLayer.retrofitService.getStickers(id = id)
@@ -103,7 +84,9 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
             tempHashMap.value!!.put(c.name!!, cnt.items.size)
             tempHashMap.postValue(tempHashMap.value)
             total += cnt.items.size
-            listOfCategory.value!![i].itemList = cnt.items
+            val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
+            cnt.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
+            listOfCategory.value!![i].itemList = tempBaseModelItemList
             listOfCategory.value!![i].currentCount = cnt.items.size
             listOfCategory.value!![i].initialCount = cnt.items.size
             listOfCategory.postValue(listOfCategory.value!!)
