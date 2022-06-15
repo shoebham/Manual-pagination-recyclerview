@@ -91,7 +91,16 @@ class MainActivityViewModel(
 //                uiModelList.add(UiModel.Header(item.name))
             repository.getStickers(id, offset, limit)
                 .collectLatest { it ->
-                    repository.listOfCategory.value!!.find { it.id == id }?.itemList = it
+                    val itemlist = repository.listOfCategory.value!!.find { it.id == id }?.itemList
+                    if (itemlist != null && itemlist.get(0).item == null) {
+                        repository.listOfCategory.value!!.find { it.id == id }?.itemList = it
+                    } else {
+                        repository.listOfCategory.value!!.find { it.id == id }?.itemList?.toMutableList()
+                            ?.addAll(it)
+                        if (itemlist != null) {
+//                            repository.listOfCategory.value!!.find { it.id == id }?.itemList=itemlist
+                        }
+                    }
 ////                        for(i in it) {
 ////                            i.category = item
 ////                            uiModelList.add(UiModel.Item(i))

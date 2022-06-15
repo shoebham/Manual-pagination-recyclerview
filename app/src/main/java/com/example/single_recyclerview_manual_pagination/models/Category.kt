@@ -10,5 +10,5 @@ data class Category<T>(
         BaseModelOfItem()
     },
     var currentCount: Int = itemList.size,
-    var total: Int = 0
+    var total: Int = 5
 )

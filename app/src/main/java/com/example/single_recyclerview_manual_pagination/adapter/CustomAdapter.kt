@@ -92,7 +92,11 @@ class CustomAdapter<T>(val dataset: BaseClass<T>) :
         } else if (item is UiModel.Banner) {
             (holder as Viewholders.StickerViewHolder).bindBanner((item as UiModel.Banner<Sticker>))
         } else if (item is UiModel.LoadMore) {
-            (holder as Viewholders.LoadMoreViewHolder).bind((item as UiModel.LoadMore<Sticker>))
+            (holder as Viewholders.LoadMoreViewHolder).bind(
+                (item as UiModel.LoadMore<Sticker>),
+                this as CustomAdapter<Sticker>,
+                position = position
+            )
         }
     }
 
@@ -109,6 +113,29 @@ class CustomAdapter<T>(val dataset: BaseClass<T>) :
             is UiModel.LoadMore -> 0
             else -> 1
         }
+    }
+
+    fun convertToUiModel(
+        baseClass: BaseClass<Sticker>,
+        categoryList: List<Category<Sticker>>
+    ): List<UiModel<Sticker>> {
+        val uiModelList = mutableListOf<UiModel<Sticker>>()
+        for ((i, item) in categoryList.withIndex()) {
+            uiModelList.add(UiModel.Header(item.name))
+            for ((j, it) in item.itemList.withIndex()) {
+                it.category = item
+                uiModelList.add(UiModel.Item(it))
+            }
+            uiModelList.add(
+                UiModel.LoadMore(
+                    itemAbove = item.itemList.last(),
+                    id = item.id,
+                    visible = item.isViewMoreVisible
+                )
+            )
+        }
+        baseClass.uiModelList = uiModelList
+        return baseClass.uiModelList
     }
 
 

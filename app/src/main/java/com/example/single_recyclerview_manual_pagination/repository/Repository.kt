@@ -54,7 +54,7 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
                         id = cat.id,
                         name = cat.name,
                         isViewMoreVisible = i < category.stickerPacks.size - 1,
-                        initialCount = 20
+                        initialCount = 20,
                     )
                     )
         }

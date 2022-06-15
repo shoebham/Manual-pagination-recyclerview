@@ -10,12 +10,14 @@ import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
+import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItem
 import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 import java.util.*
 
 class Viewholders {
+
 
     class StickerViewHolder(private val binding: ItemsBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -28,7 +30,7 @@ class Viewholders {
         }
 
         fun bind(sticker: UiModel.Item<Sticker>, adapter: CustomAdapter<Sticker>, position: Int) {
-            if (sticker.baseModelOfItem.item == null || sticker.baseModelOfItem.state == State.NOT_LOADING || sticker.baseModelOfItem.state == State.LOADING) {
+            if (sticker.baseModelOfItem.item == null && !sticker.baseModelOfItem.isLoadMoreClicked) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
@@ -38,39 +40,63 @@ class Viewholders {
                 binding.itemImageView.setColorFilter(color)
 //                sticker.baseModelOfItem.state = State.LOADING
 
-                if (sticker.baseModelOfItem.state == State.NOT_LOADING) {
+                if (sticker.baseModelOfItem.state == State.NOT_LOADING && !sticker.baseModelOfItem.isLoadMoreClicked) {
                     if (sticker.baseModelOfItem.category != null && sticker.baseModelOfItem.category?.id != null) {
-                        adapter.apiInterface.getItemsWithOffset(
-                            sticker.baseModelOfItem.category?.id!!,
-                            (sticker.baseModelOfItem.categoryBasedPosition!! + 1).toString(),
-                            sticker.baseModelOfItem.category?.initialCount!!
+                        callBindOnVisibleScreen(
+                            adapter, position,
+                            id = sticker.baseModelOfItem.category?.id!!,
+                            offset = (sticker.baseModelOfItem.categoryBasedPosition?.plus(1)).toString(),
+                            limit = sticker.baseModelOfItem.category?.initialCount!!
                         )
-                        var i = position
-                        while (adapter.differ.currentList[i] is UiModel.Item) {
-                            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-                                State.LOADING
-                            i++
-                        }
 //                        for (i in position until position + sticker.baseModelOfItem.category?.initialCount!!) {
 //                            if (adapter.differ.currentList[i] is UiModel.Item) {
 //                                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
 //                                    State.LOADING
 //                            }
 //                        }
-//                        sticker.baseModelOfItem.state = State.LOADING
+                        sticker.baseModelOfItem.state = State.LOADING
                     }
+                } else if (sticker.baseModelOfItem.isLoadMoreClicked) {
+                    val category =
+                        adapter.dataset.listOfItems.find { it.id == sticker.baseModelOfItem.category?.id }
+                    val remaining = category?.total
+                    if (remaining != null) {
+                        callBindOnVisibleScreen(
+                            adapter, position,
+                            id = sticker.baseModelOfItem.category?.id!!,
+                            offset = sticker.baseModelOfItem.categoryBasedPosition.toString(),
+                            limit = remaining
+                        )
+                    }
+
                 }
             } else if (sticker.baseModelOfItem.state == State.LOADED) {
                 Glide.with(binding.root.context)
-                    .load(sticker.baseModelOfItem.item.fixedWidthFull?.png?.url)
+                    .load(sticker.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
 //                sticker.baseModelOfItem.state = State.LOADED
             }
         }
 
-        fun callBindOnVisibleScreen() {
-
+        fun callBindOnVisibleScreen(
+            adapter: CustomAdapter<Sticker>,
+            position: Int,
+            id: Int,
+            offset: String,
+            limit: Int
+        ) {
+            adapter.apiInterface.getItemsWithOffset(
+                id,
+                offset,
+                limit
+            )
+            var i = position
+            while (adapter.differ.currentList[i] is UiModel.Item) {
+                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+                    State.LOADING
+                i++
+            }
         }
 
         fun bindBanner(item: UiModel.Banner<Sticker>) {
@@ -108,10 +134,45 @@ class Viewholders {
             }
         }
 
-        fun bind(loadMore: UiModel.LoadMore<Sticker>) {
+        fun bind(
+            loadMore: UiModel.LoadMore<Sticker>,
+            adapter: CustomAdapter<Sticker>,
+            position: Int
+        ) {
             binding.loadMore.isVisible = loadMore.visible
             binding.loadMore.setOnClickListener {
 
+                val category = adapter.dataset.listOfItems.find { it.id == loadMore.id }
+                loadMore.itemAbove?.isLoadMoreClicked = true
+                if (category != null) {
+                    val remaining = category.total
+                    var tempList = mutableListOf<BaseModelOfItem<Sticker>>()
+                    tempList = category.itemList.toMutableList()
+                    repeat(remaining) {
+                        tempList.add(BaseModelOfItem())
+                    }
+                    category.itemList = tempList
+                    val uiModellist =
+                        adapter.convertToUiModel(adapter.dataset, adapter.dataset.listOfItems)
+                    var i = position
+                    adapter.submitList(uiModellist)
+                    while (uiModellist[i] is UiModel.Item) {
+                        (uiModellist[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked = true
+                        (uiModellist[i] as UiModel.Item).baseModelOfItem.state = State.LOADING
+                        i++
+                    }
+                    val pos = category.itemList.find { it.item?.id == loadMore.itemAbove?.item?.id }
+
+
+//                    loadMore.itemAbove?.state = State.LOADING
+//                    adapter.apiInterface.getItemsWithOffset(
+//                        category.id!!,
+//                        (loadMore.itemAbove?.categoryBasedPosition).toString(),
+//                        remaining
+//                    )
+
+                }
+//
             }
         }
     }
