@@ -65,12 +65,25 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
         return category
     }
 
-    suspend fun getStickersInitially(item: Category<Sticker>): Flow<List<BaseModelOfItem<Sticker>>> {
+    suspend fun getStickers(
+        id: Int,
+        offset: String?,
+        limit: Int?
+    ): Flow<List<BaseModelOfItem<Sticker>>> {
         return flow {
             val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
 //            for(item in list){
-            val res = getStickersWithOffset(id = item.id!!, "1", item.initialCount)
-            res.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
+            val res = getStickersWithOffset(id, offset, limit)
+            for ((i, item) in res.items.withIndex()) {
+                tempBaseModelItemList.add(
+                    BaseModelOfItem(
+                        item,
+                        categoryBasedPosition = offset!!.toInt() + i,
+                        state = State.LOADED
+                    )
+                )
+            }
+//            res.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
 //            }
             emit(tempBaseModelItemList)
         }

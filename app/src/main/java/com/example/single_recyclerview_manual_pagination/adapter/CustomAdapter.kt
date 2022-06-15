@@ -5,94 +5,51 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
 import com.example.single_recyclerview_manual_pagination.models.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class CustomAdapter<T>(var dataSet: BaseClass<T>) :
+class CustomAdapter<T>() :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     lateinit var differ: AsyncListDiffer<UiModel<T>>
+
+    private lateinit var apiCallback: (item: UiModel<T>) -> Unit
+
+//    fun apiListener(callback: (item: UiModel<T>) -> Unit){
+//        apiCallback = callback
+//    }
+
+    interface ApiInterface {
+        fun getItemsWithOffset(id: Int, offset: String, limit: Int)
+    }
+
+    lateinit var apiInterface: ApiInterface
+
+    fun setApiListener(apiInter: ApiInterface) {
+        apiInterface = apiInter
+    }
+
     companion object {
         private val HEADER = 0
         private val ITEM = 1
         private val bindCount = AtomicInteger(0)
-    }
-
-    class StickerViewHolder(private val binding: ItemsBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        companion object {
-            fun from(parent: ViewGroup): StickerViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemsBinding.inflate(layoutInflater, parent, false)
-                return StickerViewHolder(binding)
-            }
-        }
-
-        fun bind(sticker: UiModel.Item<Sticker>) {
-            if (sticker.baseModelOfItem.item == null) {
-//                Glide.with(binding.root.context).load(R.drawable.placeholder)
-//                    .into(binding.itemImageView)
-                Glide.with(binding.root.context).load(R.drawable.placeholder)
-                    .into(binding.itemImageView)
-                val rnd = Random()
-                val color = Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255))
-                binding.itemImageView.setColorFilter(color)
-                sticker.baseModelOfItem.state = State.LOADING
-            } else {
-                Glide.with(binding.root.context)
-                    .load(sticker.baseModelOfItem.item?.fixedWidthFull?.png?.url)
-                    .placeholder(R.drawable.placeholder).into(binding.itemImageView)
-                binding.itemImageView.setColorFilter(null)
-                sticker.baseModelOfItem.state = State.LOADED
-            }
-        }
-
-        fun bindBanner(item: UiModel.Banner<Sticker>) {
-            Glide.with(binding.root.context)
-                .load(item.url)
-                .placeholder(R.drawable.placeholder).into(binding.itemImageView)
-            binding.itemImageView.setColorFilter(null)
-        }
-    }
-
-    class StickerHeaderViewHolder(private val binding: HeaderBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        companion object {
-            fun from(parent: ViewGroup): StickerHeaderViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = HeaderBinding.inflate(layoutInflater, parent, false)
-                return StickerHeaderViewHolder(binding)
-            }
-        }
-
-        fun bind(stickerHeader: String?) {
-
-            binding.textitem.text = stickerHeader
-
-
-        }
-    }
-
-    class LoadMoreViewHolder(private val binding: LoadMoreBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        companion object {
-            fun from(parent: ViewGroup): LoadMoreViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = LoadMoreBinding.inflate(layoutInflater, parent, false)
-                return LoadMoreViewHolder(binding)
-            }
-        }
-        fun bind(loadMore: UiModel.LoadMore<Sticker>) {
-            binding.loadMore.isVisible = loadMore.visible
-        }
     }
 
     fun submitList(list: List<UiModel<T>>) {
@@ -107,9 +64,9 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            -1 -> CustomAdapter.StickerHeaderViewHolder.from(parent)
-            0 -> LoadMoreViewHolder.from(parent)
-            else -> CustomAdapter.StickerViewHolder.from(parent)
+            -1 -> Viewholders.StickerHeaderViewHolder.from(parent)
+            0 -> Viewholders.LoadMoreViewHolder.from(parent)
+            else -> Viewholders.StickerViewHolder.from(parent)
         }
     }
 
@@ -124,13 +81,17 @@ class CustomAdapter<T>(var dataSet: BaseClass<T>) :
         )
         if (item is UiModel.Header) {
             Log.i("shubham", "onbind count ${bindCount.get()} position$position item${item.text}")
-            (holder as StickerHeaderViewHolder).bind(stickerHeader = item.text)
-        } else if (item is UiModel.Item<*>) {
-            (holder as StickerViewHolder).bind(sticker = item as UiModel.Item<Sticker>)
+            (holder as Viewholders.StickerHeaderViewHolder).bind(stickerHeader = item.text)
+        } else if (item is UiModel.Item) {
+            (holder as Viewholders.StickerViewHolder).bind(
+                sticker = item as UiModel.Item<Sticker>,
+                adapter = this as CustomAdapter<Sticker>,
+                position
+            )
         } else if (item is UiModel.Banner) {
-            (holder as StickerViewHolder).bindBanner((item as UiModel.Banner<Sticker>))
+            (holder as Viewholders.StickerViewHolder).bindBanner((item as UiModel.Banner<Sticker>))
         } else if (item is UiModel.LoadMore) {
-            (holder as LoadMoreViewHolder).bind((item as UiModel.LoadMore<Sticker>))
+            (holder as Viewholders.LoadMoreViewHolder).bind((item as UiModel.LoadMore<Sticker>))
         }
     }
 

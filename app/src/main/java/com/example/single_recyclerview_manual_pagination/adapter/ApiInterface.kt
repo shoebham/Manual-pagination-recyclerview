@@ -1,0 +1,2 @@
+package com.example.single_recyclerview_manual_pagination.adapter
+

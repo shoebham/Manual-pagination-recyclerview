@@ -3,9 +3,9 @@ package com.example.single_recyclerview_manual_pagination.models
 
 class BaseModelOfItem<T>(
     val item: T? = null,
-    val category: String? = null,
-    val categoryBasedPosition: Int? = null,
-    val continuousPosition: Int? = null,
+    var category: Category<T>? = null,
+    val categoryBasedPosition: Int? = 0,
+    val continuousPosition: Int? = 0,
     val isLastItem: Boolean = false,
     var state: State = State.NOT_LOADING
 )

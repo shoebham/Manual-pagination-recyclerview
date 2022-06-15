@@ -1,6 +1,7 @@
 package com.example.single_recyclerview_manual_pagination.models
 
 data class Category<T>(
+
     val id: Int? = null,
     val name: String = "Loading",
     var isViewMoreVisible: Boolean = true,
@@ -8,5 +9,6 @@ data class Category<T>(
     var itemList: List<BaseModelOfItem<T>> = MutableList(initialCount) {
         BaseModelOfItem()
     },
-    var currentCount: Int = itemList.size
+    var currentCount: Int = itemList.size,
+    var total: Int = 0
 )

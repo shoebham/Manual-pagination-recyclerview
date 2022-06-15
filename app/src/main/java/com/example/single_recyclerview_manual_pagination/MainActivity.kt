@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
     private var itemList = mutableListOf<String>()
     private lateinit var adapter: CustomAdapter<Sticker>
     private lateinit var binding: ActivityMainBinding
@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var countMap: LinkedHashMap<String, Int>
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
-    private lateinit var baseClass: BaseClass<Sticker>
+
+    //    private lateinit var baseClass: BaseClass<Sticker>
     private lateinit var differ: AsyncListDiffer<UiModel<Sticker>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,17 +51,26 @@ class MainActivity : AppCompatActivity() {
         val tempList = MutableList(10) { emptyListOfCategory }
         val listContainer = listContainer<Sticker>()
         listContainer.listOfItems = tempList
-        baseClass = BaseClass(tempList)
-        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-        adapter = CustomAdapter(baseClass)
+//        baseClass = BaseClass(tempList)
+//        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
+        adapter = CustomAdapter()
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
 
 //        val templist2 = mutableListOf<StickerUiModel>()
 //        val temp = baseClass.convertToUiModelList(tempList)
 
-        adapter.submitList(baseClass.mainList)
 
+//        for(l in tempList){
+//            uimodellist.add(UiModel.Header(l.name))
+//            for(item in l.itemList) {
+//                item.category=l
+//                uimodellist.add(UiModel.Item(item))
+//            }
+//        }
+        val uimodellist = viewModel.convertToUiModel(tempList)
+        adapter.submitList(uimodellist)
+        adapter.setApiListener(this)
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -122,20 +132,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun convertToBaseModel(stickers: Stickers): List<BaseModelOfItem<Sticker>> {
-        val baseModelList = mutableListOf<BaseModelOfItem<Sticker>>()
-        stickers.items.forEach {
-            baseModelList.add(BaseModelOfItem(it))
-        }
-        return baseModelList
-    }
+//    fun convertToBaseModel(stickers: Stickers): List<BaseModelOfItem<Sticker>> {
+//        val baseModelList = mutableListOf<BaseModelOfItem<Sticker>>()
+//        stickers.items.forEach {
+//            baseModelList.add(BaseModelOfItem(it))
+//        }
+//        return baseModelList
+//    }
 
     fun initItems() {
-        lifecycleScope.launch {
-            viewModel.getStickers(baseClass).collectLatest {
-                adapter.submitList(baseClass.mainList)
-            }
-        }
+        val temp = viewModel.convertToUiModel(categoryList = viewModel.categoryList.value!!)
+        adapter.submitList(temp)
+//        lifecycleScope.launch {
+//            viewModel.getStickersInitially().collectLatest {
+//                adapter.submitList(it)
+//            }
+//        }
     }
 
     fun getCount() {
@@ -214,5 +226,13 @@ class MainActivity : AppCompatActivity() {
         )
         tabbedListMediator.attach()
 
+    }
+
+    override fun getItemsWithOffset(id: Int, offset: String, limit: Int) {
+        lifecycleScope.launch {
+            viewModel.getStickersWithOffset(id, offset, limit).collectLatest {
+                adapter.submitList(it)
+            }
+        }
     }
 }

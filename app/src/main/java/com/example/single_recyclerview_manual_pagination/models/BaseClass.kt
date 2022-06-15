@@ -36,7 +36,13 @@ class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), 
                 modelList.add(UiModel.Item(item))
                 wrapper.add(item)
             }
-            modelList.add(UiModel.LoadMore(items.isViewMoreVisible))
+            modelList.add(
+                UiModel.LoadMore(
+                    itemAbove = items.itemList.last(),
+                    id = items.id,
+                    visible = items.isViewMoreVisible
+                )
+            )
         }
         listWrapper = wrapper
         mainList = modelList
