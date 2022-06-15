@@ -39,28 +39,38 @@ class Viewholders {
 //                sticker.baseModelOfItem.state = State.LOADING
 
                 if (sticker.baseModelOfItem.state == State.NOT_LOADING) {
-                    if (sticker.baseModelOfItem.category?.id != null && sticker.baseModelOfItem.category != null) {
+                    if (sticker.baseModelOfItem.category != null && sticker.baseModelOfItem.category?.id != null) {
                         adapter.apiInterface.getItemsWithOffset(
                             sticker.baseModelOfItem.category?.id!!,
                             (sticker.baseModelOfItem.categoryBasedPosition!! + 1).toString(),
                             sticker.baseModelOfItem.category?.initialCount!!
                         )
-                        for (i in position until position + sticker.baseModelOfItem.category?.initialCount!!) {
-                            if (adapter.differ.currentList[i] is UiModel.Item) {
-                                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-                                    State.LOADING
-                            }
+                        var i = position
+                        while (adapter.differ.currentList[i] is UiModel.Item) {
+                            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+                                State.LOADING
+                            i++
                         }
-                        sticker.baseModelOfItem.state = State.LOADING
+//                        for (i in position until position + sticker.baseModelOfItem.category?.initialCount!!) {
+//                            if (adapter.differ.currentList[i] is UiModel.Item) {
+//                                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+//                                    State.LOADING
+//                            }
+//                        }
+//                        sticker.baseModelOfItem.state = State.LOADING
                     }
                 }
             } else if (sticker.baseModelOfItem.state == State.LOADED) {
                 Glide.with(binding.root.context)
-                    .load(sticker.baseModelOfItem.item?.fixedWidthFull?.png?.url)
+                    .load(sticker.baseModelOfItem.item.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
 //                sticker.baseModelOfItem.state = State.LOADED
             }
+        }
+
+        fun callBindOnVisibleScreen() {
+
         }
 
         fun bindBanner(item: UiModel.Banner<Sticker>) {

@@ -1,52 +1,44 @@
 package com.example.single_recyclerview_manual_pagination.models
 
-import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-
 
 abstract class Wrapper<T>() {
     abstract var listOfItems: List<Category<T>>
     abstract var listOfBanner: List<Banner>
 }
 
-class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), List<Any> {
+class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
     enum class Item_type {
         BANNER, ITEM, AD
     }
 
-    override var listOfBanner: List<Banner> = emptyList()
+    var uiModelList = listOf<UiModel<T>>()
+    override val size: Int = uiModelList.size
 
-    var mainList = listOf<UiModel<T>>()
-    var listWrapper = mutableListOf<Any>()
-    override val size: Int = listWrapper.size
-
-
-    fun submitList(list: Wrapper<T>, itemType: Item_type) {
-        val modelList = mutableListOf<UiModel<T>>()
-        val wrapper = mutableListOf<Any>()
-        for ((i, items) in list.listOfItems.withIndex()) {
-            if (itemType == Item_type.BANNER && i < list.listOfBanner.size) {
-                modelList.add(UiModel.Banner(list.listOfBanner[i].url))
-                wrapper.add(list.listOfBanner[i])
-            }
-            modelList.add(UiModel.Header(items.name))
-            wrapper.add(items)
-            for (item in items.itemList) {
-                modelList.add(UiModel.Item(item))
-                wrapper.add(item)
-            }
-            modelList.add(
-                UiModel.LoadMore(
-                    itemAbove = items.itemList.last(),
-                    id = items.id,
-                    visible = items.isViewMoreVisible
-                )
-            )
-        }
-        listWrapper = wrapper
-        mainList = modelList
-    }
+//    fun submitList(list: Wrapper<T>, itemType: Item_type) {
+//        val modelList = mutableListOf<UiModel<T>>()
+//        val wrapper = mutableListOf<Any>()
+//        for ((i, items) in list.listOfItems.withIndex()) {
+//            if (itemType == Item_type.BANNER && i < list.listOfBanner.size) {
+//                modelList.add(UiModel.Banner(list.listOfBanner[i].url))
+//                wrapper.add(list.listOfBanner[i])
+//            }
+//            modelList.add(UiModel.Header(items.name))
+//            wrapper.add(items)
+//            for (item in items.itemList) {
+//                modelList.add(UiModel.Item(item))
+//                wrapper.add(item)
+//            }
+//            modelList.add(
+//                UiModel.LoadMore(
+//                    itemAbove = items.itemList.last(),
+//                    id = items.id,
+//                    visible = items.isViewMoreVisible
+//                )
+//            )
+//        }
+//        listWrapper = wrapper
+//        mainList = modelList
+//    }
 
 
 //    fun convertToUiModelList(categoryList: List<Category<T>>): List<UiModel> {
@@ -92,42 +84,42 @@ class BaseClass<T>(override var listOfItems: List<Category<T>>) : Wrapper<T>(), 
 //    }
 
     override fun contains(element: Any): Boolean {
-        return listWrapper.contains(element)
+        return uiModelList.contains(element)
     }
 
     override fun containsAll(elements: Collection<Any>): Boolean {
-        return listWrapper.containsAll(elements)
+        return uiModelList.containsAll(elements)
     }
 
     override fun get(index: Int): Any {
-        return listWrapper[index]
+        return uiModelList[index]
     }
 
     override fun indexOf(element: Any): Int {
-        return listWrapper.indexOf(element)
+        return uiModelList.indexOf(element)
     }
 
     override fun isEmpty(): Boolean {
-        return listWrapper.isEmpty()
+        return uiModelList.isEmpty()
     }
 
     override fun iterator(): Iterator<Any> {
-        return listWrapper.iterator()
+        return uiModelList.iterator()
     }
 
     override fun lastIndexOf(element: Any): Int {
-        return listWrapper.lastIndexOf(element)
+        return uiModelList.lastIndexOf(element)
     }
 
     override fun listIterator(): ListIterator<Any> {
-        return listWrapper.listIterator()
+        return uiModelList.listIterator()
     }
 
     override fun listIterator(index: Int): ListIterator<Any> {
-        return listWrapper.listIterator(index)
+        return uiModelList.listIterator(index)
     }
 
     override fun subList(fromIndex: Int, toIndex: Int): List<Any> {
-        return listWrapper.subList(fromIndex, toIndex)
+        return uiModelList.subList(fromIndex, toIndex)
     }
 }

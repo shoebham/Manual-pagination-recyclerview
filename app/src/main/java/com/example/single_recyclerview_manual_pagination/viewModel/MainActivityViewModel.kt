@@ -46,40 +46,45 @@ class MainActivityViewModel(
     private var _tabPosition = MutableLiveData<Int>()
     val tabPosition = _tabPosition
 
-    suspend fun getStickersInitially(): Flow<List<UiModel<Sticker>>> {
-        return flow {
-            val tempCategory = mutableListOf<Category<Sticker>>()
+//    suspend fun getStickersInitially(): Flow<List<UiModel<Sticker>>> {
+//        return flow {
+//            val tempCategory = mutableListOf<Category<Sticker>>()
+//
+//
+//            for (item in repository.listOfCategory.value!!) {
+////                uiModelList.add(UiModel.Header(item.name))
+//                repository.getStickers(item.id!!, "1", item.initialCount).collectLatest {
+//                    item.itemList = it
+////                    for(i in it) {
+////                        i.category = item
+////                        uiModelList.add(UiModel.Item(i))
+////                    }
+////                    tempCategory.add(
+////                        Category(
+////                            id = item.id,
+////                            name = item.name,
+////                            itemList = it,
+////                            initialCount = 20,
+////                            currentCount = it.size,
+////                            total = item.total
+////                        )
+////                    )
+//                }
+//            }
+//            val uiModelList = convertToUiModel(repository.listOfCategory.value!!)
+//            val listContainer = listContainer<Sticker>()
+//            listContainer.listOfItems = tempCategory
+////            baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
+//            emit(uiModelList)
+//        }
+//    }
 
-
-            for (item in repository.listOfCategory.value!!) {
-//                uiModelList.add(UiModel.Header(item.name))
-                repository.getStickers(item.id!!, "1", item.initialCount).collectLatest {
-                    item.itemList = it
-//                    for(i in it) {
-//                        i.category = item
-//                        uiModelList.add(UiModel.Item(i))
-//                    }
-//                    tempCategory.add(
-//                        Category(
-//                            id = item.id,
-//                            name = item.name,
-//                            itemList = it,
-//                            initialCount = 20,
-//                            currentCount = it.size,
-//                            total = item.total
-//                        )
-//                    )
-                }
-            }
-            val uiModelList = convertToUiModel(repository.listOfCategory.value!!)
-            val listContainer = listContainer<Sticker>()
-            listContainer.listOfItems = tempCategory
-//            baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-            emit(uiModelList)
-        }
-    }
-
-    fun getStickersWithOffset(id: Int, offset: String?, limit: Int?): Flow<List<UiModel<Sticker>>> {
+    fun getStickersWithOffset(
+        baseClass: BaseClass<Sticker>,
+        id: Int,
+        offset: String?,
+        limit: Int?
+    ): Flow<List<UiModel<Sticker>>> {
         return flow {
             val tempCategory = mutableListOf<Category<Sticker>>()
 //            for (item in repository.listOfCategory.value!!) {
@@ -102,14 +107,17 @@ class MainActivityViewModel(
                 }
 //            }
 
-            val uiModelList = convertToUiModel(repository.listOfCategory.value!!)
+            val uiModelList = convertToUiModel(baseClass, repository.listOfCategory.value!!)
 //            val listContainer = listContainer<Sticker>()
 //            listContainer.listOfItems = tempCategory
             emit(uiModelList)
         }
     }
 
-    fun convertToUiModel(categoryList: List<Category<Sticker>>): List<UiModel<Sticker>> {
+    fun convertToUiModel(
+        baseClass: BaseClass<Sticker>,
+        categoryList: List<Category<Sticker>>
+    ): List<UiModel<Sticker>> {
         val uiModelList = mutableListOf<UiModel<Sticker>>()
         for ((i, item) in categoryList.withIndex()) {
             uiModelList.add(UiModel.Header(item.name))
@@ -125,7 +133,8 @@ class MainActivityViewModel(
                 )
             )
         }
-        return uiModelList
+        baseClass.uiModelList = uiModelList
+        return baseClass.uiModelList
     }
 
 

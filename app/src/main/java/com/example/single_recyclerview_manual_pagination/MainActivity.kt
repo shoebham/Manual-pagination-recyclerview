@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
 
-    //    private lateinit var baseClass: BaseClass<Sticker>
+        private lateinit var baseClass: BaseClass<Sticker>
     private lateinit var differ: AsyncListDiffer<UiModel<Sticker>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
         val tempList = MutableList(10) { emptyListOfCategory }
         val listContainer = listContainer<Sticker>()
         listContainer.listOfItems = tempList
-//        baseClass = BaseClass(tempList)
+        baseClass = BaseClass(tempList)
 //        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-        adapter = CustomAdapter()
+        adapter = CustomAdapter(baseClass)
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
 
@@ -68,8 +68,8 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
 //                uimodellist.add(UiModel.Item(item))
 //            }
 //        }
-        val uimodellist = viewModel.convertToUiModel(tempList)
-        adapter.submitList(uimodellist)
+        val uimodellist = viewModel.convertToUiModel(baseClass, baseClass.listOfItems)
+        adapter.submitList(baseClass.uiModelList)
         adapter.setApiListener(this)
     }
     fun initUi() {
@@ -141,8 +141,9 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
 //    }
 
     fun initItems() {
-        val temp = viewModel.convertToUiModel(categoryList = viewModel.categoryList.value!!)
-        adapter.submitList(temp)
+        baseClass.listOfItems = viewModel.categoryList.value!!
+        val temp = viewModel.convertToUiModel(baseClass, baseClass.listOfItems)
+        adapter.submitList(baseClass.uiModelList)
 //        lifecycleScope.launch {
 //            viewModel.getStickersInitially().collectLatest {
 //                adapter.submitList(it)
@@ -230,8 +231,8 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
 
     override fun getItemsWithOffset(id: Int, offset: String, limit: Int) {
         lifecycleScope.launch {
-            viewModel.getStickersWithOffset(id, offset, limit).collectLatest {
-                adapter.submitList(it)
+            viewModel.getStickersWithOffset(baseClass, id, offset, limit).collectLatest {
+                adapter.submitList(baseClass.uiModelList)
             }
         }
     }

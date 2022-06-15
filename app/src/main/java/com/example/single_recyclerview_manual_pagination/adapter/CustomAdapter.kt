@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class CustomAdapter<T>() :
+class CustomAdapter<T>(val dataset: BaseClass<T>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     lateinit var differ: AsyncListDiffer<UiModel<T>>
@@ -53,6 +53,7 @@ class CustomAdapter<T>() :
     }
 
     fun submitList(list: List<UiModel<T>>) {
+        dataset.uiModelList = list
         differ.submitList(list)
     }
 
