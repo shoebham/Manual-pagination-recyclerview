@@ -1,6 +1,7 @@
 package com.example.single_recyclerview_manual_pagination.adapter
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -57,17 +58,7 @@ class Viewholders {
                         sticker.baseModelOfItem.state = State.LOADING
                     }
                 } else if (sticker.baseModelOfItem.isLoadMoreClicked) {
-                    val category =
-                        adapter.dataset.listOfItems.find { it.id == sticker.baseModelOfItem.category?.id }
-                    val remaining = category?.total
-                    if (remaining != null) {
-                        callBindOnVisibleScreen(
-                            adapter, position,
-                            id = sticker.baseModelOfItem.category?.id!!,
-                            offset = sticker.baseModelOfItem.categoryBasedPosition.toString(),
-                            limit = remaining
-                        )
-                    }
+
 
                 }
             } else if (sticker.baseModelOfItem.state == State.LOADED) {
@@ -134,6 +125,26 @@ class Viewholders {
             }
         }
 
+        fun callBindOnVisibleScreen(
+            adapter: CustomAdapter<Sticker>,
+            position: Int,
+            id: Int,
+            offset: String,
+            limit: Int
+        ) {
+            adapter.apiInterface.getItemsWithOffset(
+                id,
+                offset,
+                limit
+            )
+            var i = position
+            while (adapter.differ.currentList[i] is UiModel.Item) {
+                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+                    State.LOADING
+                i++
+            }
+        }
+
         fun bind(
             loadMore: UiModel.LoadMore<Sticker>,
             adapter: CustomAdapter<Sticker>,
@@ -156,14 +167,13 @@ class Viewholders {
                         adapter.convertToUiModel(adapter.dataset, adapter.dataset.listOfItems)
                     var i = position
                     adapter.submitList(uiModellist)
-                    while (uiModellist[i] is UiModel.Item) {
-                        (uiModellist[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked = true
-                        (uiModellist[i] as UiModel.Item).baseModelOfItem.state = State.LOADING
-                        i++
-                    }
-                    val pos = category.itemList.find { it.item?.id == loadMore.itemAbove?.item?.id }
-
-
+                    callBindOnVisibleScreen(
+                        adapter, position,
+                        id = category.id!!,
+                        offset = (loadMore.itemAbove?.categoryBasedPosition?.plus(1)).toString(),
+                        limit = remaining
+                    )
+                    Log.i("baseclass", "${adapter.dataset}")
 //                    loadMore.itemAbove?.state = State.LOADING
 //                    adapter.apiInterface.getItemsWithOffset(
 //                        category.id!!,
