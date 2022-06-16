@@ -11,7 +11,7 @@ import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
-import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItem
+import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
 import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
@@ -31,7 +31,7 @@ class Viewholders {
         }
 
         fun bind(sticker: UiModel.Item<Sticker>, adapter: CustomAdapter<Sticker>, position: Int) {
-            if (sticker.baseModelOfItem.item == null) {
+            if (sticker.baseModelOfItemInheritingAbstractClass.item == null) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
@@ -41,13 +41,15 @@ class Viewholders {
                 binding.itemImageView.setColorFilter(color)
 //                sticker.baseModelOfItem.state = State.LOADING
 
-                if (sticker.baseModelOfItem.state == State.NOT_LOADING && !sticker.baseModelOfItem.isLoadMoreClicked) {
-                    if (sticker.baseModelOfItem.category != null && sticker.baseModelOfItem.category?.id != null) {
+                if (sticker.baseModelOfItemInheritingAbstractClass.state == State.NOT_LOADING && !sticker.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
+                    if (sticker.baseModelOfItemInheritingAbstractClass.category != null && sticker.baseModelOfItemInheritingAbstractClass.category?.id != null) {
                         callBindOnVisibleScreen(
                             adapter, position,
-                            id = sticker.baseModelOfItem.category?.id!!,
-                            offset = (sticker.baseModelOfItem.categoryBasedPosition?.plus(1)).toString(),
-                            limit = sticker.baseModelOfItem.category?.initialCount!!
+                            id = sticker.baseModelOfItemInheritingAbstractClass.category?.id!!,
+                            offset = (sticker.baseModelOfItemInheritingAbstractClass.categoryBasedPosition?.plus(
+                                1
+                            )).toString(),
+                            limit = sticker.baseModelOfItemInheritingAbstractClass.category?.initialCount!!
                         )
 //                        for (i in position until position + sticker.baseModelOfItem.category?.initialCount!!) {
 //                            if (adapter.differ.currentList[i] is UiModel.Item) {
@@ -55,15 +57,33 @@ class Viewholders {
 //                                    State.LOADING
 //                            }
 //                        }
-                        sticker.baseModelOfItem.state = State.LOADING
+                        sticker.baseModelOfItemInheritingAbstractClass.state = State.LOADING
                     }
-                } else if (sticker.baseModelOfItem.isLoadMoreClicked) {
-
-
+                } else if (sticker.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
+                    val category =
+                        adapter.dataset.listOfItems.find { it.id == sticker.baseModelOfItemInheritingAbstractClass.category?.id }
+                    if (sticker.baseModelOfItemInheritingAbstractClass.state == State.NOT_LOADING) {
+                        callBindOnVisibleScreen(
+                            adapter, position,
+                            id = category?.id!!,
+                            offset = (sticker.baseModelOfItemInheritingAbstractClass.categoryBasedPosition?.plus(
+                                1
+                            )).toString(),
+                            limit = category.itemsToLoadAfterViewMore
+                        )
+                        var i = position
+                        while (adapter.differ.currentList[i] is UiModel.Item) {
+                            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.isLoadMoreClicked =
+                                true
+                            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.state =
+                                State.LOADING
+                            i++
+                        }
+                    }
                 }
-            } else if (sticker.baseModelOfItem.state == State.LOADED) {
+            } else if (sticker.baseModelOfItemInheritingAbstractClass.state == State.LOADED) {
                 Glide.with(binding.root.context)
-                    .load(sticker.baseModelOfItem.item?.fixedWidthFull?.png?.url)
+                    .load(sticker.baseModelOfItemInheritingAbstractClass.item?.fixedWidthFull?.png?.url)
                     .placeholder(R.drawable.placeholder).into(binding.itemImageView)
                 binding.itemImageView.setColorFilter(null)
 //                sticker.baseModelOfItem.state = State.LOADED
@@ -84,10 +104,11 @@ class Viewholders {
             )
             var i = position
             while (adapter.differ.currentList[i] is UiModel.Item) {
-                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.state =
                     State.LOADING
                 i++
             }
+
         }
 
         fun bindBanner(item: UiModel.Banner<Sticker>) {
@@ -139,7 +160,7 @@ class Viewholders {
             )
             var i = position
             while (adapter.differ.currentList[i] is UiModel.Item) {
-                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.state =
                     State.LOADING
                 i++
             }
@@ -150,39 +171,40 @@ class Viewholders {
             adapter: CustomAdapter<Sticker>,
             position: Int
         ) {
-            if (loadMore.itemAbove != null) {
-                loadMore.visible = !loadMore.itemAbove.isLastItem
+            if (loadMore.itemInheritingAbstractClassAbove != null) {
+                loadMore.visible = !loadMore.itemInheritingAbstractClassAbove.isLastItem
             }
             binding.loadMore.isVisible = loadMore.visible
             binding.loadMore.setOnClickListener {
-
                 val category = adapter.dataset.listOfItems.find { it.id == loadMore.id }
-                loadMore.itemAbove?.isLoadMoreClicked = true
+                loadMore.itemInheritingAbstractClassAbove?.isLoadMoreClicked = true
                 if (category != null) {
-                    val remaining = category.total
-                    var tempList = mutableListOf<BaseModelOfItem<Sticker>>()
-                    tempList = category.itemList.toMutableList()
+                    val remaining = category.itemsToLoadAfterViewMore
+                    var tempList = mutableListOf<BaseModelOfItemInheritingAbstractClass<Sticker>>()
+                    tempList = category.itemInheritingAbstractClassList.toMutableList()
+                    var j = 0
                     repeat(remaining) {
-                        tempList.add(BaseModelOfItem(isLoadMoreClicked = true))
+                        tempList.add(
+                            BaseModelOfItemInheritingAbstractClass(
+                                isLoadMoreClicked = true,
+                                categoryBasedPosition = loadMore.itemInheritingAbstractClassAbove?.categoryBasedPosition!! + j
+                            )
+                        )
+                        j++;
                     }
-                    category.itemList = tempList
+                    category.itemInheritingAbstractClassList = tempList
                     val uiModellist =
                         adapter.convertToUiModel(adapter.dataset, adapter.dataset.listOfItems)
                     var i = position
                     adapter.submitList(uiModellist)
-                    callBindOnVisibleScreen(
-                        adapter, position,
-                        id = category.id!!,
-                        offset = (loadMore.itemAbove?.categoryBasedPosition?.plus(1)).toString(),
-                        limit = remaining
-                    )
-                    while (adapter.differ.currentList[i] is UiModel.Item) {
-                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
-                            true
-                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-                            State.LOADING
-                        i++
-                    }
+
+//                    while (adapter.differ.currentList[i] is UiModel.Item) {
+//                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
+//                            true
+//                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+//                            State.LOADING
+//                        i++
+//                    }
                     Log.i("baseclass", "${adapter.dataset}")
 //                    loadMore.itemAbove?.state = State.LOADING
 //                    adapter.apiInterface.getItemsWithOffset(

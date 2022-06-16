@@ -1,28 +1,10 @@
 package com.example.single_recyclerview_manual_pagination.adapter
 
-import android.graphics.Color
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
-import com.example.single_recyclerview_manual_pagination.R
-import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
-import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
-import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
 import com.example.single_recyclerview_manual_pagination.models.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 class CustomAdapter<T>(val dataset: BaseClass<T>) :
@@ -65,6 +47,7 @@ class CustomAdapter<T>(val dataset: BaseClass<T>) :
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
+
             -1 -> Viewholders.StickerHeaderViewHolder.from(parent)
             0 -> Viewholders.LoadMoreViewHolder.from(parent)
             else -> Viewholders.StickerViewHolder.from(parent)
@@ -117,18 +100,18 @@ class CustomAdapter<T>(val dataset: BaseClass<T>) :
 
     fun convertToUiModel(
         baseClass: BaseClass<Sticker>,
-        categoryList: List<Category<Sticker>>
+        categoryList: List<CategoryInheritingAbstractClass<Sticker>>
     ): List<UiModel<Sticker>> {
         val uiModelList = mutableListOf<UiModel<Sticker>>()
         for ((i, item) in categoryList.withIndex()) {
             uiModelList.add(UiModel.Header(item.name))
-            for ((j, it) in item.itemList.withIndex()) {
+            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
                 it.category = item
                 uiModelList.add(UiModel.Item(it))
             }
             uiModelList.add(
                 UiModel.LoadMore(
-                    itemAbove = item.itemList.last(),
+                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
                     id = item.id,
                     visible = item.isViewMoreVisible
                 )

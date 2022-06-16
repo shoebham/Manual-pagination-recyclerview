@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
-import com.example.single_recyclerview_manual_pagination.listContainer
 import com.example.single_recyclerview_manual_pagination.models.*
 import com.example.single_recyclerview_manual_pagination.repository.Repository
 import kotlinx.coroutines.flow.Flow
@@ -31,8 +30,9 @@ class MainActivityViewModel(
         emit(repository.getStickerPacks())
     }
 
-    private var _categoryList = MutableLiveData<List<Category<Sticker>>>()
-    val categoryList: MutableLiveData<MutableList<Category<Sticker>>> = (repository.getlist())
+    private var _categoryList = MutableLiveData<List<CategoryInheritingAbstractClass<Sticker>>>()
+    val categoryInheritingAbstractClassList: MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>> =
+        (repository.getlist())
 
     private var _count = MutableLiveData<Int>()
     val count: LiveData<Int> = liveData {
@@ -86,28 +86,24 @@ class MainActivityViewModel(
         limit: Int?
     ): Flow<List<UiModel<Sticker>>> {
         return flow {
-            val tempCategory = mutableListOf<Category<Sticker>>()
+            val tempCategory = mutableListOf<CategoryInheritingAbstractClass<Sticker>>()
 //            for (item in repository.listOfCategory.value!!) {
 //                uiModelList.add(UiModel.Header(item.name))
             repository.getStickers(id, offset, limit)
                 .collectLatest { it ->
                     val itemlist =
-                        repository.listOfCategory.value!!.find { it.id == id }?.itemList?.toMutableList()
+                        repository.listOfCategory.value!!.find { it.id == id }?.itemInheritingAbstractClassList?.toMutableList()
                     if (itemlist != null && itemlist.get(0).item == null) {
-                        repository.listOfCategory.value!!.find { it.id == id }?.itemList = it
+                        repository.listOfCategory.value!!.find { it.id == id }?.itemInheritingAbstractClassList =
+                            it
                     } else {
-//                        repository.listOfCategory.value!!.find { it.id == id }?.itemList?.toMutableList()
-//                            ?.addAll(it)
                         if (itemlist != null) {
-
                             for ((i, item) in it.withIndex()) {
                                 itemlist[offset!!.toInt() + i - 1] = item
                             }
                             itemlist.removeAll { it.item == null }
-
-                            repository.listOfCategory.value!!.find { it.id == id }?.itemList =
+                            repository.listOfCategory.value!!.find { it.id == id }?.itemInheritingAbstractClassList =
                                 itemlist
-//                            repository.listOfCategory.value!!.find { it.id == id }?.itemList=itemList2
                         }
                     }
 
@@ -123,18 +119,18 @@ class MainActivityViewModel(
 
     fun convertToUiModel(
         baseClass: BaseClass<Sticker>,
-        categoryList: List<Category<Sticker>>
+        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<Sticker>>
     ): List<UiModel<Sticker>> {
         val uiModelList = mutableListOf<UiModel<Sticker>>()
-        for ((i, item) in categoryList.withIndex()) {
+        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
             uiModelList.add(UiModel.Header(item.name))
-            for ((j, it) in item.itemList.withIndex()) {
+            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
                 it.category = item
                 uiModelList.add(UiModel.Item(it))
             }
             uiModelList.add(
                 UiModel.LoadMore(
-                    itemAbove = item.itemList.last(),
+                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
                     id = item.id,
                     visible = item.isViewMoreVisible
                 )

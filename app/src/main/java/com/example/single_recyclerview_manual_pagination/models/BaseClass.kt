@@ -2,15 +2,11 @@ package com.example.single_recyclerview_manual_pagination.models
 
 
 abstract class Wrapper<T>() {
-    abstract var listOfItems: List<Category<T>>
+    abstract var listOfItems: List<CategoryInheritingAbstractClass<T>>
     abstract var listOfBanner: List<Banner>
 }
 
-class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
-    enum class Item_type {
-        BANNER, ITEM, AD
-    }
-
+class BaseClass<T>(var listOfItems: List<CategoryInheritingAbstractClass<T>>) : List<Any> {
     var uiModelList = listOf<UiModel<T>>()
     override val size: Int = uiModelList.size
 

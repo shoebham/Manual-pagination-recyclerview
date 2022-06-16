@@ -31,14 +31,14 @@ class Repository private constructor() {
 //    val individualCount = _individualCount
 //
 val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
-    val listOfCategory = MutableLiveData<MutableList<Category<Sticker>>>()
+    val listOfCategory = MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>>()
 
-    fun getlist(): MutableLiveData<MutableList<Category<Sticker>>> {
+    fun getlist(): MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>> {
         return listOfCategory
     }
 
     init {
-        listOfCategory.postValue(MutableList(10) { Category() })
+        listOfCategory.postValue(MutableList(10) { CategoryInheritingAbstractClass() })
         tempHashMap.postValue(LinkedHashMap<String, Int>())
     }
 //    private var _tabPosition = MutableLiveData<Int>()
@@ -50,7 +50,7 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
         val category = NetworkLayer.retrofitService.getStickerPacks()
         for ((i, cat) in category.stickerPacks.withIndex()) {
             listOfCategory.value!![i] = (
-                    Category(
+                    CategoryInheritingAbstractClass(
                         id = cat.id,
                         name = cat.name,
                         isViewMoreVisible = i < category.stickerPacks.size - 1,
@@ -69,15 +69,16 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
         id: Int,
         offset: String?,
         limit: Int?
-    ): Flow<List<BaseModelOfItem<Sticker>>> {
+    ): Flow<List<BaseModelOfItemInheritingAbstractClass<Sticker>>> {
         return flow {
-            val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
+            val tempBaseModelItemList =
+                mutableListOf<BaseModelOfItemInheritingAbstractClass<Sticker>>()
 //            for(item in list){
             val res = getStickersWithOffset(id, offset, limit)
 
             for ((i, item) in res.items.withIndex()) {
                 tempBaseModelItemList.add(
-                    BaseModelOfItem(
+                    BaseModelOfItemInheritingAbstractClass(
                         item,
                         categoryBasedPosition = offset!!.toInt() + i,
                         state = State.LOADED,

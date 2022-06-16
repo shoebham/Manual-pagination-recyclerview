@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
         initUi()
 
 
-        val emptyListOfCategory = Category<Sticker>()
+        val emptyListOfCategory = CategoryInheritingAbstractClass<Sticker>()
         val tempList = MutableList(10) { emptyListOfCategory }
         val listContainer = listContainer<Sticker>()
         listContainer.listOfItems = tempList
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
 //    }
 
     fun initItems() {
-        baseClass.listOfItems = viewModel.categoryList.value!!
+        baseClass.listOfItems = viewModel.categoryInheritingAbstractClassList.value!!
         val temp = viewModel.convertToUiModel(baseClass, baseClass.listOfItems)
         adapter.submitList(baseClass.uiModelList)
 //        lifecycleScope.launch {
