@@ -13,17 +13,18 @@ import com.example.***REMOVED***_vertical_scroll_stickers.tabSync.TabbedListMedi
 import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
-import com.example.single_recyclerview_manual_pagination.adapter.CustomAdapter
 import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
+import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
+import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
 import com.example.single_recyclerview_manual_pagination.models.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
+class MainActivity : AppCompatActivity(), ApiInterface {
     private var itemList = mutableListOf<String>()
-    private lateinit var adapter: CustomAdapter<Sticker>
+    private lateinit var adapter: demoAdapter
     private lateinit var binding: ActivityMainBinding
     private lateinit var factory: MainActivityViewModelFactory
     private lateinit var viewModel: MainActivityViewModel
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
         listContainer.listOfItems = tempList
         baseClass = BaseClass(tempList)
 //        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-        adapter = CustomAdapter(baseClass)
+        adapter = demoAdapter(baseClass, this)
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
 
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
 //        }
         val uimodellist = viewModel.convertToUiModel(baseClass, baseClass.listOfItems)
         adapter.submitList(baseClass.uiModelList)
-        adapter.setApiListener(this)
+//        adapter.setApiListener(this)
     }
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
@@ -196,8 +197,8 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
     private fun initRecyclerView() {
 //        adapter = CustomAdapter(baseClass)
 //        adapter.setHasStableIds(true)
-        adapter.stateRestorationPolicy =
-            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+//        adapter.stateRestorationPolicy =
+//            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -235,5 +236,28 @@ class MainActivity : AppCompatActivity(), CustomAdapter.ApiInterface {
                 adapter.submitList(baseClass.uiModelList)
             }
         }
+    }
+
+    override fun <T> convertToUiModel(
+        baseClass: BaseClass<T>,
+        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
+    ): List<UiModel<T>> {
+        val uiModelList = mutableListOf<UiModel<T>>()
+        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
+            uiModelList.add(UiModel.Header(item.name))
+            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
+                it.category = item
+                uiModelList.add(UiModel.Item(it))
+            }
+            uiModelList.add(
+                UiModel.LoadMore(
+                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
+                    id = item.id,
+                    visible = item.isViewMoreVisible
+                )
+            )
+        }
+        baseClass.uiModelList = uiModelList
+        return baseClass.uiModelList
     }
 }

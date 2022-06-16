@@ -18,7 +18,7 @@ interface ApiInterface {
 abstract class AbstractAdapter<T>
     (
     val dataset: BaseClass<T>,
-    val apiInterface: ApiInterface
+    var apiInterface: ApiInterface
 ) : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
     abstract var differ: AsyncListDiffer<UiModel<T>>
@@ -28,7 +28,10 @@ abstract class AbstractAdapter<T>
         differ.submitList(list)
     }
 
-    private fun currentList(): List<UiModel<T>> {
+    //    fun setApiListener(apiInter: ApiInterface) {
+//        apiInterface = apiInter
+//    }
+    fun currentList(): List<UiModel<T>> {
         return differ.currentList
     }
 

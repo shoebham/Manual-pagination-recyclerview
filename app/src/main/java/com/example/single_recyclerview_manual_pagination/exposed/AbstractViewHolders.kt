@@ -17,12 +17,12 @@ abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemV
 abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
-        bind(item, adapter, position)
+        bindItem(item as UiModel.Item<T>, adapter, position)
     }
 
-    fun bind(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
+    private fun bindItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
         if (item.baseModelOfItemInheritingAbstractClass.item == null) {
-            showPlaceholder()
+            showPlaceholder(item, adapter, position)
             if (item.baseModelOfItemInheritingAbstractClass.state == State.NOT_LOADING) {
                 if (item.baseModelOfItemInheritingAbstractClass.category != null && item.baseModelOfItemInheritingAbstractClass.category?.id != null) {
                     if (!item.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
@@ -49,9 +49,9 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                         )
                     }
                 }
-            } else if (item.baseModelOfItemInheritingAbstractClass.state == State.LOADED) {
-                showItem()
             }
+        } else if (item.baseModelOfItemInheritingAbstractClass.state == State.LOADED) {
+            showItem(item, adapter, position)
         }
     }
 
@@ -78,32 +78,45 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
         }
     }
 
-    abstract fun showPlaceholder()
-    abstract fun showItem()
+    abstract fun showPlaceholder(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int)
+    abstract fun showItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int)
 }
 
-abstract class HeaderViewHolder<T>(private val binding: HeaderBinding) :
+abstract class HeaderViewHolder<T>(binding: HeaderBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
-        bind(item, adapter, position)
+        bindHeader(item as UiModel.Header<T>)
     }
 
-    abstract fun bind(header: UiModel.Header<T>)
+    abstract fun bindHeader(header: UiModel.Header<T>)
 }
 
 abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
-        bind(item, adapter, position)
+        bindLoadMore(item as UiModel.LoadMore<T>, adapter, position)
     }
 
-    fun bind(loadMore: UiModel.LoadMore<T>, adapter: AbstractAdapter<T>, position: Int) {
+    fun bindLoadMore(loadMore: UiModel.LoadMore<T>, adapter: AbstractAdapter<T>, position: Int) {
+        doStuffWithLoadMoreUI(loadMore, adapter, position)
         binding.loadMore.setOnClickListener {
             setClickListener(loadMore, adapter, position)
         }
     }
 
-    fun setClickListener(
+    abstract fun doStuffWithLoadMoreUI(
+        loadMore: UiModel.LoadMore<T>,
+        adapter: AbstractAdapter<T>,
+        position: Int
+    )
+
+    abstract fun doStuffWithOnClickListener(
+        loadMore: UiModel.LoadMore<T>,
+        adapter: AbstractAdapter<T>,
+        position: Int
+    )
+
+    private fun setClickListener(
         loadMore: UiModel.LoadMore<T>,
         adapter: AbstractAdapter<T>,
         position: Int
@@ -130,6 +143,7 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
                     adapter.dataset.listOfItems
                 )
             adapter.submitList(uiModellist)
+            doStuffWithOnClickListener(loadMore, adapter, position)
         }
     }
 }
