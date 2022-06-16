@@ -10,6 +10,24 @@ class BaseClass<T>(var listOfItems: List<CategoryInheritingAbstractClass<T>>) : 
     var uiModelList = listOf<UiModel<T>>()
     override val size: Int = uiModelList.size
 
+    fun convertToUiModel(): List<UiModel<T>> {
+        val tempUiModelList = mutableListOf<UiModel<T>>()
+        for ((i, item) in listOfItems.withIndex()) {
+            tempUiModelList.add(UiModel.Header(item.name))
+            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
+                it.category = item
+                tempUiModelList.add(UiModel.Item(it))
+            }
+            tempUiModelList.add(
+                UiModel.LoadMore(
+                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
+                    id = item.id,
+                    visible = item.isViewMoreVisible
+                )
+            )
+        }
+        return tempUiModelList
+    }
 //    fun submitList(list: Wrapper<T>, itemType: Item_type) {
 //        val modelList = mutableListOf<UiModel<T>>()
 //        val wrapper = mutableListOf<Any>()

@@ -9,10 +9,10 @@ import com.example.single_recyclerview_manual_pagination.models.UiModel
 
 interface ApiInterface {
     fun getItemsWithOffset(id: Int, offset: String, limit: Int)
-    fun <T> convertToUiModel(
-        baseClass: BaseClass<T>,
-        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
-    ): List<UiModel<T>>
+//    fun <T> convertToUiModel(
+//        baseClass: BaseClass<T>,
+//        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
+//    ): List<UiModel<T>>
 }
 
 abstract class AbstractAdapter<T>
@@ -28,9 +28,6 @@ abstract class AbstractAdapter<T>
         differ.submitList(list)
     }
 
-    //    fun setApiListener(apiInter: ApiInterface) {
-//        apiInterface = apiInter
-//    }
     fun currentList(): List<UiModel<T>> {
         return differ.currentList
     }

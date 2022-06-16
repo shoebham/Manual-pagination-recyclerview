@@ -32,7 +32,7 @@ class MainActivityViewModel(
 
     private var _categoryList = MutableLiveData<List<CategoryInheritingAbstractClass<Sticker>>>()
     val categoryInheritingAbstractClassList: MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>> =
-        (repository.getlist())
+        (repository.listOfCategory)
 
     private var _count = MutableLiveData<Int>()
     val count: LiveData<Int> = liveData {
@@ -89,12 +89,13 @@ class MainActivityViewModel(
             val tempCategory = mutableListOf<CategoryInheritingAbstractClass<Sticker>>()
 //            for (item in repository.listOfCategory.value!!) {
 //                uiModelList.add(UiModel.Header(item.name))
+//            baseClass.listOfItems=repository.listOfCategory.value!!
             repository.getStickers(id, offset, limit)
                 .collectLatest { it ->
                     val itemlist =
-                        repository.listOfCategory.value!!.find { it.id == id }?.itemInheritingAbstractClassList?.toMutableList()
-                    if (itemlist != null && itemlist.get(0).item == null) {
-                        repository.listOfCategory.value!!.find { it.id == id }?.itemInheritingAbstractClassList =
+                        baseClass.listOfItems.find { it.id == id }?.itemInheritingAbstractClassList?.toMutableList()
+                    if (itemlist != null && itemlist[0].item == null) {
+                        baseClass.listOfItems.find { it.id == id }?.itemInheritingAbstractClassList =
                             it
                     } else {
                         if (itemlist != null) {
@@ -102,43 +103,42 @@ class MainActivityViewModel(
                                 itemlist[offset!!.toInt() + i - 1] = item
                             }
                             itemlist.removeAll { it.item == null }
-                            repository.listOfCategory.value!!.find { it.id == id }?.itemInheritingAbstractClassList =
+                            baseClass.listOfItems.find { it.id == id }?.itemInheritingAbstractClassList =
                                 itemlist
                         }
                     }
-
                 }
 //            }
 
-            val uiModelList = convertToUiModel(baseClass, repository.listOfCategory.value!!)
+            val uiModelList = baseClass.convertToUiModel()
 //            val listContainer = listContainer<Sticker>()
 //            listContainer.listOfItems = tempCategory
             emit(uiModelList)
         }
     }
 
-    fun convertToUiModel(
-        baseClass: BaseClass<Sticker>,
-        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<Sticker>>
-    ): List<UiModel<Sticker>> {
-        val uiModelList = mutableListOf<UiModel<Sticker>>()
-        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
-            uiModelList.add(UiModel.Header(item.name))
-            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
-                it.category = item
-                uiModelList.add(UiModel.Item(it))
-            }
-            uiModelList.add(
-                UiModel.LoadMore(
-                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
-                    id = item.id,
-                    visible = item.isViewMoreVisible
-                )
-            )
-        }
-        baseClass.uiModelList = uiModelList
-        return baseClass.uiModelList
-    }
+//    fun convertToUiModel(
+//        baseClass: BaseClass<Sticker>,
+//        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<Sticker>>
+//    ): List<UiModel<Sticker>> {
+//        val uiModelList = mutableListOf<UiModel<Sticker>>()
+//        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
+//            uiModelList.add(UiModel.Header(item.name))
+//            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
+//                it.category = item
+//                uiModelList.add(UiModel.Item(it))
+//            }
+//            uiModelList.add(
+//                UiModel.LoadMore(
+//                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
+//                    id = item.id,
+//                    visible = item.isViewMoreVisible
+//                )
+//            )
+//        }
+//        baseClass.uiModelList = uiModelList
+//        return baseClass.uiModelList
+//    }
 
 
 //    suspend fun getStickersWithOffset(id: Int, offset: String?, limit: Int?):Stickers{

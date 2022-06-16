@@ -138,10 +138,7 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
             }
             category.itemInheritingAbstractClassList = tempList
             val uiModellist =
-                adapter.apiInterface.convertToUiModel(
-                    adapter.dataset,
-                    adapter.dataset.listOfItems
-                )
+                adapter.dataset.convertToUiModel()
             adapter.submitList(uiModellist)
             doStuffWithOnClickListener(loadMore, adapter, position)
         }

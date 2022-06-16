@@ -69,8 +69,8 @@ class MainActivity : AppCompatActivity(), ApiInterface {
 //                uimodellist.add(UiModel.Item(item))
 //            }
 //        }
-        val uimodellist = viewModel.convertToUiModel(baseClass, baseClass.listOfItems)
-        adapter.submitList(baseClass.uiModelList)
+        val uimodellist = baseClass.convertToUiModel()
+        adapter.submitList(uimodellist)
 //        adapter.setApiListener(this)
     }
     fun initUi() {
@@ -143,8 +143,8 @@ class MainActivity : AppCompatActivity(), ApiInterface {
 
     fun initItems() {
         baseClass.listOfItems = viewModel.categoryInheritingAbstractClassList.value!!
-        val temp = viewModel.convertToUiModel(baseClass, baseClass.listOfItems)
-        adapter.submitList(baseClass.uiModelList)
+        val temp = baseClass.convertToUiModel()
+        adapter.submitList(temp)
 //        lifecycleScope.launch {
 //            viewModel.getStickersInitially().collectLatest {
 //                adapter.submitList(it)
@@ -233,31 +233,31 @@ class MainActivity : AppCompatActivity(), ApiInterface {
     override fun getItemsWithOffset(id: Int, offset: String, limit: Int) {
         lifecycleScope.launch {
             viewModel.getStickersWithOffset(baseClass, id, offset, limit).collectLatest {
-                adapter.submitList(baseClass.uiModelList)
+                adapter.submitList(it)
             }
         }
     }
 
-    override fun <T> convertToUiModel(
-        baseClass: BaseClass<T>,
-        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
-    ): List<UiModel<T>> {
-        val uiModelList = mutableListOf<UiModel<T>>()
-        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
-            uiModelList.add(UiModel.Header(item.name))
-            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
-                it.category = item
-                uiModelList.add(UiModel.Item(it))
-            }
-            uiModelList.add(
-                UiModel.LoadMore(
-                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
-                    id = item.id,
-                    visible = item.isViewMoreVisible
-                )
-            )
-        }
-        baseClass.uiModelList = uiModelList
-        return baseClass.uiModelList
-    }
+//    override fun <T> convertToUiModel(
+//        baseClass: BaseClass<T>,
+//        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
+//    ): List<UiModel<T>> {
+//        val uiModelList = mutableListOf<UiModel<T>>()
+//        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
+//            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
+//                it.category = item
+//                uiModelList.add(UiModel.Item(it))
+//            }
+//            uiModelList.add(UiModel.Header(item.name))
+//            uiModelList.add(
+//                UiModel.LoadMore(
+//                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
+//                    id = item.id,
+//                    visible = item.isViewMoreVisible
+//                )
+//            )
+//        }
+//        baseClass.uiModelList = uiModelList
+//        return baseClass.uiModelList
+//    }
 }
