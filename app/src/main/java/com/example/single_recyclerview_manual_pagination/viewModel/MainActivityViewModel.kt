@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
+import com.example.single_recyclerview_manual_pagination.exposed.BaseModelOfItem
 import com.example.single_recyclerview_manual_pagination.models.*
 import com.example.single_recyclerview_manual_pagination.repository.Repository
 import kotlinx.coroutines.flow.Flow
@@ -92,28 +93,32 @@ class MainActivityViewModel(
 //            baseClass.listOfItems=repository.listOfCategory.value!!
             repository.getStickers(id, offset, limit)
                 .collectLatest { it ->
-                    val itemlist =
-                        baseClass.listOfItems.find { it.id == id }?.itemInheritingAbstractClassList?.toMutableList()
-                    if (itemlist != null && itemlist[0].item == null) {
-                        baseClass.listOfItems.find { it.id == id }?.itemInheritingAbstractClassList =
-                            it
-                    } else {
-                        if (itemlist != null) {
-                            for ((i, item) in it.withIndex()) {
-                                itemlist[offset!!.toInt() + i - 1] = item
-                            }
-                            itemlist.removeAll { it.item == null }
-                            baseClass.listOfItems.find { it.id == id }?.itemInheritingAbstractClassList =
-                                itemlist
-                        }
-                    }
+                    dealWithDataAndReturnUiModelList(baseClass, it, id, offset, limit)
                 }
-//            }
-
             val uiModelList = baseClass.convertToUiModel()
-//            val listContainer = listContainer<Sticker>()
-//            listContainer.listOfItems = tempCategory
             emit(uiModelList)
+        }
+    }
+
+    fun dealWithDataAndReturnUiModelList(
+        baseClass: BaseClass<Sticker>, it: List<BaseModelOfItem<Sticker>>, id: Int,
+        offset: String?,
+        limit: Int?
+    ) {
+        val itemlist =
+            baseClass.listOfItems.find { it.id == id }?.baseModelOfItemList?.toMutableList()
+        if (itemlist != null && itemlist[0].item == null) {
+            baseClass.listOfItems.find { it.id == id }?.baseModelOfItemList =
+                it
+        } else {
+            if (itemlist != null) {
+                for ((i, item) in it.withIndex()) {
+                    itemlist[offset!!.toInt() + i - 1] = item
+                }
+                itemlist.removeAll { it.item == null }
+                baseClass.listOfItems.find { it.id == id }?.baseModelOfItemList =
+                    itemlist
+            }
         }
     }
 

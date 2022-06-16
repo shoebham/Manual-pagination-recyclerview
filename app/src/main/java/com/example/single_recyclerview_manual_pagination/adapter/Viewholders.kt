@@ -1,11 +1,9 @@
 package com.example.single_recyclerview_manual_pagination.adapter
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
@@ -15,8 +13,6 @@ import com.example.single_recyclerview_manual_pagination.exposed.AbstractAdapter
 import com.example.single_recyclerview_manual_pagination.exposed.HeaderViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.ItemViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.LoadMoreViewHolder
-import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
-import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 import java.util.*
@@ -52,7 +48,7 @@ class Viewholders {
         ) {
             binding.itemImageView.setColorFilter(null)
             Glide.with(binding.root.context)
-                .load(item.baseModelOfItemInheritingAbstractClass.item?.fixedWidthFull?.png?.url)
+                .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                 .placeholder(R.drawable.placeholder).into(binding.itemImageView)
         }
 

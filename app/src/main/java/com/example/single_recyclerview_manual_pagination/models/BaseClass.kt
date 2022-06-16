@@ -1,12 +1,16 @@
 package com.example.single_recyclerview_manual_pagination.models
 
+import com.example.single_recyclerview_manual_pagination.exposed.Category
+
 
 abstract class Wrapper<T>() {
     abstract var listOfItems: List<CategoryInheritingAbstractClass<T>>
     abstract var listOfBanner: List<Banner>
 }
 
-class BaseClass<T>(var listOfItems: List<CategoryInheritingAbstractClass<T>>) : List<Any> {
+class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
+
+
     var uiModelList = listOf<UiModel<T>>()
     override val size: Int = uiModelList.size
 
@@ -14,13 +18,13 @@ class BaseClass<T>(var listOfItems: List<CategoryInheritingAbstractClass<T>>) : 
         val tempUiModelList = mutableListOf<UiModel<T>>()
         for ((i, item) in listOfItems.withIndex()) {
             tempUiModelList.add(UiModel.Header(item.name))
-            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
+            for ((j, it) in item.baseModelOfItemList.withIndex()) {
                 it.category = item
                 tempUiModelList.add(UiModel.Item(it))
             }
             tempUiModelList.add(
                 UiModel.LoadMore(
-                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
+                    itemInheritingAbstractClassAbove = item.baseModelOfItemList.last(),
                     id = item.id,
                     visible = item.isViewMoreVisible
                 )

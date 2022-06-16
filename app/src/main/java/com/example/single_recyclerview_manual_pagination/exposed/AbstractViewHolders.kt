@@ -21,27 +21,27 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
     }
 
     private fun bindItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
-        if (item.baseModelOfItemInheritingAbstractClass.item == null) {
+        if (item.baseModelOfItem.item == null) {
             showPlaceholder(item, adapter, position)
-            if (item.baseModelOfItemInheritingAbstractClass.state == State.NOT_LOADING) {
-                if (item.baseModelOfItemInheritingAbstractClass.category != null && item.baseModelOfItemInheritingAbstractClass.category?.id != null) {
-                    if (!item.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
+            if (item.baseModelOfItem.state == State.NOT_LOADING) {
+                if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
+                    if (!item.baseModelOfItem.isLoadMoreClicked) {
                         callApiAndMarkItemsAsLoading(
                             adapter, position,
-                            id = item.baseModelOfItemInheritingAbstractClass.category?.id!!,
-                            offset = (item.baseModelOfItemInheritingAbstractClass.categoryBasedPosition?.plus(
+                            id = item.baseModelOfItem.category?.id!!,
+                            offset = (item.baseModelOfItem.categoryBasedPosition?.plus(
                                 1
                             )).toString(),
-                            limit = item.baseModelOfItemInheritingAbstractClass.category?.initialCount!!,
+                            limit = item.baseModelOfItem.category?.initialCount!!,
                             false
                         )
-                    } else if (item.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
+                    } else if (item.baseModelOfItem.isLoadMoreClicked) {
                         val category =
-                            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItemInheritingAbstractClass.category?.id }
+                            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
                         callApiAndMarkItemsAsLoading(
                             adapter, position,
                             id = category?.id!!,
-                            offset = (item.baseModelOfItemInheritingAbstractClass.categoryBasedPosition?.plus(
+                            offset = (item.baseModelOfItem.categoryBasedPosition?.plus(
                                 1
                             )).toString(),
                             limit = category.itemsToLoadAfterViewMore,
@@ -50,7 +50,7 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                     }
                 }
             }
-        } else if (item.baseModelOfItemInheritingAbstractClass.state == State.LOADED) {
+        } else if (item.baseModelOfItem.state == State.LOADED) {
             showItem(item, adapter, position)
         }
     }
@@ -70,9 +70,9 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
         )
         var i = position
         while (adapter.differ.currentList[i] is UiModel.Item) {
-            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.state =
+            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
                 State.LOADING
-            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.isLoadMoreClicked =
+            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
                 isLoadMoreClicked
             i++
         }
@@ -125,7 +125,7 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
         loadMore.itemInheritingAbstractClassAbove?.isLoadMoreClicked = true
         if (category != null) {
             val remaining = category.itemsToLoadAfterViewMore
-            val tempList = category.itemInheritingAbstractClassList.toMutableList()
+            val tempList = category.baseModelOfItemList.toMutableList()
             var j = 0
             repeat(remaining) {
                 tempList.add(
@@ -136,7 +136,7 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
                 )
                 j++;
             }
-            category.itemInheritingAbstractClassList = tempList
+            category.baseModelOfItemList = tempList
             val uiModellist =
                 adapter.dataset.convertToUiModel()
             adapter.submitList(uiModellist)
