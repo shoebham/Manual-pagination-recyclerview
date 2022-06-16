@@ -8,6 +8,6 @@ sealed class UiModel<T>() {
     class LoadMore<T>(
         val id: Int? = null,
         val itemAbove: BaseModelOfItem<T>? = null,
-        val visible: Boolean = true
+        var visible: Boolean = true
     ) : UiModel<T>()
 }

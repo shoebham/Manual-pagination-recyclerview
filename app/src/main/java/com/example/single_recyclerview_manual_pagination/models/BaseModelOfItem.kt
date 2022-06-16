@@ -6,7 +6,7 @@ class BaseModelOfItem<T>(
     var category: Category<T>? = null,
     val categoryBasedPosition: Int? = 0,
     val continuousPosition: Int? = 0,
-    val isLastItem: Boolean = false,
+    var isLastItem: Boolean = false,
     var state: State = State.NOT_LOADING,
     var isLoadMoreClicked: Boolean = false
 )

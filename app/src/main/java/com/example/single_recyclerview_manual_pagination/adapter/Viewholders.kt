@@ -31,7 +31,7 @@ class Viewholders {
         }
 
         fun bind(sticker: UiModel.Item<Sticker>, adapter: CustomAdapter<Sticker>, position: Int) {
-            if (sticker.baseModelOfItem.item == null && !sticker.baseModelOfItem.isLoadMoreClicked) {
+            if (sticker.baseModelOfItem.item == null) {
 //                Glide.with(binding.root.context).load(R.drawable.placeholder)
 //                    .into(binding.itemImageView)
                 Glide.with(binding.root.context).load(R.drawable.placeholder)
@@ -150,6 +150,9 @@ class Viewholders {
             adapter: CustomAdapter<Sticker>,
             position: Int
         ) {
+            if (loadMore.itemAbove != null) {
+                loadMore.visible = !loadMore.itemAbove.isLastItem
+            }
             binding.loadMore.isVisible = loadMore.visible
             binding.loadMore.setOnClickListener {
 
@@ -160,7 +163,7 @@ class Viewholders {
                     var tempList = mutableListOf<BaseModelOfItem<Sticker>>()
                     tempList = category.itemList.toMutableList()
                     repeat(remaining) {
-                        tempList.add(BaseModelOfItem())
+                        tempList.add(BaseModelOfItem(isLoadMoreClicked = true))
                     }
                     category.itemList = tempList
                     val uiModellist =
@@ -173,6 +176,13 @@ class Viewholders {
                         offset = (loadMore.itemAbove?.categoryBasedPosition?.plus(1)).toString(),
                         limit = remaining
                     )
+                    while (adapter.differ.currentList[i] is UiModel.Item) {
+                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
+                            true
+                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+                            State.LOADING
+                        i++
+                    }
                     Log.i("baseclass", "${adapter.dataset}")
 //                    loadMore.itemAbove?.state = State.LOADING
 //                    adapter.apiInterface.getItemsWithOffset(

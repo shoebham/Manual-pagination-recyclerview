@@ -74,12 +74,14 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
             val tempBaseModelItemList = mutableListOf<BaseModelOfItem<Sticker>>()
 //            for(item in list){
             val res = getStickersWithOffset(id, offset, limit)
+
             for ((i, item) in res.items.withIndex()) {
                 tempBaseModelItemList.add(
                     BaseModelOfItem(
                         item,
                         categoryBasedPosition = offset!!.toInt() + i,
-                        state = State.LOADED
+                        state = State.LOADED,
+                        isLastItem = res.items.size < limit!!
                     )
                 )
             }

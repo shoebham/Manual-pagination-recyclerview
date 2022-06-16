@@ -98,27 +98,19 @@ class MainActivityViewModel(
                     } else {
 //                        repository.listOfCategory.value!!.find { it.id == id }?.itemList?.toMutableList()
 //                            ?.addAll(it)
-
                         if (itemlist != null) {
+
                             for ((i, item) in it.withIndex()) {
                                 itemlist[offset!!.toInt() + i - 1] = item
                             }
+                            itemlist.removeAll { it.item == null }
+
                             repository.listOfCategory.value!!.find { it.id == id }?.itemList =
                                 itemlist
+//                            repository.listOfCategory.value!!.find { it.id == id }?.itemList=itemList2
                         }
                     }
-////                        for(i in it) {
-////                            i.category = item
-////                            uiModelList.add(UiModel.Item(i))
-////                        }
-////                        Category(
-////                            id = item.id,
-////                            name = item.name,
-////                            itemList = it,
-////                            initialCount = 20,
-////                            currentCount = it.size,
-////                            total = item.total
-////                        )
+
                 }
 //            }
 
