@@ -4,8 +4,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import com.example.single_recyclerview_manual_pagination.exposed.AbstractAdapter
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
+import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
 import com.example.single_recyclerview_manual_pagination.exposed.BaseViewHolder
-import com.example.single_recyclerview_manual_pagination.models.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 

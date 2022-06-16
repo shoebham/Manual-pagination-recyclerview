@@ -1,12 +1,10 @@
-package com.example.single_recyclerview_manual_pagination.models
+package com.example.single_recyclerview_manual_pagination.exposed
 
+import com.example.single_recyclerview_manual_pagination.exposed.BaseModelOfItem
 import com.example.single_recyclerview_manual_pagination.exposed.Category
+import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
+import com.example.single_recyclerview_manual_pagination.models.UiModel
 
-
-abstract class Wrapper<T>() {
-    abstract var listOfItems: List<CategoryInheritingAbstractClass<T>>
-    abstract var listOfBanner: List<Banner>
-}
 
 class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
 
@@ -31,6 +29,30 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
             )
         }
         return tempUiModelList
+    }
+
+    fun replacePlaceholders(
+        baseClass: BaseClass<T>,
+        it: List<BaseModelOfItem<T>>,
+        id: Int,
+        offset: String?,
+        limit: Int?
+    ) {
+        val category = listOfItems.find { it.id == id }
+        val itemlist = category?.baseModelOfItemList?.toMutableList()
+        if (itemlist != null && itemlist[0].item == null) {
+            listOfItems.find { it.id == id }?.baseModelOfItemList =
+                it
+        } else {
+            if (itemlist != null) {
+                for ((i, item) in it.withIndex()) {
+                    itemlist[offset!!.toInt() + i - 1] = item
+                }
+                itemlist.removeAll { it.item == null }
+                category.baseModelOfItemList = itemlist
+                if (it.isEmpty()) category.baseModelOfItemList.last().isLastItem = true
+            }
+        }
     }
 //    fun submitList(list: Wrapper<T>, itemType: Item_type) {
 //        val modelList = mutableListOf<UiModel<T>>()

@@ -3,7 +3,6 @@ package com.example.single_recyclerview_manual_pagination.exposed
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.single_recyclerview_manual_pagination.exposed.BaseViewHolder
-import com.example.single_recyclerview_manual_pagination.models.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 

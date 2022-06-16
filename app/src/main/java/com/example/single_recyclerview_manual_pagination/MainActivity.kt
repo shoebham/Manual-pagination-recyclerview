@@ -17,6 +17,7 @@ import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
 import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
+import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -50,8 +51,6 @@ class MainActivity : AppCompatActivity(), ApiInterface {
 
         val emptyListOfCategory = CategoryInheritingAbstractClass<Sticker>()
         val tempList = MutableList(10) { emptyListOfCategory }
-        val listContainer = listContainer<Sticker>()
-        listContainer.listOfItems = tempList
         baseClass = BaseClass(tempList)
 //        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
         adapter = demoAdapter(baseClass, this)

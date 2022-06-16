@@ -1,5 +1,6 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
@@ -21,31 +22,36 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
     }
 
     private fun bindItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
+        Log.i("onbind", "position: $position Item: $item")
         if (item.baseModelOfItem.item == null) {
             showPlaceholder(item, adapter, position)
             if (item.baseModelOfItem.state == State.NOT_LOADING) {
                 if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
                     if (!item.baseModelOfItem.isLoadMoreClicked) {
                         callApiAndMarkItemsAsLoading(
-                            adapter, position,
+                            adapter = adapter,
+                            position = position,
                             id = item.baseModelOfItem.category?.id!!,
-                            offset = (item.baseModelOfItem.categoryBasedPosition?.plus(
+                            offset = (item.baseModelOfItem.categoryBasedPosition.plus(
                                 1
                             )).toString(),
                             limit = item.baseModelOfItem.category?.initialCount!!,
-                            false
+                            item = item,
+                            isLoadMoreClicked = false
                         )
                     } else if (item.baseModelOfItem.isLoadMoreClicked) {
                         val category =
                             adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
                         callApiAndMarkItemsAsLoading(
-                            adapter, position,
+                            adapter = adapter,
+                            position = position,
                             id = category?.id!!,
-                            offset = (item.baseModelOfItem.categoryBasedPosition?.plus(
+                            offset = (item.baseModelOfItem.categoryBasedPosition.plus(
                                 1
                             )).toString(),
                             limit = category.itemsToLoadAfterViewMore,
-                            true
+                            item = item,
+                            isLoadMoreClicked = true
                         )
                     }
                 }
@@ -57,24 +63,34 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
 
     private fun callApiAndMarkItemsAsLoading(
         adapter: AbstractAdapter<T>,
+        item: UiModel.Item<T>,
         position: Int,
         id: Int,
         offset: String,
         limit: Int,
         isLoadMoreClicked: Boolean
     ) {
+        var i = position
+//        while (adapter.differ.currentList[i] is UiModel.Item) {
+//            if((adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state ==State.LOADING)break;
+//            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
+//                State.LOADING
+//            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
+//                isLoadMoreClicked
+//            i++
+//        }
         adapter.apiInterface.getItemsWithOffset(
             id,
             offset,
             limit
         )
-        var i = position
-        while (adapter.differ.currentList[i] is UiModel.Item) {
-            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-                State.LOADING
-            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
-                isLoadMoreClicked
-            i++
+        val category =
+            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
+        if (category != null) {
+            for (items in category.baseModelOfItemList) {
+                items.state = State.LOADED
+                items.isLoadMoreClicked = isLoadMoreClicked
+            }
         }
     }
 

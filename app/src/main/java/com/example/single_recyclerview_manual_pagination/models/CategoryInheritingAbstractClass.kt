@@ -10,7 +10,7 @@ data class CategoryInheritingAbstractClass<T>(
     override var initialCount: Int = 20,
     override var baseModelOfItemList: List<BaseModelOfItem<T>> =
         MutableList(initialCount) { BaseModelOfItemInheritingAbstractClass() },
-    override var itemsToLoadAfterViewMore: Int = 5,
+    override var itemsToLoadAfterViewMore: Int = 100,
     override var name: String = "Loading",
     override var currentCount: Int = baseModelOfItemList.size,
 ) : Category<T>()
