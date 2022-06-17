@@ -13,15 +13,15 @@ abstract class Category<T> {
     abstract var name: String
 }
 
-abstract class BaseModelOfItem<T> {
-    abstract val item: T?
-    abstract var category: Category<T>?
-    abstract val categoryBasedPosition: Int
-    abstract val continuousPosition: Int
-    abstract var isLastItem: Boolean
-    abstract var state: State
-    abstract var isLoadMoreClicked: Boolean
-}
+open class BaseModelOfItem<T>(
+    open val item: T? = null,
+    open var category: Category<T>? = null,
+    open val categoryBasedPosition: Int = 0,
+    open val continuousPosition: Int = 0,
+    open var isLastItem: Boolean = false,
+    open var state: State = State.NOT_LOADING,
+    open var isLoadMoreClicked: Boolean = false
+)
 
 abstract class Banner {
 }

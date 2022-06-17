@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
-import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
 import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.UiModel
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
     abstract fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int)
@@ -21,10 +21,17 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
         bindItem(item as UiModel.Item<T>, adapter, position)
     }
 
+    companion object {
+        private val count = AtomicInteger(0)
+    }
+
     private fun bindItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
         Log.i("onbind", "position: $position Item: $item")
         if (item.baseModelOfItem.item == null) {
+
             showPlaceholder(item, adapter, position)
+
+
             if (item.baseModelOfItem.state == State.NOT_LOADING) {
                 if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
                     if (!item.baseModelOfItem.isLoadMoreClicked) {
@@ -70,15 +77,11 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
         limit: Int,
         isLoadMoreClicked: Boolean
     ) {
+        Log.i(
+            "callApiAndMarkItems",
+            "${count.incrementAndGet()} position${position} offset${offset}"
+        )
         var i = position
-//        while (adapter.differ.currentList[i] is UiModel.Item) {
-//            if((adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state ==State.LOADING)break;
-//            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-//                State.LOADING
-//            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
-//                isLoadMoreClicked
-//            i++
-//        }
         adapter.apiInterface.getItemsWithOffset(
             id,
             offset,
@@ -101,10 +104,10 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
 abstract class HeaderViewHolder<T>(binding: HeaderBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
-        bindHeader(item as UiModel.Header<T>)
+        bindHeader(item as UiModel.Header<T>, adapter, position)
     }
 
-    abstract fun bindHeader(header: UiModel.Header<T>)
+    abstract fun bindHeader(header: UiModel.Header<T>, adapter: AbstractAdapter<T>, position: Int)
 }
 
 abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
@@ -113,7 +116,11 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
         bindLoadMore(item as UiModel.LoadMore<T>, adapter, position)
     }
 
-    fun bindLoadMore(loadMore: UiModel.LoadMore<T>, adapter: AbstractAdapter<T>, position: Int) {
+    private fun bindLoadMore(
+        loadMore: UiModel.LoadMore<T>,
+        adapter: AbstractAdapter<T>,
+        position: Int
+    ) {
         doStuffWithLoadMoreUI(loadMore, adapter, position)
         binding.loadMore.setOnClickListener {
             setClickListener(loadMore, adapter, position)
@@ -138,24 +145,24 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
         position: Int
     ) {
         val category = adapter.dataset.listOfItems.find { it.id == loadMore.id }
-        loadMore.itemInheritingAbstractClassAbove?.isLoadMoreClicked = true
+        loadMore.baseModelItemAbove?.isLoadMoreClicked = true
         if (category != null) {
             val remaining = category.itemsToLoadAfterViewMore
             val tempList = category.baseModelOfItemList.toMutableList()
             var j = 0
             repeat(remaining) {
                 tempList.add(
-                    BaseModelOfItemInheritingAbstractClass(
+                    BaseModelOfItem(
                         isLoadMoreClicked = true,
-                        categoryBasedPosition = loadMore.itemInheritingAbstractClassAbove?.categoryBasedPosition!! + j
+                        categoryBasedPosition = loadMore.baseModelItemAbove?.categoryBasedPosition!! + j
                     )
                 )
                 j++;
             }
             category.baseModelOfItemList = tempList
-            val uiModellist =
+            val uiModelList =
                 adapter.dataset.convertToUiModel()
-            adapter.submitList(uiModellist)
+            adapter.submitList(uiModelList)
             doStuffWithOnClickListener(loadMore, adapter, position)
         }
     }

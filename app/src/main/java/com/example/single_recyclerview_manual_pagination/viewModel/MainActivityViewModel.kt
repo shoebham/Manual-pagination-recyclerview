@@ -32,8 +32,8 @@ class MainActivityViewModel(
         emit(repository.getStickerPacks())
     }
 
-    private var _categoryList = MutableLiveData<List<CategoryInheritingAbstractClass<Sticker>>>()
-    val categoryInheritingAbstractClassList: MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>> =
+    private var _categoryList = MutableLiveData<List<CategoryInheritingAbstractClass>>()
+    val categoryInheritingAbstractClassList: MutableLiveData<MutableList<CategoryInheritingAbstractClass>> =
         (repository.listOfCategory)
 
     private var _count = MutableLiveData<Int>()
@@ -88,7 +88,7 @@ class MainActivityViewModel(
         limit: Int?
     ): Flow<List<UiModel<Sticker>>> {
         return flow {
-            val tempCategory = mutableListOf<CategoryInheritingAbstractClass<Sticker>>()
+            val tempCategory = mutableListOf<CategoryInheritingAbstractClass>()
 //            for (item in repository.listOfCategory.value!!) {
 //                uiModelList.add(UiModel.Header(item.name))
 //            baseClass.listOfItems=repository.listOfCategory.value!!

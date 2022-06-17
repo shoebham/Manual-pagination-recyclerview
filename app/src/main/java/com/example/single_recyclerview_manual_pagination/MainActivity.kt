@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         initUi()
 
 
-        val emptyListOfCategory = CategoryInheritingAbstractClass<Sticker>()
+        val emptyListOfCategory = CategoryInheritingAbstractClass()
         val tempList = MutableList(10) { emptyListOfCategory }
         baseClass = BaseClass(tempList)
 //        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)

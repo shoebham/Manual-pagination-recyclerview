@@ -11,7 +11,7 @@ sealed class UiModel<T>() {
     class Banner<T>(val url: String) : UiModel<T>()
     class LoadMore<T>(
         val id: Int? = null,
-        val itemInheritingAbstractClassAbove: BaseModelOfItem<T>? = null,
+        val baseModelItemAbove: BaseModelOfItem<T>? = null,
         var visible: Boolean = true
     ) : UiModel<T>()
 }

@@ -31,9 +31,9 @@ class Repository private constructor() {
 //    val individualCount = _individualCount
 //
 val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
-    val listOfCategory = MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>>()
+    val listOfCategory = MutableLiveData<MutableList<CategoryInheritingAbstractClass>>()
 
-    fun getlist(): MutableLiveData<MutableList<CategoryInheritingAbstractClass<Sticker>>> {
+    fun getlist(): MutableLiveData<MutableList<CategoryInheritingAbstractClass>> {
         return listOfCategory
     }
 
@@ -69,13 +69,12 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
         id: Int,
         offset: String?,
         limit: Int?
-    ): Flow<List<BaseModelOfItemInheritingAbstractClass<Sticker>>> {
+    ): Flow<List<BaseModelOfItemInheritingAbstractClass>> {
         return flow {
             val tempBaseModelItemList =
-                mutableListOf<BaseModelOfItemInheritingAbstractClass<Sticker>>()
+                mutableListOf<BaseModelOfItemInheritingAbstractClass>()
 //            for(item in list){
             val res = getStickersWithOffset(id, offset, limit)
-
             for ((i, item) in res.items.withIndex()) {
                 tempBaseModelItemList.add(
                     BaseModelOfItemInheritingAbstractClass(

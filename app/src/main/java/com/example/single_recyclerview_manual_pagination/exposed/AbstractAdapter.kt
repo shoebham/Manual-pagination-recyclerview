@@ -8,10 +8,6 @@ import com.example.single_recyclerview_manual_pagination.models.UiModel
 
 interface ApiInterface {
     fun getItemsWithOffset(id: Int, offset: String, limit: Int)
-//    fun <T> convertToUiModel(
-//        baseClass: BaseClass<T>,
-//        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
-//    ): List<UiModel<T>>
 }
 
 abstract class AbstractAdapter<T>
@@ -32,7 +28,7 @@ abstract class AbstractAdapter<T>
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<T>, position: Int) {
-        val item = currentList().get(position)
+        val item = currentList()[position]
         holder.bind(item = item, adapter = this, position)
     }
 

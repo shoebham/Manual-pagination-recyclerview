@@ -154,7 +154,11 @@ class Viewholders {
         //        fun bind(stickerHeader: String?) {
 //            binding.textitem.text = stickerHeader
 //        }
-        override fun bindHeader(header: UiModel.Header<Sticker>) {
+        override fun bindHeader(
+            header: UiModel.Header<Sticker>,
+            adapter: AbstractAdapter<Sticker>,
+            position: Int
+        ) {
             binding.textitem.text = header.text
         }
 
@@ -226,8 +230,8 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            if (loadMore.itemInheritingAbstractClassAbove != null) {
-                loadMore.visible = !loadMore.itemInheritingAbstractClassAbove.isLastItem
+            if (loadMore.baseModelItemAbove != null) {
+                loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
             }
             binding.loadMore.isVisible = loadMore.visible
         }

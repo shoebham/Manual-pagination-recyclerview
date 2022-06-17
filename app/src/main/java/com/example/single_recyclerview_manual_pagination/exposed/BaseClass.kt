@@ -1,8 +1,5 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
-import com.example.single_recyclerview_manual_pagination.exposed.BaseModelOfItem
-import com.example.single_recyclerview_manual_pagination.exposed.Category
-import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 
 
@@ -22,7 +19,7 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
             }
             tempUiModelList.add(
                 UiModel.LoadMore(
-                    itemInheritingAbstractClassAbove = item.baseModelOfItemList.last(),
+                    baseModelItemAbove = item.baseModelOfItemList.last(),
                     id = item.id,
                     visible = item.isViewMoreVisible
                 )
