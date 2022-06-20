@@ -1,11 +1,13 @@
 package com.example.***REMOVED***_vertical_scroll_stickers.tabSync
 
 import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
+import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 
@@ -26,7 +28,9 @@ class TabbedListMediator(
     private val mTabLayout: TabLayout,
     private var mIndices: Map<Int, Int>,
     private var countMap: HashMap<String, Int>,
-    private var mIsSmoothScroll: Boolean = false
+    private var mIsSmoothScroll: Boolean = false,
+    private var viewModel: MainActivityViewModel,
+    scrollToCategory: (Int) -> Int
 ) {
 
     private var mIsAttached = false
@@ -139,24 +143,20 @@ class TabbedListMediator(
 
     private val onTabSelectedListener = object : OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-//            if (!mTabClickFlag) return
-//            val position = tab.position
-//            if (mIsSmoothScroll) {
-////                Log.i(
-////                    "countmap",
-////                    "position=${position} mIndices[position]=${mIndices[position]} getCountTill(position):${
-////                        getCountTill(position)
-////                    }"
-////                )
-//                smoothScroller.targetPosition = getCountTill(position)
-//                mRecyclerView.layoutManager?.startSmoothScroll(smoothScroller)
-//            } else {
-//                (mRecyclerView.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
-//                    getCountTill(position),
-//                    0
-//                )
-//                mTabClickFlag = false
-//            }
+            if (!mTabClickFlag) return
+            val position = tab.position
+            val id = viewModel.stickerPacks.value!!.stickerPacks[position].id
+            Log.i("tabbed", "id$id")
+            if (mIsSmoothScroll) {
+                smoothScroller.targetPosition = scrollToCategory(id)
+                mRecyclerView.layoutManager?.startSmoothScroll(smoothScroller)
+            } else {
+                (mRecyclerView.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
+                    scrollToCategory(id),
+                    0
+                )
+                mTabClickFlag = false
+            }
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}

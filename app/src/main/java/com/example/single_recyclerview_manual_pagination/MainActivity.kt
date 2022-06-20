@@ -177,20 +177,20 @@ class MainActivity : AppCompatActivity(), ApiInterface {
                 binding.tabs.addTab(binding.tabs.newTab().setText(category.name))
             }
         }
-        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                val position = tab.position
-                val id = viewModel.stickerPacks.value!!.stickerPacks[position].id
-                (binding.recyclerview.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
-                    scrollToCategory(id),
-                    0
-                )
-
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+//        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabSelected(tab: TabLayout.Tab) {
+//                val position = tab.position
+//                val id = viewModel.stickerPacks.value!!.stickerPacks[position].id
+//                (binding.recyclerview.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
+//                    scrollToCategory(id),
+//                    0
+//                )
+//
+//            }
+//
+//            override fun onTabUnselected(tab: TabLayout.Tab) {}
+//            override fun onTabReselected(tab: TabLayout.Tab) {}
+//        })
     }
 
 
@@ -203,8 +203,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
     private fun initRecyclerView() {
 //        adapter = CustomAdapter(baseClass)
 //        adapter.setHasStableIds(true)
-        adapter.stateRestorationPolicy =
-            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -217,7 +216,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
             }
         })
         binding.recyclerview.itemAnimator = null
-        recyclerViewState = binding.recyclerview.getLayoutManager()?.onSaveInstanceState()!!;
+
     }
 
     /**
@@ -229,7 +228,10 @@ class MainActivity : AppCompatActivity(), ApiInterface {
             binding.recyclerview,
             binding.tabs,
             indicesList,
-            countMap, false
+            countMap,
+            false,
+            viewModel,
+            ::scrollToCategory
         )
         tabbedListMediator.attach()
 
@@ -239,12 +241,13 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         lifecycleScope.launch {
             viewModel.getStickersWithOffset(baseClass, id, offset, limit).collectLatest {
                 adapter.submitList(it)
-                binding.recyclerview.getLayoutManager()?.onRestoreInstanceState(recyclerViewState);
+
             }
         }
     }
 
-    override fun scrollToCategory(id: Int): Int {
+    override fun scrollToCategory(id: Int?): Int {
+        Log.i("scrolltocategory", "here $id")
         for ((i, item) in baseClass.uiModelList.withIndex()) {
             if (item is UiModel.Header) {
                 if (item.category?.id == id)
