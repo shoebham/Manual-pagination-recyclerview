@@ -54,22 +54,12 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         val emptyListOfCategory = CategoryInheritingAbstractClass()
         val tempList = MutableList(10) { emptyListOfCategory }
         baseClass = BaseClass(tempList)
-//        baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
+
         adapter = demoAdapter(baseClass, this)
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
 
-//        val templist2 = mutableListOf<StickerUiModel>()
-//        val temp = baseClass.convertToUiModelList(tempList)
 
-
-//        for(l in tempList){
-//            uimodellist.add(UiModel.Header(l.name))
-//            for(item in l.itemList) {
-//                item.category=l
-//                uimodellist.add(UiModel.Item(item))
-//            }
-//        }
         val uimodellist = baseClass.convertToUiModel()
         adapter.submitList(uimodellist)
 //        adapter.setApiListener(this)
@@ -92,65 +82,17 @@ class MainActivity : AppCompatActivity(), ApiInterface {
             initItems()
             initTabLayout()
             initMediator()
-//            binding.recyclerview.layoutManager.
-//            viewModel.categoryList.observe(this) { it ->
-//                Log.i("shubham", "data received")
-//                baseClass = BaseClass<Sticker>(it)
-//                val templist = mutableListOf<UiModel<Sticker>>()
-//                var total = 0
-//                val newList = mutableListOf<Category<Sticker>>()
-//                it.forEach { it2 ->
-//                    newList.add(
-//                        Category(
-//                            id = it2.id,
-//                            name = it2.name,
-//                            initialCount = it2.initialCount,
-//                            itemList = it2.itemList,
-//                            currentCount = it2.currentCount,
-//                            isViewMoreVisible = it2.isViewMoreVisible
-//                        )
-//                    )
-//                }
-////                val bannerList = listOf<Banner>(
-////                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
-////                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg"),
-////                    Banner("https://business.amazon.com/assets/global/images/success-stories/images/hero/hero-customer-success-stories-uber.png.transform/2880x960/image.jpg")
-////                )
-//
-//                val listContainer = listContainer<Sticker>()
-//                listContainer.listOfItems = newList
-//                baseClass.submitList(listContainer, BaseClass.Item_type.ITEM)
-////                listContainer.listOfBanner=bannerList
-////                baseClass.submitList(listContainer,BaseClass.Item_type.BANNER)
-//
-//                adapter.submitList(baseClass.mainList)
-//
-//
-////                adapter.dataSet=baseClass
-//
-//            }
+
         })
 
 
     }
 
-//    fun convertToBaseModel(stickers: Stickers): List<BaseModelOfItem<Sticker>> {
-//        val baseModelList = mutableListOf<BaseModelOfItem<Sticker>>()
-//        stickers.items.forEach {
-//            baseModelList.add(BaseModelOfItem(it))
-//        }
-//        return baseModelList
-//    }
-
     fun initItems() {
         baseClass.listOfItems = viewModel.categoryInheritingAbstractClassList.value!!
         val temp = baseClass.convertToUiModel()
         adapter.submitList(temp)
-//        lifecycleScope.launch {
-//            viewModel.getStickersInitially().collectLatest {
-//                adapter.submitList(it)
-//            }
-//        }
+
     }
 
     fun getCount() {
@@ -177,20 +119,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
                 binding.tabs.addTab(binding.tabs.newTab().setText(category.name))
             }
         }
-//        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-//            override fun onTabSelected(tab: TabLayout.Tab) {
-//                val position = tab.position
-//                val id = viewModel.stickerPacks.value!!.stickerPacks[position].id
-//                (binding.recyclerview.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
-//                    scrollToCategory(id),
-//                    0
-//                )
-//
-//            }
-//
-//            override fun onTabUnselected(tab: TabLayout.Tab) {}
-//            override fun onTabReselected(tab: TabLayout.Tab) {}
-//        })
+
     }
 
 
@@ -201,9 +130,8 @@ class MainActivity : AppCompatActivity(), ApiInterface {
      */
     lateinit var recyclerViewState: Parcelable
     private fun initRecyclerView() {
-//        adapter = CustomAdapter(baseClass)
-//        adapter.setHasStableIds(true)
-
+        adapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -216,7 +144,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
             }
         })
         binding.recyclerview.itemAnimator = null
-
+        recyclerViewState = binding.recyclerview.getLayoutManager()?.onSaveInstanceState()!!;
     }
 
     /**
@@ -241,6 +169,8 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         lifecycleScope.launch {
             viewModel.getStickersWithOffset(baseClass, id, offset, limit).collectLatest {
                 adapter.submitList(it)
+                binding.recyclerview.getLayoutManager()?.onRestoreInstanceState(recyclerViewState);
+
 
             }
         }

@@ -1,6 +1,8 @@
 package com.example.single_recyclerview_manual_pagination.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -16,29 +18,64 @@ import com.example.single_recyclerview_manual_pagination.exposed.LoadMoreViewHol
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
+
 
 class Viewholders {
 
+    companion object {
+        private var count = AtomicInteger(0)
+    }
 
     class StickerViewHolder(private val binding: ItemsBinding) : ItemViewHolder<Sticker>(binding) {
+
         companion object {
             fun from(parent: ViewGroup): StickerViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ItemsBinding.inflate(layoutInflater, parent, false)
                 return StickerViewHolder(binding)
             }
+
+            var colorList = MutableList<ColorDrawable?>(10000) { null }
+
         }
 
+        private fun getRandomDrawableColor(position: Int): ColorDrawable {
+            if (colorList[position] == null) {
+                Log.i("colors", "${count.incrementAndGet()}")
+                val idx = Random().nextInt(vibrantLightColorList.size)
+                val rnd = Random()
+                val color = ColorDrawable(
+                    Color.argb(
+                        255,
+                        rnd.nextInt(255),
+                        rnd.nextInt(255),
+                        rnd.nextInt(255)
+                    )
+                )
+                colorList[position] = color
+            }
+            return colorList[position]!!
+        }
+
+        private val vibrantLightColorList = arrayOf(
+            ColorDrawable(Color.parseColor("#9ACCCD")), ColorDrawable(Color.parseColor("#8FD8A0")),
+            ColorDrawable(Color.parseColor("#CBD890")), ColorDrawable(Color.parseColor("#DACC8F")),
+            ColorDrawable(Color.parseColor("#D9A790")), ColorDrawable(Color.parseColor("#D18FD9")),
+            ColorDrawable(Color.parseColor("#FF6772")), ColorDrawable(Color.parseColor("#DDFB5C"))
+        )
+
+        //        val color=getRandomDrawableColor()
         override fun showPlaceholder(
             item: UiModel.Item<Sticker>,
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            Glide.with(binding.root.context).load(R.drawable.placeholder)
+            Glide.with(binding.root.context).load(getRandomDrawableColor(position))
                 .into(binding.itemImageView)
             val rnd = Random()
             val color = Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255))
-            binding.itemImageView.setColorFilter(color)
+//            binding.itemImageView.setColorFilter(color)
         }
 
         override fun showItem(
@@ -48,9 +85,10 @@ class Viewholders {
         ) {
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
-                .placeholder(R.drawable.placeholder).into(binding.itemImageView)
-            binding.itemImageView.setColorFilter(null)
+                .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
+//            binding.itemImageView.setColorFilter(null)
         }
+
 
 //        fun bind(sticker: UiModel.Item<Sticker>, adapter: CustomAdapter<Sticker>, position: Int) {
 //            if (sticker.baseModelOfItemInheritingAbstractClass.item == null) {
