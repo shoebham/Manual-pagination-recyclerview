@@ -1,6 +1,7 @@
 package com.example.single_recyclerview_manual_pagination
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -19,6 +20,7 @@ import com.example.single_recyclerview_manual_pagination.databinding.ActivityMai
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.*
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -175,17 +177,21 @@ class MainActivity : AppCompatActivity(), ApiInterface {
                 binding.tabs.addTab(binding.tabs.newTab().setText(category.name))
             }
         }
-//        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-//            override fun onTabSelected(tab: TabLayout.Tab) {
-//                val position = tab.position
-//                viewModel.getTabPosition().postValue(position)
-//            }
-//
-//            override fun onTabUnselected(tab: TabLayout.Tab) {}
-//            override fun onTabReselected(tab: TabLayout.Tab) {}
-//        })
-    }
+        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                val position = tab.position
+                val id = viewModel.stickerPacks.value!!.stickerPacks[position].id
+                (binding.recyclerview.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
+                    scrollToCategory(id),
+                    0
+                )
 
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+    }
 
 
     /**
@@ -193,11 +199,12 @@ class MainActivity : AppCompatActivity(), ApiInterface {
      * and also appends loader at the end of list
      *
      */
+    lateinit var recyclerViewState: Parcelable
     private fun initRecyclerView() {
 //        adapter = CustomAdapter(baseClass)
 //        adapter.setHasStableIds(true)
-//        adapter.stateRestorationPolicy =
-//            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        adapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = GridLayoutManager(this, 3)
         (binding.recyclerview.layoutManager as GridLayoutManager).setSpanSizeLookup(object :
@@ -210,8 +217,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
             }
         })
         binding.recyclerview.itemAnimator = null
-
-
+        recyclerViewState = binding.recyclerview.getLayoutManager()?.onSaveInstanceState()!!;
     }
 
     /**
@@ -233,8 +239,19 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         lifecycleScope.launch {
             viewModel.getStickersWithOffset(baseClass, id, offset, limit).collectLatest {
                 adapter.submitList(it)
+                binding.recyclerview.getLayoutManager()?.onRestoreInstanceState(recyclerViewState);
             }
         }
+    }
+
+    override fun scrollToCategory(id: Int): Int {
+        for ((i, item) in baseClass.uiModelList.withIndex()) {
+            if (item is UiModel.Header) {
+                if (item.category?.id == id)
+                    return i
+            }
+        }
+        return 0
     }
 
 //    override fun <T> convertToUiModel(

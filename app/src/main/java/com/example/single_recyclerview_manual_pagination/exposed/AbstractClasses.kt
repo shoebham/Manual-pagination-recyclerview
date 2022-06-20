@@ -23,6 +23,7 @@ open class BaseModelOfItem<T>(
     open var isLoadMoreClicked: Boolean = false
 )
 
+
 abstract class Banner {
 }
 

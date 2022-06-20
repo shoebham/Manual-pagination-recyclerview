@@ -46,10 +46,10 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            binding.itemImageView.setColorFilter(null)
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                 .placeholder(R.drawable.placeholder).into(binding.itemImageView)
+            binding.itemImageView.setColorFilter(null)
         }
 
 //        fun bind(sticker: UiModel.Item<Sticker>, adapter: CustomAdapter<Sticker>, position: Int) {
@@ -159,7 +159,7 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            binding.textitem.text = header.text
+            binding.textitem.text = header.category?.name
         }
 
     }

@@ -139,24 +139,24 @@ class TabbedListMediator(
 
     private val onTabSelectedListener = object : OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            if (!mTabClickFlag) return
-            val position = tab.position
-            if (mIsSmoothScroll) {
-//                Log.i(
-//                    "countmap",
-//                    "position=${position} mIndices[position]=${mIndices[position]} getCountTill(position):${
-//                        getCountTill(position)
-//                    }"
+//            if (!mTabClickFlag) return
+//            val position = tab.position
+//            if (mIsSmoothScroll) {
+////                Log.i(
+////                    "countmap",
+////                    "position=${position} mIndices[position]=${mIndices[position]} getCountTill(position):${
+////                        getCountTill(position)
+////                    }"
+////                )
+//                smoothScroller.targetPosition = getCountTill(position)
+//                mRecyclerView.layoutManager?.startSmoothScroll(smoothScroller)
+//            } else {
+//                (mRecyclerView.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
+//                    getCountTill(position),
+//                    0
 //                )
-                smoothScroller.targetPosition = getCountTill(position)
-                mRecyclerView.layoutManager?.startSmoothScroll(smoothScroller)
-            } else {
-                (mRecyclerView.layoutManager as GridLayoutManager?)?.scrollToPositionWithOffset(
-                    getCountTill(position),
-                    0
-                )
-                mTabClickFlag = false
-            }
+//                mTabClickFlag = false
+//            }
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}

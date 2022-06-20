@@ -11,10 +11,10 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
         newItem: UiModel<Sticker>
     ): Boolean {
         val returnValue =
-            (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
-                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
+            (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem.item?.id == newItem.baseModelOfItem.item?.id) ||
+                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category?.name == newItem.category?.name)
         return returnValue
-        return (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
+        return (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category == newItem.category)
     }
 
     override fun areContentsTheSame(
@@ -23,7 +23,7 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
     ): Boolean {
         val returnValue =
             (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
-                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.text == newItem.text)
+                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category?.name == newItem.category?.name)
 //        Log.i("diffutil", "areContentsTheSame() ${returnValue} ");
 
 

@@ -24,8 +24,6 @@ class demoAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        // Use peek over getItem to avoid triggering page fetch / drops, since
-        // recycling views is not indicative of the user's current scroll position.
         return when (currentList()[position]) {
             is UiModel.Header -> -1
             is UiModel.LoadMore -> 0
