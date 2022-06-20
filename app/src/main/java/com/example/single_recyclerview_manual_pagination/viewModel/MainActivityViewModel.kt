@@ -2,6 +2,7 @@ package com.example.***REMOVED***_vertical_scroll_stickers.viewModel
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
@@ -37,9 +38,9 @@ class MainActivityViewModel(
         (repository.listOfCategory)
 
     private var _count = MutableLiveData<Int>()
-    val count: LiveData<Int> = liveData {
-        emit(repository.getCount(stickerPacks.value!!))
-    }
+//    val count: LiveData<Int> = liveData {
+//        emit(repository.getCount(stickerPacks.value!!))
+//    }
 
     private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
     val individualCount: LiveData<LinkedHashMap<String, Int>> = repository.tempHashMap
@@ -92,10 +93,9 @@ class MainActivityViewModel(
 //            for (item in repository.listOfCategory.value!!) {
 //                uiModelList.add(UiModel.Header(item.name))
 //            baseClass.listOfItems=repository.listOfCategory.value!!
-            repository.getStickers(id, offset, limit)
-                .collectLatest { it ->
-                    baseClass.replacePlaceholders(baseClass, it, id, offset, limit)
-                }
+            repository.getStickers(id, offset, limit).collectLatest {
+                baseClass.replacePlaceholders(baseClass, it, id, offset, limit)
+            }
             val uiModelList = baseClass.convertToUiModel()
             emit(uiModelList)
         }

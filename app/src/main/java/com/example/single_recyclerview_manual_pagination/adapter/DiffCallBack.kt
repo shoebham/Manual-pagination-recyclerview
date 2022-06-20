@@ -1,6 +1,7 @@
 package com.example.single_recyclerview_manual_pagination.adapter
 
 import androidx.recyclerview.widget.DiffUtil
+import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 
@@ -10,9 +11,17 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
         oldItem: UiModel<Sticker>,
         newItem: UiModel<Sticker>
     ): Boolean {
-        val returnValue =
+        var returnValue =
             (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem.item?.id == newItem.baseModelOfItem.item?.id) ||
-                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category?.name == newItem.category?.name)
+                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category == newItem.category)
+        if (oldItem is UiModel.Item && newItem is UiModel.Item) {
+            if (oldItem.baseModelOfItem.item == null && newItem.baseModelOfItem.item == null) {
+                if (oldItem.baseModelOfItem.state == State.ERROR || newItem.baseModelOfItem.state == State.ERROR) {
+                    returnValue =
+                        returnValue && oldItem.baseModelOfItem.state == newItem.baseModelOfItem.state
+                }
+            }
+        }
         return returnValue
         return (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category == newItem.category)
     }
@@ -21,9 +30,15 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
         oldItem: UiModel<Sticker>,
         newItem: UiModel<Sticker>
     ): Boolean {
-        val returnValue =
+        var returnValue =
             (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem?.item?.id == newItem.baseModelOfItem?.item?.id) ||
-                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category?.name == newItem.category?.name)
+                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category?.id == newItem.category?.id)
+        if (oldItem is UiModel.Item && newItem is UiModel.Item) {
+            if (oldItem.baseModelOfItem.item == null && newItem.baseModelOfItem.item == null) {
+                returnValue =
+                    returnValue && oldItem.baseModelOfItem.state == newItem.baseModelOfItem.state
+            }
+        }
 //        Log.i("diffutil", "areContentsTheSame() ${returnValue} ");
 
 

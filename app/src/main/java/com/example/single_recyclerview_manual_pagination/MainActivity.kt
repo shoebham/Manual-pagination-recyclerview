@@ -96,12 +96,12 @@ class MainActivity : AppCompatActivity(), ApiInterface {
     }
 
     fun getCount() {
-        viewModel.count.observe(this, Observer { it ->
-            countOfStickers = it
-        })
-        viewModel.individualCount.observe(this) {
-            countMap.putAll(it)
-        }
+//        viewModel.count.observe(this, Observer { it ->
+//            countOfStickers = it
+//        })
+//        viewModel.individualCount.observe(this) {
+//            countMap.putAll(it)
+//        }
         Log.i("mainactivityy", "countofstickers${countOfStickers} ${countMap.size}")
         for (key in countMap.keys) {
             Log.i("countmap", "key:${key} value:${countMap.get(key)}")

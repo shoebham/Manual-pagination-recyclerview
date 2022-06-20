@@ -1,5 +1,7 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
+import android.util.Log
+import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 
 
@@ -38,14 +40,17 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
         val category = listOfItems.find { it.id == id }
         val itemlist = category?.baseModelOfItemList?.toMutableList()
         if (itemlist != null && itemlist[0].item == null) {
-            listOfItems.find { it.id == id }?.baseModelOfItemList =
-                it
+            listOfItems.find { it.id == id }?.baseModelOfItemList = it
         } else {
             if (itemlist != null) {
                 for ((i, item) in it.withIndex()) {
+
                     itemlist[offset!!.toInt() + i - 1] = item
                 }
                 itemlist.removeAll { it.item == null }
+                for (item in itemlist) {
+                    item.state = State.LOADED
+                }
                 category.baseModelOfItemList = itemlist
                 if (it.isEmpty()) category.baseModelOfItemList.last().isLastItem = true
             }

@@ -8,6 +8,8 @@ import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
 import com.example.single_recyclerview_manual_pagination.models.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.lang.Exception
 
 class Repository private constructor() {
 
@@ -19,7 +21,7 @@ class Repository private constructor() {
         }
     }
 
-//    private var _stickerPacks = MutableLiveData<StickerPacks>()
+    //    private var _stickerPacks = MutableLiveData<StickerPacks>()
 //    val stickerPacks = _stickerPacks
 //
 //    private var _categoryList = MutableLiveData<List<Category>>()
@@ -30,7 +32,7 @@ class Repository private constructor() {
 //    private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
 //    val individualCount = _individualCount
 //
-val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
+    val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
     val listOfCategory = MutableLiveData<MutableList<CategoryInheritingAbstractClass>>()
 
     fun getlist(): MutableLiveData<MutableList<CategoryInheritingAbstractClass>> {
@@ -73,18 +75,37 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
         return flow {
             val tempBaseModelItemList =
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
+            try {
 //            for(item in list){
-            val res = getStickersWithOffset(id, offset, limit)
-            for ((i, item) in res.items.withIndex()) {
-                tempBaseModelItemList.add(
-                    BaseModelOfItemInheritingAbstractClass(
-                        item,
-                        categoryBasedPosition = offset!!.toInt() + i,
-                        state = State.LOADED,
-                        isLastItem = res.items.size < limit!!
-                    )
+                if (id == 405) throw(Exception())
+                val res = NetworkLayer.retrofitService.getStickers(
+                    id = id,
+                    limit = limit,
+                    offset = offset
                 )
+                for ((i, item) in res.items.withIndex()) {
+                    tempBaseModelItemList.add(
+                        BaseModelOfItemInheritingAbstractClass(
+                            item,
+                            categoryBasedPosition = offset!!.toInt() + i,
+                            state = State.LOADED,
+                            isLastItem = res.items.size < limit!!
+                        )
+                    )
+                }
+            } catch (exception: Exception) {
+                Log.i("repository", "Exception:$exception")
+                for (i in 0 until limit!!) {
+                    tempBaseModelItemList.add(
+                        BaseModelOfItemInheritingAbstractClass(
+                            null,
+                            categoryBasedPosition = offset!!.toInt() + i,
+                            state = State.ERROR
+                        )
+                    )
+                }
             }
+
 //            res.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
 //            }
             emit(tempBaseModelItemList)
@@ -93,15 +114,17 @@ val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
 //        return itemList.items
     }
 
+    //    lateinit var res:Stickers
     suspend fun getStickersWithOffset(id: Int, offset: String?, limit: Int?): Stickers {
-        val res = NetworkLayer.retrofitService.getStickers(id = id, limit = limit, offset = offset)
+        var res = Stickers(emptyList(), "1")
+        try {
+//            if(id==405)throw(Exception())
+            res = NetworkLayer.retrofitService.getStickers(id = id, limit = limit, offset = offset)
+        } catch (exception: Exception) {
+            res = Stickers(emptyList(), "error")
+            Log.i("repository", "$exception res:${res}")
+        }
 
-//
-//        listOfCategory.value!!.find {it.id==id }?.itemList = tempBaseModelItemList
-//        listOfCategory.value!!.find {it.id==id }?.currentCount = res.items.size
-//        listOfCategory.value!!.find {it.id==id }?.initialCount = res.items.size
-//        listOfCategory.postValue(listOfCategory.value!!)
-//        Log.i("repository", "${listOfCategory.value}")
         return res
     }
 

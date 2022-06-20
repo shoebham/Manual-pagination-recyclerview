@@ -65,7 +65,7 @@ class Viewholders {
             ColorDrawable(Color.parseColor("#FF6772")), ColorDrawable(Color.parseColor("#DDFB5C"))
         )
 
-        //        val color=getRandomDrawableColor()
+
         override fun showPlaceholder(
             item: UiModel.Item<Sticker>,
             adapter: AbstractAdapter<Sticker>,
@@ -86,7 +86,6 @@ class Viewholders {
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
-//            binding.itemImageView.setColorFilter(null)
         }
 
 

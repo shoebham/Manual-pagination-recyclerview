@@ -2,6 +2,7 @@ package com.example.single_recyclerview_manual_pagination.exposed
 
 import android.util.Log
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
@@ -28,11 +29,12 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
     private fun bindItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
         Log.i("onbind", "position: $position Item: $item")
         if (item.baseModelOfItem.item == null) {
-
+            binding.retry.isVisible = false
+            binding.itemImageView.isVisible = true
             showPlaceholder(item, adapter, position)
-
-
             if (item.baseModelOfItem.state == State.NOT_LOADING) {
+                binding.retry.isVisible = false
+                binding.itemImageView.isVisible = true
                 if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
                     if (!item.baseModelOfItem.isLoadMoreClicked) {
                         callApiAndMarkItemsAsLoading(
@@ -63,7 +65,14 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                     }
                 }
             }
+            if (item.baseModelOfItem.state == State.ERROR) {
+                Log.i("bindItem", "here")
+                binding.retry.isVisible = true
+                binding.itemImageView.isVisible = false
+            }
         } else if (item.baseModelOfItem.state == State.LOADED) {
+            binding.retry.isVisible = false
+            binding.itemImageView.isVisible = true
             showItem(item, adapter, position)
         }
     }
@@ -81,20 +90,21 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
             "callApiAndMarkItems",
             "${count.incrementAndGet()} position${position} offset${offset}"
         )
+        val category =
+            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
+        if (category != null) {
+            for (items in category.baseModelOfItemList) {
+                items.isLoadMoreClicked = isLoadMoreClicked
+                items.state = State.LOADING
+            }
+        }
         var i = position
         adapter.apiInterface.getItemsWithOffset(
             id,
             offset,
             limit
         )
-        val category =
-            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
-        if (category != null) {
-            for (items in category.baseModelOfItemList) {
-                items.state = State.LOADED
-                items.isLoadMoreClicked = isLoadMoreClicked
-            }
-        }
+
     }
 
     abstract fun showPlaceholder(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int)
