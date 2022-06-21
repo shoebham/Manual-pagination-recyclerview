@@ -15,6 +15,7 @@ import com.example.single_recyclerview_manual_pagination.exposed.AbstractAdapter
 import com.example.single_recyclerview_manual_pagination.exposed.HeaderViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.ItemViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.LoadMoreViewHolder
+import com.example.single_recyclerview_manual_pagination.models.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.models.UiModel
 import java.util.*
@@ -268,7 +269,12 @@ class Viewholders {
             position: Int
         ) {
             if (loadMore.baseModelItemAbove != null) {
-                loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
+                if (loadMore.baseModelItemAbove.state == State.ERROR) {
+                    binding.loadMore.isEnabled = false
+                } else {
+                    loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
+                    binding.loadMore.isEnabled = true
+                }
             }
             binding.loadMore.isVisible = loadMore.visible
         }

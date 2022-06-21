@@ -68,7 +68,23 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
             if (item.baseModelOfItem.state == State.ERROR) {
                 Log.i("bindItem", "here")
                 binding.retry.isVisible = true
-                binding.itemImageView.isVisible = false
+//                binding.itemImageView.isVisible = false
+                binding.retry.setOnClickListener {
+                    binding.retry.isVisible = false
+                    binding.itemImageView.isVisible = true
+                    callApiAndMarkItemsAsLoading(
+                        adapter = adapter,
+                        position = position,
+                        id = item.baseModelOfItem.category?.id!!,
+                        offset = (item.baseModelOfItem.categoryBasedPosition.plus(
+                            1
+                        )).toString(),
+                        limit = item.baseModelOfItem.category?.initialCount!!,
+                        item = item,
+                        isLoadMoreClicked = false
+                    )
+
+                }
             }
         } else if (item.baseModelOfItem.state == State.LOADED) {
             binding.retry.isVisible = false

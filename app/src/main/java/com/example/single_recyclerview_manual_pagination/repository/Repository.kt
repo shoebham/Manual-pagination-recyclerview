@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.lang.Exception
+import java.util.concurrent.atomic.AtomicInteger
 
 class Repository private constructor() {
 
@@ -19,6 +20,9 @@ class Repository private constructor() {
         fun getInstance() = instance ?: synchronized(this) {
             instance ?: Repository().also { instance = it }
         }
+
+        private val count = AtomicInteger(0)
+
     }
 
     //    private var _stickerPacks = MutableLiveData<StickerPacks>()
@@ -77,12 +81,12 @@ class Repository private constructor() {
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
 //            for(item in list){
-                if (id == 405) throw(Exception())
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,
                     offset = offset
                 )
+                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
                 for ((i, item) in res.items.withIndex()) {
                     tempBaseModelItemList.add(
                         BaseModelOfItemInheritingAbstractClass(
