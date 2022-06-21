@@ -37,13 +37,13 @@ class Viewholders {
                 return StickerViewHolder(binding)
             }
 
-            var colorList = MutableList<ColorDrawable?>(10000) { null }
-
+//            var colorList = MutableList<ColorDrawable?>(10000) { null }
+var colorMap = HashMap<Int, ColorDrawable>()
         }
 
         private fun getRandomDrawableColor(position: Int): ColorDrawable {
-            if (colorList[position] == null) {
-                Log.i("colors", "${count.incrementAndGet()}")
+            if (colorMap.get(position) == null) {
+//                Log.i("colors", "${count.incrementAndGet()}")
                 val idx = Random().nextInt(vibrantLightColorList.size)
                 val rnd = Random()
                 val color = ColorDrawable(
@@ -54,9 +54,9 @@ class Viewholders {
                         rnd.nextInt(255)
                     )
                 )
-                colorList[position] = color
+                colorMap.put(position, color)
             }
-            return colorList[position]!!
+            return colorMap[position]!!
         }
 
         private val vibrantLightColorList = arrayOf(
@@ -72,10 +72,16 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            Glide.with(binding.root.context).load(getRandomDrawableColor(position))
+            Log.i(
+                "stickerviewholder",
+                " placeholder position:${position} getRandomDrawableColor(position)${
+                    getRandomDrawableColor(position)
+                } "
+            )
+            Glide.with(binding.root.context)
+                .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
+                .placeholder(getRandomDrawableColor(position))
                 .into(binding.itemImageView)
-            val rnd = Random()
-            val color = Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255))
 //            binding.itemImageView.setColorFilter(color)
         }
 
@@ -84,92 +90,17 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
+            Log.i(
+                "stickerviewholder",
+                "item position:${position} getRandomDrawableColor(position)${
+                    getRandomDrawableColor(position)
+                } "
+            )
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
         }
 
-
-//        fun bind(sticker: UiModel.Item<Sticker>, adapter: CustomAdapter<Sticker>, position: Int) {
-//            if (sticker.baseModelOfItemInheritingAbstractClass.item == null) {
-////                Glide.with(binding.root.context).load(R.drawable.placeholder)
-//////                    .into(binding.itemImageView)
-////                Glide.with(binding.root.context).load(R.drawable.placeholder)
-////                    .into(binding.itemImageView)
-////                val rnd = Random()
-////                val color = Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255))
-////                binding.itemImageView.setColorFilter(color)
-////                sticker.baseModelOfItem.state = State.LOADING
-//
-//                if (sticker.baseModelOfItemInheritingAbstractClass.state == State.NOT_LOADING && !sticker.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
-//                    if (sticker.baseModelOfItemInheritingAbstractClass.category != null && sticker.baseModelOfItemInheritingAbstractClass.category?.id != null) {
-//                        callBindOnVisibleScreen(
-//                            adapter, position,
-//                            id = sticker.baseModelOfItemInheritingAbstractClass.category?.id!!,
-//                            offset = (sticker.baseModelOfItemInheritingAbstractClass.categoryBasedPosition?.plus(
-//                                1
-//                            )).toString(),
-//                            limit = sticker.baseModelOfItemInheritingAbstractClass.category?.initialCount!!
-//                        )
-////                        for (i in position until position + sticker.baseModelOfItem.category?.initialCount!!) {
-////                            if (adapter.differ.currentList[i] is UiModel.Item) {
-////                                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-////                                    State.LOADING
-////                            }
-////                        }
-//                        sticker.baseModelOfItemInheritingAbstractClass.state = State.LOADING
-//                    }
-//                } else if (sticker.baseModelOfItemInheritingAbstractClass.isLoadMoreClicked) {
-//                    val category =
-//                        adapter.dataset.listOfItems.find { it.id == sticker.baseModelOfItemInheritingAbstractClass.category?.id }
-//                    if (sticker.baseModelOfItemInheritingAbstractClass.state == State.NOT_LOADING) {
-//                        callBindOnVisibleScreen(
-//                            adapter, position,
-//                            id = category?.id!!,
-//                            offset = (sticker.baseModelOfItemInheritingAbstractClass.categoryBasedPosition?.plus(
-//                                1
-//                            )).toString(),
-//                            limit = category.itemsToLoadAfterViewMore
-//                        )
-//                        var i = position
-//                        while (adapter.differ.currentList[i] is UiModel.Item) {
-//                            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.isLoadMoreClicked =
-//                                true
-//                            (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.state =
-//                                State.LOADING
-//                            i++
-//                        }
-//                    }
-//                }
-//            } else if (sticker.baseModelOfItemInheritingAbstractClass.state == State.LOADED) {
-//                Glide.with(binding.root.context)
-//                    .load(sticker.baseModelOfItemInheritingAbstractClass.item?.fixedWidthFull?.png?.url)
-//                    .placeholder(R.drawable.placeholder).into(binding.itemImageView)
-//                binding.itemImageView.setColorFilter(null)
-////                sticker.baseModelOfItem.state = State.LOADED
-//            }
-//        }
-
-//        fun callBindOnVisibleScreen(
-//            adapter: CustomAdapter<Sticker>,
-//            position: Int,
-//            id: Int,
-//            offset: String,
-//            limit: Int
-//        ) {
-//            adapter.apiInterface.getItemsWithOffset(
-//                id,
-//                offset,
-//                limit
-//            )
-//            var i = position
-//            while (adapter.differ.currentList[i] is UiModel.Item) {
-//                (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItemInheritingAbstractClass.state =
-//                    State.LOADING
-//                i++
-//            }
-//
-//        }
 
         fun bindBanner(item: UiModel.Banner<Sticker>) {
             Glide.with(binding.root.context)
@@ -197,7 +128,7 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            binding.textitem.text = header.category?.name
+            binding.textitem.text = header.category.name
         }
 
     }

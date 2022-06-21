@@ -33,8 +33,6 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
             binding.itemImageView.isVisible = true
             showPlaceholder(item, adapter, position)
             if (item.baseModelOfItem.state == State.NOT_LOADING) {
-                binding.retry.isVisible = false
-                binding.itemImageView.isVisible = true
                 if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
                     if (!item.baseModelOfItem.isLoadMoreClicked) {
                         callApiAndMarkItemsAsLoading(
@@ -67,12 +65,11 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
             }
             if (item.baseModelOfItem.state == State.ERROR) {
                 Log.i("bindItem", "here")
-                binding.retry.isVisible = true
+
 //                binding.itemImageView.isVisible = false
                 binding.retry.setOnClickListener {
-                    binding.retry.isVisible = false
-                    binding.itemImageView.isVisible = true
-                    callApiAndMarkItemsAsLoading(
+
+                callApiAndMarkItemsAsLoading(
                         adapter = adapter,
                         position = position,
                         id = item.baseModelOfItem.category?.id!!,
@@ -111,7 +108,7 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
         if (category != null) {
             for (items in category.baseModelOfItemList) {
                 items.isLoadMoreClicked = isLoadMoreClicked
-                items.state = State.LOADING
+                items.state = State.LOADED
             }
         }
         var i = position

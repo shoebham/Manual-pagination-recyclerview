@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         baseClass.listOfItems = viewModel.categoryInheritingAbstractClassList.value!!
         val temp = baseClass.convertToUiModel()
         adapter.submitList(temp)
-
     }
 
     fun getCount() {

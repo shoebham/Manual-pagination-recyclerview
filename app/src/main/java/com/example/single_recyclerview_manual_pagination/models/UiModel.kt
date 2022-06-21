@@ -8,7 +8,7 @@ sealed class UiModel<T>() {
     class Item<T>(val baseModelOfItem: BaseModelOfItem<T>) :
         UiModel<T>()
 
-    class Header<T>(val category: Category<T>?) : UiModel<T>()
+    class Header<T>(val category: Category<T>) : UiModel<T>()
     class Banner<T>(val url: String) : UiModel<T>()
     class LoadMore<T>(
         val id: Int? = null,

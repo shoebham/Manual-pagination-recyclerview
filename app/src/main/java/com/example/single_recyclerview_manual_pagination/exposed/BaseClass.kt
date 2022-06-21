@@ -37,8 +37,11 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
         offset: String?,
         limit: Int?
     ) {
+
         val category = listOfItems.find { it.id == id }
+
         val itemlist = category?.baseModelOfItemList?.toMutableList()
+
         if (itemlist != null && itemlist[0].item == null) {
             listOfItems.find { it.id == id }?.baseModelOfItemList = it
         } else {
