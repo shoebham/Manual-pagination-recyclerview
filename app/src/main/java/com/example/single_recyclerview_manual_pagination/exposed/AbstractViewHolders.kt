@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
-import com.example.single_recyclerview_manual_pagination.models.State
-import com.example.single_recyclerview_manual_pagination.models.UiModel
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {

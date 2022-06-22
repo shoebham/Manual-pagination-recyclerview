@@ -1,10 +1,9 @@
 package com.example.single_recyclerview_manual_pagination.adapter
 
-import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
-import com.example.single_recyclerview_manual_pagination.models.State
+import com.example.single_recyclerview_manual_pagination.exposed.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
-import com.example.single_recyclerview_manual_pagination.models.UiModel
+import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 
 
 class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {

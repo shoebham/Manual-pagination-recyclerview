@@ -2,7 +2,6 @@ package com.example.single_recyclerview_manual_pagination.adapter
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -15,9 +14,9 @@ import com.example.single_recyclerview_manual_pagination.exposed.AbstractAdapter
 import com.example.single_recyclerview_manual_pagination.exposed.HeaderViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.ItemViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.LoadMoreViewHolder
-import com.example.single_recyclerview_manual_pagination.models.State
+import com.example.single_recyclerview_manual_pagination.exposed.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
-import com.example.single_recyclerview_manual_pagination.models.UiModel
+import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -72,12 +71,6 @@ var colorMap = HashMap<Int, ColorDrawable>()
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            Log.i(
-                "stickerviewholder",
-                " placeholder position:${position} getRandomDrawableColor(position)${
-                    getRandomDrawableColor(position)
-                } "
-            )
             Glide.with(binding.root.context)
                 .load(getRandomDrawableColor(position))
                 .into(binding.itemImageView)
@@ -88,12 +81,6 @@ var colorMap = HashMap<Int, ColorDrawable>()
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            Log.i(
-                "stickerviewholder",
-                "item position:${position} getRandomDrawableColor(position)${
-                    getRandomDrawableColor(position)
-                } "
-            )
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthTiny?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)

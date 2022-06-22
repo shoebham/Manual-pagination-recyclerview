@@ -2,11 +2,10 @@ package com.example.***REMOVED***_vertical_scroll_stickers.viewModel
 
 import android.app.Application
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
-import com.example.single_recyclerview_manual_pagination.exposed.BaseModelOfItem
+import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.*
 import com.example.single_recyclerview_manual_pagination.repository.Repository
 import kotlinx.coroutines.flow.Flow

@@ -1,9 +1,5 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
-import android.util.Log
-import com.example.single_recyclerview_manual_pagination.models.State
-import com.example.single_recyclerview_manual_pagination.models.UiModel
-
 
 class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
 

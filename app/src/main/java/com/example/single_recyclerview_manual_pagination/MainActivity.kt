@@ -19,6 +19,7 @@ import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
+import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -143,6 +144,8 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         })
         binding.recyclerview.itemAnimator = null
         recyclerViewState = binding.recyclerview.getLayoutManager()?.onSaveInstanceState()!!;
+        binding.recyclerview.recycledViewPool.setMaxRecycledViews(0, 1000)
+        binding.recyclerview.recycledViewPool.setMaxRecycledViews(1, 1000)
     }
 
     /**
