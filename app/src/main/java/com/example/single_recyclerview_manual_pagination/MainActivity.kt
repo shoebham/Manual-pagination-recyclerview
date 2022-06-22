@@ -179,7 +179,6 @@ class MainActivity : AppCompatActivity(), ApiInterface {
     }
 
     override fun scrollToCategory(id: Int?): Int {
-        Log.i("scrolltocategory", "here $id")
         for ((i, item) in baseClass.uiModelList.withIndex()) {
             if (item is UiModel.Header) {
                 if (item.category.id == id)
@@ -200,26 +199,5 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         return 0
     }
 
-//    override fun <T> convertToUiModel(
-//        baseClass: BaseClass<T>,
-//        categoryInheritingAbstractClassList: List<CategoryInheritingAbstractClass<T>>
-//    ): List<UiModel<T>> {
-//        val uiModelList = mutableListOf<UiModel<T>>()
-//        for ((i, item) in categoryInheritingAbstractClassList.withIndex()) {
-//            for ((j, it) in item.itemInheritingAbstractClassList.withIndex()) {
-//                it.category = item
-//                uiModelList.add(UiModel.Item(it))
-//            }
-//            uiModelList.add(UiModel.Header(item.name))
-//            uiModelList.add(
-//                UiModel.LoadMore(
-//                    itemInheritingAbstractClassAbove = item.itemInheritingAbstractClassList.last(),
-//                    id = item.id,
-//                    visible = item.isViewMoreVisible
-//                )
-//            )
-//        }
-//        baseClass.uiModelList = uiModelList
-//        return baseClass.uiModelList
-//    }
+
 }

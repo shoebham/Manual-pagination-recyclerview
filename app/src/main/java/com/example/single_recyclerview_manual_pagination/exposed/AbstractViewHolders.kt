@@ -181,11 +181,10 @@ abstract class LoadMoreViewHolder<T>(private val binding: LoadMoreBinding) :
                 j++;
             }
             category.baseModelOfItemList = tempList
-            val uiModelList =
-                adapter.dataset.convertToUiModel()
+            val uiModelList = adapter.dataset.convertToUiModel()
             adapter.submitList(uiModelList)
             doStuffWithOnClickListener(loadMore, adapter, position)
         }
     }
 }
-//}
+

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
 import com.example.single_recyclerview_manual_pagination.exposed.State
 import com.example.single_recyclerview_manual_pagination.models.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.lang.Exception
@@ -81,12 +82,13 @@ class Repository private constructor() {
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
 //            for(item in list){
+                delay(3000)
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,
                     offset = offset
                 )
-                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
+//                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
                 for ((i, item) in res.items.withIndex()) {
                     tempBaseModelItemList.add(
                         BaseModelOfItemInheritingAbstractClass(
