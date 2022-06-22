@@ -4,31 +4,40 @@ import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
+import com.example.single_recyclerview_manual_pagination.models.Sticker
+import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
     abstract fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int)
 }
 
+
 //abstract class AbstractViewHolders{
-abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
+abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
         bindItem(item as UiModel.Item<T>, adapter, position)
     }
 
+    lateinit var retryView: View
+
     companion object {
         private val count = AtomicInteger(0)
     }
 
-    private fun bindItem(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int) {
+    private fun bindItem(
+        item: UiModel.Item<T>,
+        adapter: AbstractAdapter<T>,
+        position: Int
+    ) {
         Log.i("onbind", "position: $position Item: $item")
         if (item.baseModelOfItem.item == null) {
-            binding.retry.isVisible = false
-            binding.itemImageView.isVisible = true
+            isRetryVisible(false)
             showPlaceholder(item, adapter, position)
             if (item.baseModelOfItem.state == State.NOT_LOADING) {
                 if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
@@ -47,6 +56,7 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                     } else if (item.baseModelOfItem.isLoadMoreClicked) {
                         val category =
                             adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
+
                         callApiAndMarkItemsAsLoading(
                             adapter = adapter,
                             position = position,
@@ -61,13 +71,14 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                     }
                 }
             }
+
             if (item.baseModelOfItem.state == State.ERROR) {
                 Log.i("bindItem", "here")
-                binding.retry.isVisible = true
-//                binding.itemImageView.isVisible = false
-                binding.retry.setOnClickListener {
-                    binding.retry.isVisible = false
-                callApiAndMarkItemsAsLoading(
+                isRetryVisible(true)
+                setRetryListener(adapter = adapter, item = item, position = position)
+                retryView.setOnClickListener {
+                    isRetryVisible(false)
+                    callApiAndMarkItemsAsLoading(
                         adapter = adapter,
                         position = position,
                         id = item.baseModelOfItem.category?.id!!,
@@ -78,15 +89,34 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                         item = item,
                         isLoadMoreClicked = false
                     )
-
                 }
+//                binding.retry.setOnClickListener {
+//                    isRetryVisible(false)
+//                    callApiAndMarkItemsAsLoading(
+//                        adapter = adapter,
+//                        position = position,
+//                        id = item.baseModelOfItem.category?.id!!,
+//                        offset = (item.baseModelOfItem.categoryBasedPosition.plus(
+//                            1
+//                        )).toString(),
+//                        limit = item.baseModelOfItem.category?.initialCount!!,
+//                        item = item,
+//                        isLoadMoreClicked = false
+//                )
+//                }
             }
         } else if (item.baseModelOfItem.state == State.LOADED) {
-            binding.retry.isVisible = false
-            binding.itemImageView.isVisible = true
+            isRetryVisible(false)
             showItem(item, adapter, position)
         }
     }
+
+    abstract fun isRetryVisible(isVisible: Boolean)
+    abstract fun setRetryListener(
+        adapter: AbstractAdapter<T>,
+        item: UiModel.Item<T>,
+        position: Int
+    )
 
     private fun callApiAndMarkItemsAsLoading(
         adapter: AbstractAdapter<T>,
@@ -109,13 +139,18 @@ abstract class ItemViewHolder<T>(private val binding: ItemsBinding) :
                 items.state = State.LOADED
             }
         }
-        var i = position
-        adapter.apiInterface.getItemsWithOffset(
-            id,
-            offset,
-            limit
-        )
+        var res = listOf<T?>()
 
+
+        CoroutineScope(Dispatchers.IO).launch {
+            res = adapter.apiInterface.getItemsWithOffset(
+                id,
+                offset,
+                limit
+            )
+            adapter.dataset.mapListToBaseModelOfItem(res, id, offset, limit)
+            adapter.submitList(adapter.dataset.convertToUiModel())
+        }
     }
 
     abstract fun showPlaceholder(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int)

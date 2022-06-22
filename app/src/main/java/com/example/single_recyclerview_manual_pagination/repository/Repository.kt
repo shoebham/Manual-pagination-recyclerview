@@ -7,9 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
 import com.example.single_recyclerview_manual_pagination.exposed.State
 import com.example.single_recyclerview_manual_pagination.models.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -76,47 +78,47 @@ class Repository private constructor() {
         id: Int,
         offset: String?,
         limit: Int?
-    ): Flow<List<BaseModelOfItemInheritingAbstractClass>> {
-        return flow {
+    ): List<Sticker?> {
+        var listOfT = listOf<Sticker?>(null)
+        withContext(Dispatchers.IO) {
             val tempBaseModelItemList =
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
 //            for(item in list){
-                delay(3000)
+//                delay(3000)
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,
                     offset = offset
                 )
-//                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
-                for ((i, item) in res.items.withIndex()) {
-                    tempBaseModelItemList.add(
-                        BaseModelOfItemInheritingAbstractClass(
-                            item,
-                            categoryBasedPosition = offset!!.toInt() + i,
-                            state = State.LOADED,
-                            isLastItem = res.items.size < limit!!
-                        )
-                    )
-                }
+                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
+                listOfT = res.items
+//                for ((i, item) in res.items.withIndex()) {
+//                    tempBaseModelItemList.add(
+//                        BaseModelOfItemInheritingAbstractClass(
+//                            item,
+//                            categoryBasedPosition = offset!!.toInt() + i,
+//                            state = State.LOADED,
+//                            isLastItem = res.items.size < limit!!,
+//                        )
+//                    )
+//                }
             } catch (exception: Exception) {
                 Log.i("repository", "Exception:$exception")
-                for (i in 0 until limit!!) {
-                    tempBaseModelItemList.add(
-                        BaseModelOfItemInheritingAbstractClass(
-                            null,
-                            state = State.ERROR
-                        )
-                    )
-                }
+//                for (i in 0 until limit!!) {
+//                    tempBaseModelItemList.add(
+//                        BaseModelOfItemInheritingAbstractClass(
+//                            null,
+//                            state = State.ERROR
+//                        )
+//                    )
+//                }
             }
-
+            }
 //            res.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
 //            }
-            emit(tempBaseModelItemList)
-        }
 
-//        return itemList.items
+        return listOfT
     }
 
     //    lateinit var res:Stickers

@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class demoAdapter(
     val baseclass: BaseClass<Sticker>,
-    val apiinterface: ApiInterface,
+    val apiinterface: ApiInterface<Sticker>,
 ) : AbstractAdapter<Sticker>(baseclass, apiinterface) {
 
     companion object {

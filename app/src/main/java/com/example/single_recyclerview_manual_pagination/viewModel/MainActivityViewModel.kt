@@ -11,6 +11,7 @@ import com.example.single_recyclerview_manual_pagination.repository.Repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 class MainActivityViewModel(
@@ -81,23 +82,20 @@ class MainActivityViewModel(
 //        }
 //    }
 
-    fun getStickersWithOffset(
+    suspend fun getStickersWithOffset(
         baseClass: BaseClass<Sticker>,
         id: Int,
         offset: String?,
         limit: Int?
-    ): Flow<List<UiModel<Sticker>>> {
-        return flow {
-            val tempCategory = mutableListOf<CategoryInheritingAbstractClass>()
+    ): List<Sticker?> {
+
+        val tempCategory = mutableListOf<CategoryInheritingAbstractClass>()
 //            for (item in repository.listOfCategory.value!!) {
 //                uiModelList.add(UiModel.Header(item.name))
 //            baseClass.listOfItems=repository.listOfCategory.value!!
-            repository.getStickers(id, offset, limit).collectLatest {
-                baseClass.replacePlaceholders(baseClass, it, id, offset, limit)
-            }
-            val uiModelList = baseClass.convertToUiModel()
-            emit(uiModelList)
-        }
+        var res = listOf<Sticker?>()
+        res = repository.getStickers(id, offset, limit)
+        return res;
     }
 
 

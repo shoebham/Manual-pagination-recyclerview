@@ -1,5 +1,7 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
+import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
+
 
 class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
 
@@ -27,11 +29,9 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
     }
 
     fun replacePlaceholders(
-        baseClass: BaseClass<T>,
         it: List<BaseModelOfItem<T>>,
         id: Int,
         offset: String?,
-        limit: Int?
     ) {
 
         val category = listOfItems.find { it.id == id }
@@ -54,6 +54,37 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
             }
         }
     }
+
+    fun mapListToBaseModelOfItem(
+        response: List<T?>, id: Int, offset: String?,
+        limit: Int?
+    ) {
+        val tempBaseModelItemList =
+            mutableListOf<BaseModelOfItem<T>>()
+        if (response.isNotEmpty() && response[0] != null) {
+            for ((i, item) in response.withIndex()) {
+                tempBaseModelItemList.add(
+                    BaseModelOfItem(
+                        item,
+                        categoryBasedPosition = offset!!.toInt() + i,
+                        state = State.LOADED,
+                        isLastItem = response.size < limit!!,
+                    )
+                )
+            }
+        } else {
+            for (i in 0 until limit!!) {
+                tempBaseModelItemList.add(
+                    BaseModelOfItem(
+                        null,
+                        state = State.ERROR
+                    )
+                )
+            }
+        }
+        replacePlaceholders(it = tempBaseModelItemList, id = id, offset = offset)
+    }
+
     override fun contains(element: Any): Boolean {
         return uiModelList.contains(element)
     }

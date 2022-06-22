@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class MainActivity : AppCompatActivity(), ApiInterface {
+class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     private var itemList = mutableListOf<String>()
     private lateinit var adapter: demoAdapter
     private lateinit var binding: ActivityMainBinding
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
 
-        private lateinit var baseClass: BaseClass<Sticker>
+    private lateinit var baseClass: BaseClass<Sticker>
     private lateinit var differ: AsyncListDiffer<UiModel<Sticker>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         adapter.submitList(uimodellist)
 //        adapter.setApiListener(this)
     }
+
     fun initUi() {
         factory = InjectorUtils.provideMainActivityViewModelFactory(application)
         viewModel = ViewModelProvider(this, factory)
@@ -167,15 +168,11 @@ class MainActivity : AppCompatActivity(), ApiInterface {
 
     }
 
-    override fun getItemsWithOffset(id: Int, offset: String, limit: Int) {
-        lifecycleScope.launch {
-            viewModel.getStickersWithOffset(baseClass, id, offset, limit).collectLatest {
-                adapter.submitList(it)
-                binding.recyclerview.getLayoutManager()?.onRestoreInstanceState(recyclerViewState);
-
-
-            }
-        }
+    override suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<Sticker?> {
+        var res = listOf<Sticker?>()
+        res = viewModel.getStickersWithOffset(baseClass, id, offset, limit)
+        Log.i("mainactivity", "res $res")
+        return res
     }
 
     override fun scrollToCategory(id: Int?): Int {

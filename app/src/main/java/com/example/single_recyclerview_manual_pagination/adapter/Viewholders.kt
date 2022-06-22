@@ -36,8 +36,7 @@ class Viewholders {
                 return StickerViewHolder(binding)
             }
 
-//            var colorList = MutableList<ColorDrawable?>(10000) { null }
-var colorMap = HashMap<Int, ColorDrawable>()
+            var colorMap = HashMap<Int, ColorDrawable>()
         }
 
         private fun getRandomDrawableColor(position: Int): ColorDrawable {
@@ -92,6 +91,32 @@ var colorMap = HashMap<Int, ColorDrawable>()
                 .load(item.url)
                 .placeholder(R.drawable.placeholder).into(binding.itemImageView)
             binding.itemImageView.setColorFilter(null)
+        }
+
+        override fun isRetryVisible(isVisible: Boolean) {
+            binding.retry.isVisible = isVisible
+        }
+
+        override fun setRetryListener(
+            adapter: AbstractAdapter<Sticker>,
+            item: UiModel.Item<Sticker>,
+            position: Int
+        ) {
+            retryView = binding.retry
+//            binding.retry.setOnClickListener {
+//                isRetryVisible(false)
+//                callApiAndMarkItemsAsLoading(
+//                    adapter = adapter,
+//                    position = position,
+//                    id = item.baseModelOfItem.category?.id!!,
+//                    offset = (item.baseModelOfItem.categoryBasedPosition.plus(
+//                        1
+//                    )).toString(),
+//                    limit = item.baseModelOfItem.category?.initialCount!!,
+//                    item = item,
+//                    isLoadMoreClicked = false
+//                )
+//            }
         }
     }
 

@@ -2,10 +2,12 @@ package com.example.single_recyclerview_manual_pagination.exposed
 
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
-interface ApiInterface {
-    fun getItemsWithOffset(id: Int, offset: String, limit: Int)
+interface ApiInterface<T> {
+    suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<T?>
     fun scrollToCategory(id: Int?): Int
     fun getCategoryIdxOfCurrentPosition(position: Int): Int
 }
@@ -13,7 +15,7 @@ interface ApiInterface {
 abstract class AbstractAdapter<T>
     (
     val dataset: BaseClass<T>,
-    var apiInterface: ApiInterface
+    var apiInterface: ApiInterface<T>
 ) : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
     companion object {
@@ -35,7 +37,7 @@ abstract class AbstractAdapter<T>
     override fun onBindViewHolder(holder: BaseViewHolder<T>, position: Int) {
 //        Log.i("bindcount","bindcount: ${bindCount.incrementAndGet()}")
         val item = currentList()[position]
-        holder.bind(item = item, adapter = this, position)
+        holder.bind(item = item, adapter = this@AbstractAdapter, position)
     }
 
     override fun getItemCount() = currentList().size
