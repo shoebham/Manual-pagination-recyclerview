@@ -3,6 +3,7 @@ package com.example.single_recyclerview_manual_pagination.adapter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
@@ -29,6 +30,7 @@ class Viewholders {
 
     class StickerViewHolder(private val binding: ItemsBinding) : ItemViewHolder<Sticker>(binding) {
 
+        override var retryView: View = binding.retry
         companion object {
             fun from(parent: ViewGroup): StickerViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
@@ -86,13 +88,6 @@ class Viewholders {
         }
 
 
-        fun bindBanner(item: UiModel.Banner<Sticker>) {
-            Glide.with(binding.root.context)
-                .load(item.url)
-                .placeholder(R.drawable.placeholder).into(binding.itemImageView)
-            binding.itemImageView.setColorFilter(null)
-        }
-
         override fun isRetryVisible(isVisible: Boolean) {
             binding.retry.isVisible = isVisible
         }
@@ -145,6 +140,7 @@ class Viewholders {
 
     class loadmoreviewholder(private val binding: LoadMoreBinding) :
         LoadMoreViewHolder<Sticker>(binding) {
+        override var loadMoreView: View = binding.loadMore
         companion object {
             fun from(parent: ViewGroup): loadmoreviewholder {
                 val layoutInflater = LayoutInflater.from(parent.context)

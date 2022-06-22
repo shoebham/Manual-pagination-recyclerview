@@ -3,11 +3,11 @@ package com.example.single_recyclerview_manual_pagination.exposed
 import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
 
 
-class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
+class BaseClass<T>(var listOfItems: List<Category<T>>) {
 
 
     var uiModelList = listOf<UiModel<T>>()
-    override val size: Int = uiModelList.size
+    val size: Int = uiModelList.size
 
     fun convertToUiModel(): List<UiModel<T>> {
         val tempUiModelList = mutableListOf<UiModel<T>>()
@@ -85,43 +85,4 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) : List<Any> {
         replacePlaceholders(it = tempBaseModelItemList, id = id, offset = offset)
     }
 
-    override fun contains(element: Any): Boolean {
-        return uiModelList.contains(element)
-    }
-
-    override fun containsAll(elements: Collection<Any>): Boolean {
-        return uiModelList.containsAll(elements)
-    }
-
-    override fun get(index: Int): Any {
-        return uiModelList[index]
-    }
-
-    override fun indexOf(element: Any): Int {
-        return uiModelList.indexOf(element)
-    }
-
-    override fun isEmpty(): Boolean {
-        return uiModelList.isEmpty()
-    }
-
-    override fun iterator(): Iterator<Any> {
-        return uiModelList.iterator()
-    }
-
-    override fun lastIndexOf(element: Any): Int {
-        return uiModelList.lastIndexOf(element)
-    }
-
-    override fun listIterator(): ListIterator<Any> {
-        return uiModelList.listIterator()
-    }
-
-    override fun listIterator(index: Int): ListIterator<Any> {
-        return uiModelList.listIterator(index)
-    }
-
-    override fun subList(fromIndex: Int, toIndex: Int): List<Any> {
-        return uiModelList.subList(fromIndex, toIndex)
-    }
 }
