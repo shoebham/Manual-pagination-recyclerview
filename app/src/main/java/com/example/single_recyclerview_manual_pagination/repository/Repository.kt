@@ -86,7 +86,7 @@ class Repository private constructor() {
                     limit = limit,
                     offset = offset
                 )
-//                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
+                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
                 for ((i, item) in res.items.withIndex()) {
                     tempBaseModelItemList.add(
                         BaseModelOfItemInheritingAbstractClass(
@@ -103,7 +103,6 @@ class Repository private constructor() {
                     tempBaseModelItemList.add(
                         BaseModelOfItemInheritingAbstractClass(
                             null,
-                            categoryBasedPosition = offset!!.toInt() + i,
                             state = State.ERROR
                         )
                     )

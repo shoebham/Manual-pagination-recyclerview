@@ -15,13 +15,15 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
         var returnValue =
             (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem.item?.id == newItem.baseModelOfItem.item?.id) ||
                     (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category.name == newItem.category.name)
-//        if (oldItem is UiModel.Item && newItem is UiModel.Item) {
-//            if (oldItem.baseModelOfItem.item == null && newItem.baseModelOfItem.item == null) {
-//                returnValue =
-//                    returnValue && oldItem.baseModelOfItem.state == newItem.baseModelOfItem.state
-//            }
-//        }
-        Log.i("diffutil", "areItemsTheSame $returnValue")
+        if (oldItem is UiModel.Item && newItem is UiModel.Item) {
+            if (oldItem.baseModelOfItem.item == null && newItem.baseModelOfItem.item == null) {
+                if (oldItem.baseModelOfItem.state == State.ERROR || newItem.baseModelOfItem.state == State.ERROR) {
+                    returnValue =
+                        returnValue && oldItem.baseModelOfItem.state == newItem.baseModelOfItem.state
+                }
+            }
+        }
+//        Log.i("diffutil", "areItemsTheSame $returnValue")
         return returnValue
         return (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category == newItem.category)
     }
@@ -39,7 +41,7 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
 //                    returnValue && oldItem.baseModelOfItem.state == newItem.baseModelOfItem.state
 //            }
 //        }
-        Log.i("diffutil", "areContentsTheSame() ${returnValue} ");
+//        Log.i("diffutil", "areContentsTheSame() ${returnValue} ");
 
 
 //        if (oldItem is UiModel.Item && newItem is UiModel.Item)

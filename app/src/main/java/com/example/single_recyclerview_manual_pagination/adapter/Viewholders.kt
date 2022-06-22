@@ -79,10 +79,8 @@ var colorMap = HashMap<Int, ColorDrawable>()
                 } "
             )
             Glide.with(binding.root.context)
-                .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
-                .placeholder(getRandomDrawableColor(position))
+                .load(getRandomDrawableColor(position))
                 .into(binding.itemImageView)
-//            binding.itemImageView.setColorFilter(color)
         }
 
         override fun showItem(
@@ -97,7 +95,7 @@ var colorMap = HashMap<Int, ColorDrawable>()
                 } "
             )
             Glide.with(binding.root.context)
-                .load(item.baseModelOfItem.item?.fixedWidthFull?.png?.url)
+                .load(item.baseModelOfItem.item?.fixedWidthTiny?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
         }
 

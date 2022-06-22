@@ -30,7 +30,8 @@ class TabbedListMediator(
     private var countMap: HashMap<String, Int>,
     private var mIsSmoothScroll: Boolean = false,
     private var viewModel: MainActivityViewModel,
-    scrollToCategory: (Int) -> Int
+    scrollToCategory: (Int) -> Int,
+    getCategoryOfCurrentPosition: (Int) -> Int
 ) {
 
     private var mIsAttached = false
@@ -171,35 +172,41 @@ class TabbedListMediator(
             }
         }
 
-//        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//            super.onScrolled(recyclerView, dx, dy)
-//            if (mTabClickFlag) {
-//                return
-//            }
-//
-//            val gridLayoutManager: GridLayoutManager =
-//                recyclerView.layoutManager as GridLayoutManager?
-//                    ?: throw RuntimeException("No LinearLayoutManager attached to the RecyclerView.")
-//
-//            var itemPosition =
-//                gridLayoutManager.findFirstCompletelyVisibleItemPosition()
-//
-//            if (itemPosition == -1) {
-//                itemPosition =
-//                    gridLayoutManager.findFirstVisibleItemPosition()
-//            }
-//
-//            if (mRecyclerState == RecyclerView.SCROLL_STATE_DRAGGING
-//                || mRecyclerState == RecyclerView.SCROLL_STATE_SETTLING
-//            ) {
-////                itemPosition-=getCountTill(position = itemPosition)
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            if (mTabClickFlag) {
+                return
+            }
+
+            val gridLayoutManager: GridLayoutManager =
+                recyclerView.layoutManager as GridLayoutManager?
+                    ?: throw RuntimeException("No LinearLayoutManager attached to the RecyclerView.")
+
+            var itemPosition =
+                gridLayoutManager.findFirstCompletelyVisibleItemPosition()
+
+            if (itemPosition == -1) {
+                itemPosition =
+                    gridLayoutManager.findFirstVisibleItemPosition()
+            }
+
+            if (mRecyclerState == RecyclerView.SCROLL_STATE_DRAGGING
+                || mRecyclerState == RecyclerView.SCROLL_STATE_SETTLING
+            ) {
+//                itemPosition-=getCountTill(position = itemPosition)
 //                if (itemPosition <= 0) itemPosition = 0
+                val category = getCategoryOfCurrentPosition(itemPosition)
+                var idx = getCategoryOfCurrentPosition(itemPosition)
+//                if (category != null) {
+//                    idx = scrollToCategory(category)
+                Log.i("tabbedlist", "idx${idx}")
+//                }
 //                for (i in 1..mIndices.values.size - 1) {
 ////                    Log.i("countmap", "itemposition${itemPosition} ${getCountTill(position = i)}")
-//                    if (i > 0 && itemPosition > getCountTill(i - 1) && itemPosition < getCountTill(i)) {
-//                        if (!mTabLayout.getTabAt(i - 1)!!.isSelected) {
-//                            mTabLayout.getTabAt(i - 1)!!.select()
-//                        }
+//                    if (i > 0) {
+                if (!mTabLayout.getTabAt(idx)!!.isSelected) {
+                    mTabLayout.getTabAt(idx)!!.select()
+                }
 ////                            if (gridLayoutManager.findLastCompletelyVisibleItemPosition() == mIndices[mIndices.size - 1]) {
 ////                                if (!mTabLayout.getTabAt(mIndices.size - 1)!!.isSelected) {
 ////                                    mTabLayout.getTabAt(mIndices.size - 1)!!.select()
@@ -208,9 +215,9 @@ class TabbedListMediator(
 ////                            }
 //                    }
 //                }
-//
-//            }
-//        }
+
+            }
+        }
     }
 
     /**

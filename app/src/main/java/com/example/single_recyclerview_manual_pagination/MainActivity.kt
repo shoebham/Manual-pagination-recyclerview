@@ -20,7 +20,6 @@ import com.example.single_recyclerview_manual_pagination.databinding.ActivityMai
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
 import com.example.single_recyclerview_manual_pagination.models.*
-import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -158,7 +157,8 @@ class MainActivity : AppCompatActivity(), ApiInterface {
             countMap,
             false,
             viewModel,
-            ::scrollToCategory
+            ::scrollToCategory,
+            ::getCategoryIdxOfCurrentPosition
         )
         tabbedListMediator.attach()
 
@@ -179,8 +179,19 @@ class MainActivity : AppCompatActivity(), ApiInterface {
         Log.i("scrolltocategory", "here $id")
         for ((i, item) in baseClass.uiModelList.withIndex()) {
             if (item is UiModel.Header) {
-                if (item.category?.id == id)
+                if (item.category.id == id)
                     return i
+            }
+        }
+        return 0
+    }
+
+    override fun getCategoryIdxOfCurrentPosition(position: Int): Int {
+        var j = -1
+        for ((i, item) in baseClass.uiModelList.withIndex()) {
+            if (item is UiModel.Header) j++
+            if (i == position) {
+                return j
             }
         }
         return 0

@@ -9,6 +9,7 @@ import com.example.single_recyclerview_manual_pagination.models.UiModel
 interface ApiInterface {
     fun getItemsWithOffset(id: Int, offset: String, limit: Int)
     fun scrollToCategory(id: Int?): Int
+    fun getCategoryIdxOfCurrentPosition(position: Int): Int
 }
 
 abstract class AbstractAdapter<T>
