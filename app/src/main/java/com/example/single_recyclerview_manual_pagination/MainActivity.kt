@@ -18,8 +18,7 @@ import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
 import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
-import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
-import com.example.single_recyclerview_manual_pagination.exposed.Category
+import com.example.single_recyclerview_manual_pagination.exposed.PagingListWrapperClass
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.*
 
@@ -37,7 +36,7 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     private var countOfStickers: Int = 0
     private var countList: MutableList<Int> = ArrayList()
 
-    private lateinit var baseClass: BaseClass<Sticker>
+    private lateinit var pagingListWrapperClass: PagingListWrapperClass<Sticker>
     private lateinit var differ: AsyncListDiffer<UiModel<Sticker>>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +51,11 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         initUi()
         val emptyListOfCategory = CategoryInheritingAbstractClass()
         val tempList = MutableList(10) { emptyListOfCategory }
-        baseClass = BaseClass(tempList)
-        adapter = demoAdapter(baseClass, this, scope = lifecycleScope)
+        pagingListWrapperClass = PagingListWrapperClass(tempList)
+        adapter = demoAdapter(pagingListWrapperClass, this, scope = lifecycleScope)
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
-        val uimodellist = baseClass.convertToUiModel()
+        val uimodellist = pagingListWrapperClass.convertToUiModel()
         adapter.submitList(uimodellist)
 
 //        adapter.setApiListener(this)
@@ -87,8 +86,8 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     }
 
     fun initItems() {
-        baseClass.categoryList = viewModel.categoryInheritingAbstractClassList.value!!
-        val temp = baseClass.convertToUiModel()
+        pagingListWrapperClass.categoryList = viewModel.categoryInheritingAbstractClassList.value!!
+        val temp = pagingListWrapperClass.convertToUiModel()
         adapter.submitList(temp)
     }
 
@@ -169,16 +168,16 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     }
 
     override suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<Sticker>? {
-        val res = viewModel.getStickersWithOffset(baseClass, id, offset, limit)
+        val res = viewModel.getStickersWithOffset(pagingListWrapperClass, id, offset, limit)
         return res
     }
 
     fun scrollToCategory(id: Int?): Int {
-        return baseClass.getCategoryPositionInUiModelList(id)
+        return pagingListWrapperClass.getCategoryPositionInUiModelList(id)
     }
 
     fun getCategoryIdxOfCurrentPosition(position: Int): Int {
-        return baseClass.getCategoryIdxOfCurrentPosition(position)
+        return pagingListWrapperClass.getCategoryIdxOfCurrentPosition(position)
     }
 
 

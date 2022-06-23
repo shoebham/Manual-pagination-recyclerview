@@ -1,5 +1,6 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
+
 open class BaseModelOfItem<T>(
     open val item: T? = null,
     open var category: Category<T>? = null,

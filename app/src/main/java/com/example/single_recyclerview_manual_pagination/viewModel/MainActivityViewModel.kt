@@ -4,14 +4,9 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
-import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
-import com.example.single_recyclerview_manual_pagination.exposed.UiModel
+import com.example.single_recyclerview_manual_pagination.exposed.PagingListWrapperClass
 import com.example.single_recyclerview_manual_pagination.models.*
 import com.example.single_recyclerview_manual_pagination.repository.Repository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 class MainActivityViewModel(
@@ -83,7 +78,7 @@ class MainActivityViewModel(
 //    }
 
     suspend fun getStickersWithOffset(
-        baseClass: BaseClass<Sticker>,
+        pagingListWrapperClass: PagingListWrapperClass<Sticker>,
         id: Int,
         offset: String?,
         limit: Int?

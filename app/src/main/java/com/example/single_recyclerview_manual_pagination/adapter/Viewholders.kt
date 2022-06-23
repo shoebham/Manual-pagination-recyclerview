@@ -7,15 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-import com.example.single_recyclerview_manual_pagination.R
 import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
 import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
 import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
-import com.example.single_recyclerview_manual_pagination.exposed.AbstractAdapter
+import com.example.single_recyclerview_manual_pagination.exposed.CustomPagingAdapter
 import com.example.single_recyclerview_manual_pagination.exposed.HeaderViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.ItemViewHolder
 import com.example.single_recyclerview_manual_pagination.exposed.LoadMoreViewHolder
-import com.example.single_recyclerview_manual_pagination.exposed.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
@@ -72,7 +70,7 @@ class Viewholders {
 
         override fun showPlaceholder(
             item: UiModel.Item<Sticker>,
-            adapter: AbstractAdapter<Sticker>,
+            adapter: CustomPagingAdapter<Sticker>,
             position: Int
         ) {
             Glide.with(binding.root.context)
@@ -82,7 +80,7 @@ class Viewholders {
 
         override fun showItem(
             item: UiModel.Item<Sticker>,
-            adapter: AbstractAdapter<Sticker>,
+            adapter: CustomPagingAdapter<Sticker>,
             position: Int
         ) {
             Glide.with(binding.root.context)
@@ -96,7 +94,7 @@ class Viewholders {
         }
 
         override fun setRetryListener(
-            adapter: AbstractAdapter<Sticker>,
+            adapter: CustomPagingAdapter<Sticker>,
             item: UiModel.Item<Sticker>,
             position: Int
         ) {
@@ -119,7 +117,7 @@ class Viewholders {
 //        }
         override fun bindHeader(
             header: UiModel.Header<Sticker>,
-            adapter: AbstractAdapter<Sticker>,
+            adapter: CustomPagingAdapter<Sticker>,
             position: Int
         ) {
             binding.textitem.text = (header.category as CategoryInheritingAbstractClass).name
@@ -140,7 +138,7 @@ class Viewholders {
 
         override fun doStuffWithLoadMoreUI(
             loadMore: UiModel.LoadMore<Sticker>,
-            adapter: AbstractAdapter<Sticker>,
+            adapter: CustomPagingAdapter<Sticker>,
             position: Int
         ) {
 
@@ -148,7 +146,7 @@ class Viewholders {
 
         override fun doStuffWithOnClickListener(
             loadMore: UiModel.LoadMore<Sticker>,
-            adapter: AbstractAdapter<Sticker>,
+            adapter: CustomPagingAdapter<Sticker>,
             position: Int
         ) {
 

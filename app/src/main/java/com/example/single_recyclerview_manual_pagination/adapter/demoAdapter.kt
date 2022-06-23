@@ -3,9 +3,9 @@ package com.example.single_recyclerview_manual_pagination.adapter
 import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
-import com.example.single_recyclerview_manual_pagination.exposed.AbstractAdapter
+import com.example.single_recyclerview_manual_pagination.exposed.CustomPagingAdapter
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
-import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
+import com.example.single_recyclerview_manual_pagination.exposed.PagingListWrapperClass
 import com.example.single_recyclerview_manual_pagination.exposed.BaseViewHolder
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
@@ -13,10 +13,10 @@ import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.atomic.AtomicInteger
 
 class demoAdapter(
-    val baseclass: BaseClass<Sticker>,
+    val baseclass: PagingListWrapperClass<Sticker>,
     val apiinterface: ApiInterface<Sticker>,
     val scope: CoroutineScope
-) : AbstractAdapter<Sticker>(baseclass, apiinterface) {
+) : CustomPagingAdapter<Sticker>(baseclass, apiinterface) {
 
     companion object {
         private var createCount = AtomicInteger(0)

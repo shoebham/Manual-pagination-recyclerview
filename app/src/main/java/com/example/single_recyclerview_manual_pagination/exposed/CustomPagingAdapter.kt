@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 import java.util.concurrent.atomic.AtomicInteger
 
 
-abstract class AbstractAdapter<T>
+abstract class CustomPagingAdapter<T>
     (
-    val dataset: BaseClass<T>,
+    val dataset: PagingListWrapperClass<T>,
     var apiInterface: ApiInterface<T>
 ) : RecyclerView.Adapter<BaseViewHolder<T>>() {
 
@@ -29,7 +29,7 @@ abstract class AbstractAdapter<T>
     override fun onBindViewHolder(holder: BaseViewHolder<T>, position: Int) {
 //        Log.i("bindcount","bindcount: ${bindCount.incrementAndGet()}")
         val item = currentList()[position]
-        holder.bind(item = item, adapter = this@AbstractAdapter, position)
+        holder.bind(item = item, adapter = this@CustomPagingAdapter, position)
     }
 
     override fun getItemCount() = currentList().size

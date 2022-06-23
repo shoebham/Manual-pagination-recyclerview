@@ -1,11 +1,9 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
 
-class BaseClass<T>(var categoryList: List<Category<T>>) {
-
+class PagingListWrapperClass<T>(var categoryList: List<Category<T>>) {
 
     var uiModelList = listOf<UiModel<T>>()
-
     fun convertToUiModel(): List<UiModel<T>> {
         val tempUiModelList = mutableListOf<UiModel<T>>()
         for (item in categoryList) {
@@ -32,16 +30,16 @@ class BaseClass<T>(var categoryList: List<Category<T>>) {
     ) {
 
         val category = categoryList.find { it.id == id }
-        val itemlist = category?.baseModelOfItemList?.toMutableList()
-        if (itemlist != null && itemlist[0].item == null) {
+        val itemList = category?.baseModelOfItemList?.toMutableList()
+        if (itemList != null && itemList[0].item == null) {
             categoryList.find { it.id == id }?.baseModelOfItemList = it
         } else {
-            if (itemlist != null && it.isNotEmpty()) {
+            if (itemList != null && it.isNotEmpty()) {
                 for ((i, item) in it.withIndex()) {
-                    itemlist[offset.toInt() + i - 1] = item
+                    itemList[offset.toInt() + i - 1] = item
                 }
-                itemlist.removeAll { it.item == null }
-                category.baseModelOfItemList = itemlist
+                itemList.removeAll { it.item == null }
+                category.baseModelOfItemList = itemList
                 if (it.isEmpty()) category.baseModelOfItemList.last().isLastItem = true
             }
         }
