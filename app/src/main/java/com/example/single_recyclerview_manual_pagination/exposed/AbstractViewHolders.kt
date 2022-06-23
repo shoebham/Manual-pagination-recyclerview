@@ -16,8 +16,6 @@ abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemV
     abstract fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int)
 }
 
-
-//abstract class AbstractViewHolders{
 abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
@@ -118,15 +116,14 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
         )
         val category =
             adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
-        if (category != null) {
-            for (items in category.baseModelOfItemList) {
-                items.isLoadMoreClicked = isLoadMoreClicked
-                items.state = State.LOADED
-            }
+
+        var i = position
+        while (adapter.dataset.uiModelList[i] is UiModel.Item<T>) {
+            (adapter.dataset.uiModelList[i] as UiModel.Item<T>).baseModelOfItem.state =
+                State.LOADING
+            i++;
         }
-        var res = listOf<T?>()
-
-
+        var res: List<T>? = null
         CoroutineScope(Dispatchers.IO).launch {
             res = adapter.apiInterface.getItemsWithOffset(
                 id,
@@ -163,6 +160,15 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
         adapter: AbstractAdapter<T>,
         position: Int
     ) {
+
+        loadMoreView.isEnabled = false
+        if (loadMore.baseModelItemAbove != null) {
+            if (loadMore.baseModelItemAbove.state == State.LOADED) {
+                loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
+                loadMoreView.isEnabled = true
+            }
+        }
+        loadMoreView.isVisible = loadMore.visible
         doStuffWithLoadMoreUI(loadMore, adapter, position)
         loadMoreView.setOnClickListener {
             setClickListener(loadMore, adapter, position)
@@ -204,6 +210,7 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
             category.baseModelOfItemList = tempList
             val uiModelList = adapter.dataset.convertToUiModel()
             adapter.submitList(uiModelList)
+
             doStuffWithOnClickListener(loadMore, adapter, position)
         }
     }

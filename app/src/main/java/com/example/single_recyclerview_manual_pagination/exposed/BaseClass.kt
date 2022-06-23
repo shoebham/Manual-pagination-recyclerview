@@ -1,5 +1,6 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
+import android.util.Log
 import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
 
 
@@ -27,7 +28,7 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
         return tempUiModelList
     }
 
-    fun replacePlaceholders(
+    private fun replacePlaceholders(
         it: List<BaseModelOfItem<T>>,
         id: Int,
         offset: String?,
@@ -41,6 +42,7 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
             listOfItems.find { it.id == id }?.baseModelOfItemList = it
         } else {
             if (itemlist != null && it.isNotEmpty()) {
+                Log.i("baseclass", "category: $category it:${it.size}")
                 for ((i, item) in it.withIndex()) {
                     itemlist[offset!!.toInt() + i - 1] = item
                 }
@@ -55,12 +57,12 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
     }
 
     fun mapListToBaseModelOfItem(
-        response: List<T?>, id: Int, offset: String?,
+        response: List<T>?, id: Int, offset: String?,
         limit: Int?
     ) {
         val tempBaseModelItemList =
             mutableListOf<BaseModelOfItem<T>>()
-        if (response.isNotEmpty() && response[0] != null) {
+        if (response != null && response.isNotEmpty() && response[0] != null) {
             for ((i, item) in response.withIndex()) {
                 tempBaseModelItemList.add(
                     BaseModelOfItem(
@@ -71,8 +73,8 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
                     )
                 )
             }
-        } else {
-            for (i in 0 until limit!!) {
+        } else if (response == null) {
+            for (i in 0 until limit!! + 1) {
                 tempBaseModelItemList.add(
                     BaseModelOfItem(
                         null,

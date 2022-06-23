@@ -148,72 +148,13 @@ class Viewholders {
                 return loadmoreviewholder(binding)
             }
         }
-//        fun bind(
-//            loadMore: UiModel.LoadMore<Sticker>,
-//            adapter: CustomAdapter<Sticker>,
-//            position: Int
-//        ) {
-//            if (loadMore.itemInheritingAbstractClassAbove != null) {
-//                loadMore.visible = !loadMore.itemInheritingAbstractClassAbove.isLastItem
-//            }
-//            binding.loadMore.isVisible = loadMore.visible
-//            binding.loadMore.setOnClickListener {
-//                val category = adapter.dataset.listOfItems.find { it.id == loadMore.id }
-//                loadMore.itemInheritingAbstractClassAbove?.isLoadMoreClicked = true
-//                if (category != null) {
-//                    val remaining = category.itemsToLoadAfterViewMore
-//                    var tempList = mutableListOf<BaseModelOfItemInheritingAbstractClass<Sticker>>()
-//                    tempList = category.itemInheritingAbstractClassList.toMutableList()
-//                    var j = 0
-//                    repeat(remaining) {
-//                        tempList.add(
-//                            BaseModelOfItemInheritingAbstractClass(
-//                                isLoadMoreClicked = true,
-//                                categoryBasedPosition = loadMore.itemInheritingAbstractClassAbove?.categoryBasedPosition!! + j
-//                            )
-//                        )
-//                        j++;
-//                    }
-//                    category.itemInheritingAbstractClassList = tempList
-//                    val uiModellist =
-//                        adapter.convertToUiModel(adapter.dataset, adapter.dataset.listOfItems)
-//                    var i = position
-//                    adapter.submitList(uiModellist)
-//
-////                    while (adapter.differ.currentList[i] is UiModel.Item) {
-////                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.isLoadMoreClicked =
-////                            true
-////                        (adapter.differ.currentList[i] as UiModel.Item).baseModelOfItem.state =
-////                            State.LOADING
-////                        i++
-////                    }
-//                    Log.i("baseclass", "${adapter.dataset}")
-////                    loadMore.itemAbove?.state = State.LOADING
-////                    adapter.apiInterface.getItemsWithOffset(
-////                        category.id!!,
-////                        (loadMore.itemAbove?.categoryBasedPosition).toString(),
-////                        remaining
-////                    )
-//
-//                }
-////
-//            }
-//        }
 
         override fun doStuffWithLoadMoreUI(
             loadMore: UiModel.LoadMore<Sticker>,
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            if (loadMore.baseModelItemAbove != null) {
-                if (loadMore.baseModelItemAbove.state == State.ERROR) {
-                    binding.loadMore.isEnabled = false
-                } else {
-                    loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
-                    binding.loadMore.isEnabled = true
-                }
-            }
-            binding.loadMore.isVisible = loadMore.visible
+
         }
 
         override fun doStuffWithOnClickListener(

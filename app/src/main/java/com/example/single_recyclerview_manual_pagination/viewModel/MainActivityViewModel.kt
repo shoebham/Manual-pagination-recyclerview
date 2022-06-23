@@ -87,14 +87,14 @@ class MainActivityViewModel(
         id: Int,
         offset: String?,
         limit: Int?
-    ): List<Sticker?> {
+    ): List<Sticker>? {
 
         val tempCategory = mutableListOf<CategoryInheritingAbstractClass>()
 //            for (item in repository.listOfCategory.value!!) {
 //                uiModelList.add(UiModel.Header(item.name))
 //            baseClass.listOfItems=repository.listOfCategory.value!!
-        var res = listOf<Sticker?>()
-        res = repository.getStickers(id, offset, limit)
+
+        val res = repository.getStickers(id, offset, limit)
         return res;
     }
 

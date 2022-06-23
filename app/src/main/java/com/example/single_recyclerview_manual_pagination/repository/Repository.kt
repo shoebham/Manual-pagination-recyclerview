@@ -78,14 +78,14 @@ class Repository private constructor() {
         id: Int,
         offset: String?,
         limit: Int?
-    ): List<Sticker?> {
-        var listOfT = listOf<Sticker?>(null)
+    ): List<Sticker>? {
+        var listOfT: List<Sticker>? = null
         withContext(Dispatchers.IO) {
             val tempBaseModelItemList =
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
 //            for(item in list){
-//                delay(3000)
+                delay(3000)
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,
@@ -93,31 +93,11 @@ class Repository private constructor() {
                 )
                 if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
                 listOfT = res.items
-//                for ((i, item) in res.items.withIndex()) {
-//                    tempBaseModelItemList.add(
-//                        BaseModelOfItemInheritingAbstractClass(
-//                            item,
-//                            categoryBasedPosition = offset!!.toInt() + i,
-//                            state = State.LOADED,
-//                            isLastItem = res.items.size < limit!!,
-//                        )
-//                    )
-//                }
+
             } catch (exception: Exception) {
                 Log.i("repository", "Exception:$exception")
-//                for (i in 0 until limit!!) {
-//                    tempBaseModelItemList.add(
-//                        BaseModelOfItemInheritingAbstractClass(
-//                            null,
-//                            state = State.ERROR
-//                        )
-//                    )
-//                }
             }
-            }
-//            res.items.forEach { tempBaseModelItemList.add(BaseModelOfItem(it)) }
-//            }
-
+        }
         return listOfT
     }
 

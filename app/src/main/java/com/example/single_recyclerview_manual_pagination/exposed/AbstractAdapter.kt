@@ -6,10 +6,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
-interface ApiInterface<T> {
-    suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<T?>
 
-}
 
 abstract class AbstractAdapter<T>
     (

@@ -165,9 +165,8 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
 
     }
 
-    override suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<Sticker?> {
-        var res = listOf<Sticker?>()
-        res = viewModel.getStickersWithOffset(baseClass, id, offset, limit)
+    override suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<Sticker>? {
+        val res = viewModel.getStickersWithOffset(baseClass, id, offset, limit)
         return res
     }
 
