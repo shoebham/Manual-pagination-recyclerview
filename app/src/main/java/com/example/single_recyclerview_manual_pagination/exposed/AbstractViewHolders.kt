@@ -172,10 +172,9 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
         adapter: AbstractAdapter<T>,
         position: Int
     ) {
-
         loadMoreView.isEnabled = false
         if (loadMore.baseModelItemAbove != null) {
-            if (loadMore.baseModelItemAbove.state == State.LOADED) {
+            if (loadMore.baseModelItemAbove.item != null && loadMore.baseModelItemAbove.state == State.LOADED) {
                 loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
                 loadMoreView.isEnabled = true
             }
@@ -222,7 +221,6 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
             category.baseModelOfItemList = tempList
             val uiModelList = adapter.dataset.convertToUiModel()
             adapter.submitList(uiModelList)
-
             doStuffWithOnClickListener(loadMore, adapter, position)
         }
     }

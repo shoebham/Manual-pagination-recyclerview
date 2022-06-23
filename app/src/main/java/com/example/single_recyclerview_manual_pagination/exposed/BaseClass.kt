@@ -35,21 +35,15 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
     ) {
 
         val category = listOfItems.find { it.id == id }
-
         val itemlist = category?.baseModelOfItemList?.toMutableList()
-
         if (itemlist != null && itemlist[0].item == null) {
             listOfItems.find { it.id == id }?.baseModelOfItemList = it
         } else {
             if (itemlist != null && it.isNotEmpty()) {
-                Log.i("baseclass", "category: $category it:${it.size}")
                 for ((i, item) in it.withIndex()) {
                     itemlist[offset!!.toInt() + i - 1] = item
                 }
                 itemlist.removeAll { it.item == null }
-                for (item in itemlist) {
-                    item.state = State.LOADED
-                }
                 category.baseModelOfItemList = itemlist
                 if (it.isEmpty()) category.baseModelOfItemList.last().isLastItem = true
             }

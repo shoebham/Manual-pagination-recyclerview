@@ -84,7 +84,7 @@ class Repository private constructor() {
             val tempBaseModelItemList =
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
-
+                delay(3000)
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,
