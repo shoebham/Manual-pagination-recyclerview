@@ -8,8 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 interface ApiInterface<T> {
     suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<T?>
-    fun scrollToCategory(id: Int?): Int
-    fun getCategoryIdxOfCurrentPosition(position: Int): Int
+
 }
 
 abstract class AbstractAdapter<T>

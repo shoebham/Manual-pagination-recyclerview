@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +20,6 @@ import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.*
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
@@ -60,8 +57,8 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         adapter.differ = differ
 
 
-        val uimodellist = baseClass.convertToUiModel()
-        adapter.submitList(uimodellist)
+//        val uimodellist = baseClass.convertToUiModel()
+//        adapter.submitList(uimodellist)
 //        adapter.setApiListener(this)
     }
 
@@ -171,29 +168,15 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     override suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<Sticker?> {
         var res = listOf<Sticker?>()
         res = viewModel.getStickersWithOffset(baseClass, id, offset, limit)
-        Log.i("mainactivity", "res $res")
         return res
     }
 
-    override fun scrollToCategory(id: Int?): Int {
-        for ((i, item) in baseClass.uiModelList.withIndex()) {
-            if (item is UiModel.Header) {
-                if (item.category.id == id)
-                    return i
-            }
-        }
-        return 0
+    fun scrollToCategory(id: Int?): Int {
+        return baseClass.getCategoryPositionInUiModelList(id)
     }
 
-    override fun getCategoryIdxOfCurrentPosition(position: Int): Int {
-        var j = -1
-        for ((i, item) in baseClass.uiModelList.withIndex()) {
-            if (item is UiModel.Header) j++
-            if (i == position) {
-                return j
-            }
-        }
-        return 0
+    fun getCategoryIdxOfCurrentPosition(position: Int): Int {
+        return baseClass.getCategoryIdxOfCurrentPosition(position)
     }
 
 

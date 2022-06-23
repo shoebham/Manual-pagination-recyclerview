@@ -7,7 +7,6 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
 
 
     var uiModelList = listOf<UiModel<T>>()
-    val size: Int = uiModelList.size
 
     fun convertToUiModel(): List<UiModel<T>> {
         val tempUiModelList = mutableListOf<UiModel<T>>()
@@ -83,6 +82,27 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
             }
         }
         replacePlaceholders(it = tempBaseModelItemList, id = id, offset = offset)
+    }
+
+    fun getCategoryPositionInUiModelList(id: Int?): Int {
+        for ((i, item) in uiModelList.withIndex()) {
+            if (item is UiModel.Header) {
+                if (item.category.id == id)
+                    return i
+            }
+        }
+        return 0
+    }
+
+    fun getCategoryIdxOfCurrentPosition(position: Int): Int {
+        var j = -1
+        for ((i, item) in uiModelList.withIndex()) {
+            if (item is UiModel.Header) j++
+            if (i == position) {
+                return j
+            }
+        }
+        return 0
     }
 
 }
