@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     }
 
     fun initItems() {
-        baseClass.listOfItems = viewModel.categoryInheritingAbstractClassList.value!!
+        baseClass.categoryList = viewModel.categoryInheritingAbstractClassList.value!!
         val temp = baseClass.convertToUiModel()
         adapter.submitList(temp)
     }

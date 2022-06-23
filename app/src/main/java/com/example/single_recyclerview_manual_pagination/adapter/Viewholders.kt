@@ -66,7 +66,6 @@ class Viewholders {
             ColorDrawable(Color.parseColor("#FF6772")), ColorDrawable(Color.parseColor("#DDFB5C"))
         )
 
-
         override fun showPlaceholder(
             item: UiModel.Item<Sticker>,
             adapter: AbstractAdapter<Sticker>,

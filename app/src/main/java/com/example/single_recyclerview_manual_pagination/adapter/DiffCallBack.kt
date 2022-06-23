@@ -13,7 +13,7 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
     ): Boolean {
         var returnValue =
             (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem.item?.id == newItem.baseModelOfItem.item?.id) ||
-                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category.name == newItem.category.name)
+                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category.id == newItem.category.id)
         if (oldItem is UiModel.Item && newItem is UiModel.Item) {
             if (oldItem.baseModelOfItem.item == null && newItem.baseModelOfItem.item == null) {
                 if (oldItem.baseModelOfItem.state == State.ERROR || newItem.baseModelOfItem.state == State.ERROR) {
@@ -33,7 +33,7 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
     ): Boolean {
         var returnValue =
             (oldItem is UiModel.Item && newItem is UiModel.Item && oldItem.baseModelOfItem.item?.id == newItem.baseModelOfItem.item?.id) ||
-                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category.name == newItem.category.name)
+                    (oldItem is UiModel.Header && newItem is UiModel.Header && oldItem.category.id == newItem.category.id)
 //        if (oldItem is UiModel.Item && newItem is UiModel.Item) {
 //            if (oldItem.baseModelOfItem.item == null && newItem.baseModelOfItem.item == null) {
 //                returnValue =

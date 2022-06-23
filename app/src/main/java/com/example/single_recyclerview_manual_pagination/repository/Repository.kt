@@ -53,7 +53,6 @@ class Repository private constructor() {
 //    private var _tabPosition = MutableLiveData<Int>()
 //    val tabPosition = _tabPosition
 
-
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun getStickerPacks(): StickerPacks {
         val category = NetworkLayer.retrofitService.getStickerPacks()
@@ -67,9 +66,8 @@ class Repository private constructor() {
                     )
                     )
         }
-        listOfCategory.value!!.removeIf { it.id == null }
+        listOfCategory.value!!.removeIf { it.id == -1 }
         listOfCategory.postValue(listOfCategory.value!!)
-
         Log.i("shubham", "Testing")
         return category
     }
@@ -84,7 +82,7 @@ class Repository private constructor() {
             val tempBaseModelItemList =
                 mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
-                delay(3000)
+//                delay(3000)
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,

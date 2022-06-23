@@ -5,10 +5,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.example.single_recyclerview_manual_pagination.databinding.HeaderBinding
-import com.example.single_recyclerview_manual_pagination.databinding.ItemsBinding
-import com.example.single_recyclerview_manual_pagination.databinding.LoadMoreBinding
-import com.example.single_recyclerview_manual_pagination.models.Sticker
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -27,63 +23,68 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
     companion object {
         private val count = AtomicInteger(0)
     }
+
     private fun bindItem(
         item: UiModel.Item<T>,
         adapter: AbstractAdapter<T>,
         position: Int
     ) {
         Log.i("onbind", "position: $position Item: $item")
+
         if (item.baseModelOfItem.item == null) {
             showPlaceholder(item, adapter, position)
             isRetryVisible(false)
-            if (item.baseModelOfItem.state == State.NOT_LOADING) {
-                if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
-                    if (!item.baseModelOfItem.isLoadMoreClicked) {
+            val category =
+                adapter.dataset.categoryList.find { it.id == item.baseModelOfItem.category?.id }
+
+            if (category != null) {
+                if (item.baseModelOfItem.state == State.NOT_LOADING) {
+                    if (category.id != -1) {
+                        if (!item.baseModelOfItem.isLoadMoreClicked) {
+                            callApiAndMarkItemsAsLoading(
+                                adapter = adapter,
+                                position = position,
+                                id = category.id,
+                                offset = (item.baseModelOfItem.categoryBasedPosition.plus(
+                                    1
+                                )).toString(),
+                                limit = category.initialCount,
+                                item = item,
+                                isLoadMoreClicked = false
+                            )
+                        } else if (item.baseModelOfItem.isLoadMoreClicked) {
+                            callApiAndMarkItemsAsLoading(
+                                adapter = adapter,
+                                position = position,
+                                id = category.id,
+                                offset = (item.baseModelOfItem.categoryBasedPosition.plus(
+                                    1
+                                )).toString(),
+                                limit = category.itemsToLoadAfterViewMore,
+                                item = item,
+                                isLoadMoreClicked = true
+                            )
+                        }
+                    }
+
+                } else if (item.baseModelOfItem.state == State.ERROR) {
+                    Log.i("bindItem", "here")
+                    isRetryVisible(true)
+                    setRetryListener(adapter = adapter, item = item, position = position)
+                    retryView.setOnClickListener {
+                        isRetryVisible(false)
                         callApiAndMarkItemsAsLoading(
                             adapter = adapter,
                             position = position,
-                            id = item.baseModelOfItem.category?.id!!,
+                            id = category.id,
                             offset = (item.baseModelOfItem.categoryBasedPosition.plus(
                                 1
                             )).toString(),
-                            limit = item.baseModelOfItem.category?.initialCount!!,
+                            limit = category.initialCount,
                             item = item,
                             isLoadMoreClicked = false
                         )
-                    } else if (item.baseModelOfItem.isLoadMoreClicked) {
-                        val category =
-                            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
-
-                        callApiAndMarkItemsAsLoading(
-                            adapter = adapter,
-                            position = position,
-                            id = category?.id!!,
-                            offset = (item.baseModelOfItem.categoryBasedPosition.plus(
-                                1
-                            )).toString(),
-                            limit = category.itemsToLoadAfterViewMore,
-                            item = item,
-                            isLoadMoreClicked = true
-                        )
                     }
-                }
-            } else if (item.baseModelOfItem.state == State.ERROR) {
-                Log.i("bindItem", "here")
-                isRetryVisible(true)
-                setRetryListener(adapter = adapter, item = item, position = position)
-                retryView.setOnClickListener {
-                    isRetryVisible(false)
-                    callApiAndMarkItemsAsLoading(
-                        adapter = adapter,
-                        position = position,
-                        id = item.baseModelOfItem.category?.id!!,
-                        offset = (item.baseModelOfItem.categoryBasedPosition.plus(
-                            1
-                        )).toString(),
-                        limit = item.baseModelOfItem.category?.initialCount!!,
-                        item = item,
-                        isLoadMoreClicked = false
-                    )
                 }
             }
         } else if (item.baseModelOfItem.state == State.LOADED) {
@@ -112,22 +113,9 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
             "callApiAndMarkItems",
             "${count.incrementAndGet()} position${position} offset${offset}"
         )
-//        var i = position
-//        while (i < adapter.dataset.uiModelList.size && adapter.dataset.uiModelList[i] is UiModel.Item<T>) {
-//            Log.i("abstractviewholder", "$i")
-//            (adapter.dataset.uiModelList[i] as UiModel.Item<T>).baseModelOfItem.state =
-//                State.LOADING
-//            i++;
-//        }
-////
-//        if (category != null) {
-//            for (items in category.baseModelOfItemList) {
-//                items.isLoadMoreClicked = isLoadMoreClicked
-//                items.state = State.LOADED
-//            }
-//        }
+
         val category =
-            adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
+            adapter.dataset.categoryList.find { it.id == item.baseModelOfItem.category?.id }
         if (category != null) {
             for (items in category.baseModelOfItemList) {
                 items.state = State.LOADED
@@ -173,11 +161,11 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
         position: Int
     ) {
         loadMoreView.isEnabled = false
-        if (loadMore.baseModelItemAbove != null) {
-            if (loadMore.baseModelItemAbove.item != null && loadMore.baseModelItemAbove.state == State.LOADED) {
-                loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
-                loadMoreView.isEnabled = true
-            }
+        if (loadMore.baseModelItemAbove.item != null
+            && loadMore.baseModelItemAbove.state == State.LOADED
+        ) {
+            loadMore.visible = !loadMore.baseModelItemAbove.isLastItem
+            loadMoreView.isEnabled = true
         }
         loadMoreView.isVisible = loadMore.visible
         doStuffWithLoadMoreUI(loadMore, adapter, position)
@@ -203,17 +191,19 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
         adapter: AbstractAdapter<T>,
         position: Int
     ) {
-        val category = adapter.dataset.listOfItems.find { it.id == loadMore.id }
-        loadMore.baseModelItemAbove?.isLoadMoreClicked = true
+        val category = adapter.dataset.categoryList.find { it.id == loadMore.id }
+        loadMore.baseModelItemAbove.isLoadMoreClicked = true
         if (category != null) {
-            val remaining = category.itemsToLoadAfterViewMore
+            val itemsToLoadAfterViewMore = category.itemsToLoadAfterViewMore
             val tempList = category.baseModelOfItemList.toMutableList()
             var j = 0
-            repeat(remaining) {
+            repeat(itemsToLoadAfterViewMore) {
                 tempList.add(
                     BaseModelOfItem(
                         isLoadMoreClicked = true,
-                        categoryBasedPosition = loadMore.baseModelItemAbove?.categoryBasedPosition!! + j
+                        categoryBasedPosition =
+                        loadMore.baseModelItemAbove.categoryBasedPosition + j,
+                        category = category
                     )
                 )
                 j++;

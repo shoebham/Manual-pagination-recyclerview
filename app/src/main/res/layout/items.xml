@@ -36,8 +36,6 @@
         android:layout_height="wrap_content"
         android:text="retry"
         android:layout_margin="10dp"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,18 +1,19 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
-import android.util.Log
-import com.example.single_recyclerview_manual_pagination.models.BaseModelOfItemInheritingAbstractClass
+import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
 
 
-class BaseClass<T>(var listOfItems: List<Category<T>>) {
+class BaseClass<T>(var categoryList: List<Category<T>>) {
 
 
     var uiModelList = listOf<UiModel<T>>()
 
     fun convertToUiModel(): List<UiModel<T>> {
         val tempUiModelList = mutableListOf<UiModel<T>>()
-        for ((i, item) in listOfItems.withIndex()) {
+        for ((i, item) in categoryList.withIndex()) {
+
             tempUiModelList.add(UiModel.Header(item))
+
             for ((j, it) in item.baseModelOfItemList.withIndex()) {
                 it.category = item
                 tempUiModelList.add(UiModel.Item(it))
@@ -31,17 +32,17 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
     private fun replacePlaceholders(
         it: List<BaseModelOfItem<T>>,
         id: Int,
-        offset: String?,
+        offset: String,
     ) {
 
-        val category = listOfItems.find { it.id == id }
+        val category = categoryList.find { it.id == id }
         val itemlist = category?.baseModelOfItemList?.toMutableList()
         if (itemlist != null && itemlist[0].item == null) {
-            listOfItems.find { it.id == id }?.baseModelOfItemList = it
+            categoryList.find { it.id == id }?.baseModelOfItemList = it
         } else {
             if (itemlist != null && it.isNotEmpty()) {
                 for ((i, item) in it.withIndex()) {
-                    itemlist[offset!!.toInt() + i - 1] = item
+                    itemlist[offset.toInt() + i - 1] = item
                 }
                 itemlist.removeAll { it.item == null }
                 category.baseModelOfItemList = itemlist
@@ -51,34 +52,41 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
     }
 
     fun mapListToBaseModelOfItem(
-        response: List<T>?, id: Int, offset: String?,
-        limit: Int?
+        response: List<T>?, id: Int, offset: String,
+        limit: Int
     ) {
         val tempBaseModelItemList =
             mutableListOf<BaseModelOfItem<T>>()
-        if (response != null && response.isNotEmpty() && response[0] != null) {
-            for ((i, item) in response.withIndex()) {
-                tempBaseModelItemList.add(
-                    BaseModelOfItem(
-                        item,
-                        categoryBasedPosition = offset!!.toInt() + i,
-                        state = State.LOADED,
-                        isLastItem = response.size < limit!!,
+        val category = categoryList.find { it.id == id }
+        if (category != null) {
+            if (response != null && response.isNotEmpty() && response[0] != null) {
+                for ((i, item) in response.withIndex()) {
+                    tempBaseModelItemList.add(
+                        BaseModelOfItem(
+                            item,
+                            categoryBasedPosition = offset.toInt() + i,
+                            state = State.LOADED,
+                            isLastItem = response.size < limit,
+                            category = category
+                        )
                     )
-                )
-            }
-        } else if (response == null) {
-            for (i in 0 until limit!!) {
-                tempBaseModelItemList.add(
-                    BaseModelOfItem(
-                        null,
-                        state = State.ERROR
+                }
+            } else if (response == null) {
+                for (i in 0 until limit) {
+                    tempBaseModelItemList.add(
+                        BaseModelOfItem(
+                            null,
+                            state = State.ERROR,
+                            category = category
+                        )
                     )
-                )
+                }
             }
         }
+
         replacePlaceholders(it = tempBaseModelItemList, id = id, offset = offset)
     }
+
 
     fun getCategoryPositionInUiModelList(id: Int?): Int {
         for ((i, item) in uiModelList.withIndex()) {
