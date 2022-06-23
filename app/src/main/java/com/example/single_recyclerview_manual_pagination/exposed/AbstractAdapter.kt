@@ -2,10 +2,7 @@ package com.example.single_recyclerview_manual_pagination.exposed
 
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
-
 
 
 abstract class AbstractAdapter<T>
@@ -16,7 +13,6 @@ abstract class AbstractAdapter<T>
 
     companion object {
         private var bindCount = AtomicInteger(0)
-
     }
 
     abstract var differ: AsyncListDiffer<UiModel<T>>

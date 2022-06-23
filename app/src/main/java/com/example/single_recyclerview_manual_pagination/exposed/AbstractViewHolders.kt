@@ -12,7 +12,7 @@ abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemV
     abstract fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int)
 }
 
-abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
+abstract class ItemViewHolder<T>(binding: ViewBinding, private val scope: CoroutineScope) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
         bindItem(item as UiModel.Item<T>, adapter, position)
@@ -122,8 +122,8 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
                 items.isLoadMoreClicked = isLoadMoreClicked
             }
         }
-        var res: List<T>? = null
-        CoroutineScope(Dispatchers.IO).launch {
+        var res: List<T>?
+        scope.launch {
             res = adapter.apiInterface.getItemsWithOffset(
                 id,
                 offset,
@@ -148,7 +148,7 @@ abstract class HeaderViewHolder<T>(binding: ViewBinding) :
     abstract fun bindHeader(header: UiModel.Header<T>, adapter: AbstractAdapter<T>, position: Int)
 }
 
-abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
+abstract class LoadMoreViewHolder<T>(binding: ViewBinding) :
     BaseViewHolder<T>(binding.root) {
     override fun bind(item: UiModel<T>, adapter: AbstractAdapter<T>, position: Int) {
         bindLoadMore(item as UiModel.LoadMore<T>, adapter, position)
@@ -206,7 +206,7 @@ abstract class LoadMoreViewHolder<T>(private val binding: ViewBinding) :
                         category = category
                     )
                 )
-                j++;
+                j++
             }
             category.baseModelOfItemList = tempList
             val uiModelList = adapter.dataset.convertToUiModel()

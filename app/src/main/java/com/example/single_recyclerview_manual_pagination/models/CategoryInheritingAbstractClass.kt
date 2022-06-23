@@ -11,16 +11,21 @@ data class CategoryInheritingAbstractClass(
     override var baseModelOfItemList: List<BaseModelOfItem<Sticker>> =
         MutableList(initialCount) { BaseModelOfItemInheritingAbstractClass() },
     override var itemsToLoadAfterViewMore: Int = 20,
-    override var name: String = "Loading",
     override var currentCount: Int = baseModelOfItemList.size,
+    var name: String = "Loading",
 ) : Category<Sticker>()
 
-// dummy data
+//things to do
 // val var
 // docs
-// !!
-// keep only necessary things
 // nomenclature
-// warnings
+
+
+//things done
+// !!
+// dummy data
+// keep only necessary things
 // a4 size line
+// warnings
 // coroutine scope
+

@@ -1,7 +1,5 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
-import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
-
 
 class BaseClass<T>(var categoryList: List<Category<T>>) {
 
@@ -10,11 +8,9 @@ class BaseClass<T>(var categoryList: List<Category<T>>) {
 
     fun convertToUiModel(): List<UiModel<T>> {
         val tempUiModelList = mutableListOf<UiModel<T>>()
-        for ((i, item) in categoryList.withIndex()) {
-
+        for (item in categoryList) {
             tempUiModelList.add(UiModel.Header(item))
-
-            for ((j, it) in item.baseModelOfItemList.withIndex()) {
+            for (it in item.baseModelOfItemList) {
                 it.category = item
                 tempUiModelList.add(UiModel.Item(it))
             }

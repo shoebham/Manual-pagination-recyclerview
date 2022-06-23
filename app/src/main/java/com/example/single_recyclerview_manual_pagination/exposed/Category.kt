@@ -7,5 +7,4 @@ abstract class Category<T> {
     abstract var baseModelOfItemList: List<BaseModelOfItem<T>>
     abstract var currentCount: Int
     abstract var itemsToLoadAfterViewMore: Int
-    abstract var name: String
 }

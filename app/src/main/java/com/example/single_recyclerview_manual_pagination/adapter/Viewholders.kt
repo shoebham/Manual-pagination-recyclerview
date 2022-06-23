@@ -18,6 +18,8 @@ import com.example.single_recyclerview_manual_pagination.exposed.LoadMoreViewHol
 import com.example.single_recyclerview_manual_pagination.exposed.State
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
+import com.example.single_recyclerview_manual_pagination.models.CategoryInheritingAbstractClass
+import kotlinx.coroutines.CoroutineScope
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -28,14 +30,16 @@ class Viewholders {
         private var count = AtomicInteger(0)
     }
 
-    class StickerViewHolder(private val binding: ItemsBinding) : ItemViewHolder<Sticker>(binding) {
+    class StickerViewHolder(private val binding: ItemsBinding, scope: CoroutineScope) :
+        ItemViewHolder<Sticker>(binding, scope = scope) {
 
         override var retryView: View = binding.retry
+
         companion object {
-            fun from(parent: ViewGroup): StickerViewHolder {
+            fun from(parent: ViewGroup, scope: CoroutineScope): StickerViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ItemsBinding.inflate(layoutInflater, parent, false)
-                return StickerViewHolder(binding)
+                return StickerViewHolder(binding, scope)
             }
 
             var colorMap = HashMap<Int, ColorDrawable>()
@@ -118,7 +122,7 @@ class Viewholders {
             adapter: AbstractAdapter<Sticker>,
             position: Int
         ) {
-            binding.textitem.text = header.category.name
+            binding.textitem.text = (header.category as CategoryInheritingAbstractClass).name
         }
 
     }

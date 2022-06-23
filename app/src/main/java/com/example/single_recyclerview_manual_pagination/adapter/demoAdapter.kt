@@ -9,11 +9,13 @@ import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
 import com.example.single_recyclerview_manual_pagination.exposed.BaseViewHolder
 import com.example.single_recyclerview_manual_pagination.models.Sticker
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
+import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.atomic.AtomicInteger
 
 class demoAdapter(
     val baseclass: BaseClass<Sticker>,
     val apiinterface: ApiInterface<Sticker>,
+    val scope: CoroutineScope
 ) : AbstractAdapter<Sticker>(baseclass, apiinterface) {
 
     companion object {
@@ -27,7 +29,7 @@ class demoAdapter(
         return when (viewType) {
             -1 -> Viewholders.StickerHeaderViewHolder.from(parent)
             0 -> Viewholders.loadmoreviewholder.from(parent)
-            else -> Viewholders.StickerViewHolder.from(parent)
+            else -> Viewholders.StickerViewHolder.from(parent, scope)
         }
     }
 

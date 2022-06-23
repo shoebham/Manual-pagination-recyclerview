@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,7 @@ import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
 import com.example.single_recyclerview_manual_pagination.exposed.BaseClass
+import com.example.single_recyclerview_manual_pagination.exposed.Category
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.*
 
@@ -51,11 +53,12 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         val emptyListOfCategory = CategoryInheritingAbstractClass()
         val tempList = MutableList(10) { emptyListOfCategory }
         baseClass = BaseClass(tempList)
-        adapter = demoAdapter(baseClass, this)
+        adapter = demoAdapter(baseClass, this, scope = lifecycleScope)
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
         val uimodellist = baseClass.convertToUiModel()
         adapter.submitList(uimodellist)
+
 //        adapter.setApiListener(this)
     }
 
