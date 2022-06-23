@@ -73,8 +73,8 @@ class Viewholders {
             position: Int
         ) {
             Glide.with(binding.root.context)
-                .load(getRandomDrawableColor(position))
-                .into(binding.itemImageView)
+                .load(item.baseModelOfItem.item?.fixedWidthSmall?.png?.url)
+                .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
         }
 
         override fun showItem(
@@ -83,7 +83,7 @@ class Viewholders {
             position: Int
         ) {
             Glide.with(binding.root.context)
-                .load(item.baseModelOfItem.item?.fixedWidthTiny?.png?.url)
+                .load(item.baseModelOfItem.item?.fixedWidthSmall?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
         }
 
@@ -98,20 +98,6 @@ class Viewholders {
             position: Int
         ) {
             retryView = binding.retry
-//            binding.retry.setOnClickListener {
-//                isRetryVisible(false)
-//                callApiAndMarkItemsAsLoading(
-//                    adapter = adapter,
-//                    position = position,
-//                    id = item.baseModelOfItem.category?.id!!,
-//                    offset = (item.baseModelOfItem.categoryBasedPosition.plus(
-//                        1
-//                    )).toString(),
-//                    limit = item.baseModelOfItem.category?.initialCount!!,
-//                    item = item,
-//                    isLoadMoreClicked = false
-//                )
-//            }
         }
     }
 

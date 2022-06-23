@@ -74,7 +74,7 @@ class BaseClass<T>(var listOfItems: List<Category<T>>) {
                 )
             }
         } else if (response == null) {
-            for (i in 0 until limit!! + 1) {
+            for (i in 0 until limit!!) {
                 tempBaseModelItemList.add(
                     BaseModelOfItem(
                         null,

@@ -45,20 +45,17 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         for (i in 1..1000) {
             itemList.add("Item $i");
         }
+
+
         initUi()
-
-
         val emptyListOfCategory = CategoryInheritingAbstractClass()
         val tempList = MutableList(10) { emptyListOfCategory }
         baseClass = BaseClass(tempList)
-
         adapter = demoAdapter(baseClass, this)
         differ = AsyncListDiffer(adapter, DiffCallBack())
         adapter.differ = differ
-
-
-//        val uimodellist = baseClass.convertToUiModel()
-//        adapter.submitList(uimodellist)
+        val uimodellist = baseClass.convertToUiModel()
+        adapter.submitList(uimodellist)
 //        adapter.setApiListener(this)
     }
 
@@ -144,6 +141,9 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         recyclerViewState = binding.recyclerview.getLayoutManager()?.onSaveInstanceState()!!;
         binding.recyclerview.recycledViewPool.setMaxRecycledViews(0, 1000)
         binding.recyclerview.recycledViewPool.setMaxRecycledViews(1, 1000)
+        binding.recyclerview.setItemViewCacheSize(100);
+        binding.recyclerview.setNestedScrollingEnabled(false);
+
     }
 
     /**

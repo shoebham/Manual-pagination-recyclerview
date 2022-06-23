@@ -34,8 +34,8 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
     ) {
         Log.i("onbind", "position: $position Item: $item")
         if (item.baseModelOfItem.item == null) {
-            isRetryVisible(false)
             showPlaceholder(item, adapter, position)
+            isRetryVisible(false)
             if (item.baseModelOfItem.state == State.NOT_LOADING) {
                 if (item.baseModelOfItem.category != null && item.baseModelOfItem.category?.id != null) {
                     if (!item.baseModelOfItem.isLoadMoreClicked) {
@@ -67,9 +67,7 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
                         )
                     }
                 }
-            }
-
-            if (item.baseModelOfItem.state == State.ERROR) {
+            } else if (item.baseModelOfItem.state == State.ERROR) {
                 Log.i("bindItem", "here")
                 isRetryVisible(true)
                 setRetryListener(adapter = adapter, item = item, position = position)
@@ -114,14 +112,27 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
             "callApiAndMarkItems",
             "${count.incrementAndGet()} position${position} offset${offset}"
         )
+//        var i = position
+//        while (i < adapter.dataset.uiModelList.size && adapter.dataset.uiModelList[i] is UiModel.Item<T>) {
+//            Log.i("abstractviewholder", "$i")
+//            (adapter.dataset.uiModelList[i] as UiModel.Item<T>).baseModelOfItem.state =
+//                State.LOADING
+//            i++;
+//        }
+////
+//        if (category != null) {
+//            for (items in category.baseModelOfItemList) {
+//                items.isLoadMoreClicked = isLoadMoreClicked
+//                items.state = State.LOADED
+//            }
+//        }
         val category =
             adapter.dataset.listOfItems.find { it.id == item.baseModelOfItem.category?.id }
-
-        var i = position
-        while (adapter.dataset.uiModelList[i] is UiModel.Item<T>) {
-            (adapter.dataset.uiModelList[i] as UiModel.Item<T>).baseModelOfItem.state =
-                State.LOADING
-            i++;
+        if (category != null) {
+            for (items in category.baseModelOfItemList) {
+                items.state = State.LOADED
+                items.isLoadMoreClicked = isLoadMoreClicked
+            }
         }
         var res: List<T>? = null
         CoroutineScope(Dispatchers.IO).launch {
@@ -133,6 +144,7 @@ abstract class ItemViewHolder<T>(private val binding: ViewBinding) :
             adapter.dataset.mapListToBaseModelOfItem(res, id, offset, limit)
             adapter.submitList(adapter.dataset.convertToUiModel())
         }
+
     }
 
     abstract fun showPlaceholder(item: UiModel.Item<T>, adapter: AbstractAdapter<T>, position: Int)
