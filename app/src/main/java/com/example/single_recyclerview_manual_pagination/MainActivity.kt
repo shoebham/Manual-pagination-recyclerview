@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         return res
     }
 
-    fun scrollToCategory(id: Int?): Int {
+    fun scrollToCategory(id: Int): Int {
         return pagingListWrapperClass.getCategoryPositionInUiModelList(id)
     }
 

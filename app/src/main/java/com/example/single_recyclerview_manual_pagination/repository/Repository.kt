@@ -88,7 +88,7 @@ class Repository private constructor() {
                     limit = limit,
                     offset = offset
                 )
-//                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
+                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
                 listOfT = res.items
 
             } catch (exception: Exception) {

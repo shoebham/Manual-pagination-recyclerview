@@ -69,9 +69,7 @@ class Viewholders {
         )
 
         override fun showPlaceholder(
-            item: UiModel.Item<Sticker>,
-            adapter: CustomPagingAdapter<Sticker>,
-            position: Int
+            item: UiModel.Item<Sticker>
         ) {
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthSmall?.png?.url)
@@ -79,9 +77,7 @@ class Viewholders {
         }
 
         override fun showItem(
-            item: UiModel.Item<Sticker>,
-            adapter: CustomPagingAdapter<Sticker>,
-            position: Int
+            item: UiModel.Item<Sticker>
         ) {
             Glide.with(binding.root.context)
                 .load(item.baseModelOfItem.item?.fixedWidthSmall?.png?.url)
@@ -94,9 +90,7 @@ class Viewholders {
         }
 
         override fun setRetryListener(
-            adapter: CustomPagingAdapter<Sticker>,
-            item: UiModel.Item<Sticker>,
-            position: Int
+            item: UiModel.Item<Sticker>
         ) {
             retryView = binding.retry
         }
@@ -116,9 +110,7 @@ class Viewholders {
 //            binding.textitem.text = stickerHeader
 //        }
         override fun bindHeader(
-            header: UiModel.Header<Sticker>,
-            adapter: CustomPagingAdapter<Sticker>,
-            position: Int
+            header: UiModel.Header<Sticker>
         ) {
             binding.textitem.text = (header.category as CategoryInheritingAbstractClass).name
         }
@@ -137,17 +129,13 @@ class Viewholders {
         }
 
         override fun doStuffWithLoadMoreUI(
-            loadMore: UiModel.LoadMore<Sticker>,
-            adapter: CustomPagingAdapter<Sticker>,
-            position: Int
+            loadMore: UiModel.LoadMore<Sticker>
         ) {
 
         }
 
         override fun doStuffWithOnClickListener(
-            loadMore: UiModel.LoadMore<Sticker>,
-            adapter: CustomPagingAdapter<Sticker>,
-            position: Int
+            loadMore: UiModel.LoadMore<Sticker>
         ) {
 
         }
