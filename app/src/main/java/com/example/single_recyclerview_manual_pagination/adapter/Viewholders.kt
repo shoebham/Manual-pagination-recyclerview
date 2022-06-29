@@ -27,10 +27,8 @@ class Viewholders {
     companion object {
         private var count = AtomicInteger(0)
     }
-
     class StickerViewHolder(private val binding: ItemsBinding, scope: CoroutineScope) :
         ItemViewHolder<Sticker>(binding, scope = scope) {
-
         override var retryView: View = binding.retry
 
         companion object {
@@ -39,14 +37,11 @@ class Viewholders {
                 val binding = ItemsBinding.inflate(layoutInflater, parent, false)
                 return StickerViewHolder(binding, scope)
             }
-
             var colorMap = HashMap<Int, ColorDrawable>()
         }
 
         private fun getRandomDrawableColor(position: Int): ColorDrawable {
             if (colorMap.get(position) == null) {
-//                Log.i("colors", "${count.incrementAndGet()}")
-                val idx = Random().nextInt(vibrantLightColorList.size)
                 val rnd = Random()
                 val color = ColorDrawable(
                     Color.argb(
@@ -60,27 +55,21 @@ class Viewholders {
             }
             return colorMap[position]!!
         }
-
-        private val vibrantLightColorList = arrayOf(
-            ColorDrawable(Color.parseColor("#9ACCCD")), ColorDrawable(Color.parseColor("#8FD8A0")),
-            ColorDrawable(Color.parseColor("#CBD890")), ColorDrawable(Color.parseColor("#DACC8F")),
-            ColorDrawable(Color.parseColor("#D9A790")), ColorDrawable(Color.parseColor("#D18FD9")),
-            ColorDrawable(Color.parseColor("#FF6772")), ColorDrawable(Color.parseColor("#DDFB5C"))
-        )
-
         override fun showPlaceholder(
-            item: UiModel.Item<Sticker>
+            item: UiModel.Item<Sticker>,
+            position: Int
         ) {
             Glide.with(binding.root.context)
-                .load(item.baseModelOfItem.item?.fixedWidthSmall?.png?.url)
+                .load(item.baseModelOfItem.item?.fixedWidthTiny?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
         }
 
         override fun showItem(
-            item: UiModel.Item<Sticker>
+            item: UiModel.Item<Sticker>,
+            position: Int
         ) {
             Glide.with(binding.root.context)
-                .load(item.baseModelOfItem.item?.fixedWidthSmall?.png?.url)
+                .load(item.baseModelOfItem.item?.fixedWidthTiny?.png?.url)
                 .placeholder(getRandomDrawableColor(position)).into(binding.itemImageView)
         }
 

@@ -16,14 +16,15 @@ package com.example.single_recyclerview_manual_pagination.exposed
  * this helps in sending api call with correct parameters ex. when load more is clicked the limit
  * is changed to itemsToLoadAfterViewMore parameter which is extracted from the category
  */
-open class BaseModelOfItem<T>(
-    open val item: T? = null,
-    open val categoryBasedPosition: Int = 0,
-    open val continuousPosition: Int = 0,
-    open var isLastItem: Boolean = false,
-    open var category: Category<T>? = null,
-    open var state: State = State.NOT_LOADING,
-    open var isLoadMoreClicked: Boolean = false
+class BaseModelOfItem<T>(
+    val item: T? = null,
+    val categoryBasedPosition: Int = 0,
+    val continuousPosition: Int = 0,
+    var isLastItem: Boolean = false,
+    var category: Category<T>? = null,
+    var state: State = State.NOT_LOADING,
+    var isLoadMoreClicked: Boolean = false,
+    val offset: String = "1",
 )
 
 

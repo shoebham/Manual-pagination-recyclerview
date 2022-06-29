@@ -51,7 +51,7 @@ class DiffCallBack : DiffUtil.ItemCallback<UiModel<Sticker>>() {
 //        if ((oldItem is UiModel.Header && newItem is UiModel.Header))
 //            Log.i("header", " $returnValue old:${oldItem.text} new:${newItem.text}")
 
-        return oldItem == newItem
+        return returnValue
 
     }
 

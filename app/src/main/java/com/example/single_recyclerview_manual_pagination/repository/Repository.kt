@@ -66,6 +66,10 @@ class Repository private constructor() {
                     )
                     )
         }
+        val categories = category.stickerPacks.map {
+            CategoryInheritingAbstractClass(id = it.id, name = it.name, initialCount = 20)
+        }
+
         listOfCategory.value!!.removeIf { it.id == -1 }
         listOfCategory.postValue(listOfCategory.value!!)
         Log.i("shubham", "Testing")
@@ -76,11 +80,11 @@ class Repository private constructor() {
         id: Int,
         offset: String?,
         limit: Int?
-    ): List<Sticker>? {
-        var listOfT: List<Sticker>? = null
+    ): Stickers? {
+        var listOfT: Stickers? = null
         withContext(Dispatchers.IO) {
-            val tempBaseModelItemList =
-                mutableListOf<BaseModelOfItemInheritingAbstractClass>()
+//            val tempBaseModelItemList =
+//                mutableListOf<BaseModelOfItemInheritingAbstractClass>()
             try {
 //                delay(3000)
                 val res = NetworkLayer.retrofitService.getStickers(
@@ -88,8 +92,8 @@ class Repository private constructor() {
                     limit = limit,
                     offset = offset
                 )
-                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
-                listOfT = res.items
+//                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
+                listOfT = res
 
             } catch (exception: Exception) {
                 Log.i("repository", "Exception:$exception")

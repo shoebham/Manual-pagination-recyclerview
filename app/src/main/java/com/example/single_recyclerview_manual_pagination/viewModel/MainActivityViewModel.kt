@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
+import com.example.single_recyclerview_manual_pagination.exposed.BaseModel
 import com.example.single_recyclerview_manual_pagination.exposed.PagingListWrapperClass
 import com.example.single_recyclerview_manual_pagination.models.*
 import com.example.single_recyclerview_manual_pagination.repository.Repository
@@ -82,7 +83,7 @@ class MainActivityViewModel(
         id: Int,
         offset: String?,
         limit: Int?
-    ): List<Sticker>? {
+    ): Stickers? {
 
         val tempCategory = mutableListOf<CategoryInheritingAbstractClass>()
 //            for (item in repository.listOfCategory.value!!) {

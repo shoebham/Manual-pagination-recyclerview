@@ -18,6 +18,7 @@ import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
 import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding
 import com.example.single_recyclerview_manual_pagination.exposed.ApiInterface
+import com.example.single_recyclerview_manual_pagination.exposed.BaseModel
 import com.example.single_recyclerview_manual_pagination.exposed.PagingListWrapperClass
 import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import com.example.single_recyclerview_manual_pagination.models.*
@@ -47,7 +48,6 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
             itemList.add("Item $i");
         }
 
-
         initUi()
         val emptyListOfCategory = CategoryInheritingAbstractClass()
         val tempList = MutableList(10) { emptyListOfCategory }
@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
         adapter.differ = differ
         val uimodellist = pagingListWrapperClass.convertToUiModel()
         adapter.submitList(uimodellist)
-
 //        adapter.setApiListener(this)
     }
 
@@ -88,16 +87,11 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
     fun initItems() {
         pagingListWrapperClass.categoryList = viewModel.categoryInheritingAbstractClassList.value!!
         val temp = pagingListWrapperClass.convertToUiModel()
+
         adapter.submitList(temp)
     }
 
     fun getCount() {
-//        viewModel.count.observe(this, Observer { it ->
-//            countOfStickers = it
-//        })
-//        viewModel.individualCount.observe(this) {
-//            countMap.putAll(it)
-//        }
         Log.i("mainactivityy", "countofstickers${countOfStickers} ${countMap.size}")
         for (key in countMap.keys) {
             Log.i("countmap", "key:${key} value:${countMap.get(key)}")
@@ -167,7 +161,11 @@ class MainActivity : AppCompatActivity(), ApiInterface<Sticker> {
 
     }
 
-    override suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<Sticker>? {
+    override suspend fun getItemsWithOffset(
+        id: Int,
+        offset: String,
+        limit: Int
+    ): BaseModel<Sticker>? {
         val res = viewModel.getStickersWithOffset(pagingListWrapperClass, id, offset, limit)
         return res
     }

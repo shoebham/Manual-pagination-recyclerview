@@ -1,12 +1,13 @@
 package com.example.single_recyclerview_manual_pagination.models
 
+import com.example.single_recyclerview_manual_pagination.exposed.BaseModel
 import com.squareup.moshi.Json
 
 data class Stickers(
     @Json(name = "stickers")
-    var items: List<Sticker>,
-    var offset: String?
-)
+    override var items: List<Sticker>,
+    override var offset: String
+) : BaseModel<Sticker>(offset = offset)
 
 data class Sticker(
     val backgroundColor: String?=null,

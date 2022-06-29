@@ -1,6 +1,9 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
 
+import com.example.single_recyclerview_manual_pagination.models.Sticker
+
+
 /**
  * abstract class for category of type T
  * this class is used to wrap the items inside a category in a recycler view
@@ -14,11 +17,11 @@ package com.example.single_recyclerview_manual_pagination.exposed
  *
  * @see BaseModelOfItem
  */
-abstract class Category<T> {
+abstract class Category<T>(initialPlaceholders: Int) {
     abstract val id: Int
     abstract val isViewMoreVisible: Boolean
-    abstract val currentCount: Int
     abstract val itemsToLoadAfterViewMore: Int
     abstract val initialCount: Int
-    abstract var baseModelOfItemList: List<BaseModelOfItem<T>>
+    internal var baseModelOfItemList: List<BaseModelOfItem<T>> =
+        MutableList(initialPlaceholders) { BaseModelOfItem() }
 }

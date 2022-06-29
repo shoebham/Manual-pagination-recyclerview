@@ -1,5 +1,6 @@
 package com.example.single_recyclerview_manual_pagination.exposed
 
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.viewbinding.ViewBinding
@@ -65,6 +66,7 @@ abstract class LoadMoreViewHolder<T>(binding: ViewBinding) :
         loadMore: UiModel.LoadMore<T>,
         adapter: CustomPagingAdapter<T>
     ) {
+        Log.i("loadmore", "here")
         val category = adapter.dataset.categoryList.find { it.id == loadMore.id }
         loadMore.baseModelItemAbove.isLoadMoreClicked = true
         if (category != null) {
@@ -75,8 +77,8 @@ abstract class LoadMoreViewHolder<T>(binding: ViewBinding) :
                 tempList.add(
                     BaseModelOfItem(
                         isLoadMoreClicked = true,
-                        categoryBasedPosition =
-                        loadMore.baseModelItemAbove.categoryBasedPosition + j,
+                        offset =
+                        loadMore.baseModelItemAbove.offset,
                         category = category
                     )
                 )

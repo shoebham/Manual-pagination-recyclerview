@@ -10,15 +10,11 @@ data class CategoryInheritingAbstractClass(
     override val isViewMoreVisible: Boolean = true,
     override val initialCount: Int = 20,
     override val itemsToLoadAfterViewMore: Int = 20,
-    override var baseModelOfItemList: List<BaseModelOfItem<Sticker>> =
-        MutableList(initialCount) { BaseModelOfItemInheritingAbstractClass() },
-    override val currentCount: Int = baseModelOfItemList.size,
-) : Category<Sticker>()
+) : Category<Sticker>(initialCount)
+
 
 //things to do
 // val var
-// docs
-
 
 //things done
 // !!
@@ -28,3 +24,4 @@ data class CategoryInheritingAbstractClass(
 // warnings
 // coroutine scope
 // nomenclature
+// docs

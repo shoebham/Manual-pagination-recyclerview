@@ -1,15 +1,18 @@
-package com.example.single_recyclerview_manual_pagination.exposed
+package com.example.single_recyclerview_manual_pagination.exposed;
 
 import android.util.Log
 import android.view.View
 import androidx.viewbinding.ViewBinding
+import com.example.single_recyclerview_manual_pagination.exposed.BaseViewHolder
+import com.example.single_recyclerview_manual_pagination.exposed.CustomPagingAdapter
+import com.example.single_recyclerview_manual_pagination.exposed.UiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicInteger
-
 
 /**
  * Abstract class to provide support for Items in vertical scrolling recycler view.
+ * This class shows placeholders and items whenever the data is received and updates the
+ * recyclerview.
  * Assumes the support of view binding
  */
 abstract class ItemViewHolder<T>(binding: ViewBinding, private val scope: CoroutineScope) :
@@ -24,9 +27,6 @@ abstract class ItemViewHolder<T>(binding: ViewBinding, private val scope: Corout
      */
     abstract var retryView: View
 
-    companion object {
-        private val count = AtomicInteger(0)
-    }
 
     /**
      * Binds the item to the view holder.
@@ -45,74 +45,47 @@ abstract class ItemViewHolder<T>(binding: ViewBinding, private val scope: Corout
         adapter: CustomPagingAdapter<T>,
         position: Int
     ) {
-        Log.i("onbind", "position: $position Item: $item")
         if (item.baseModelOfItem.item == null) {
-            showPlaceholder(item)
+            showPlaceholder(item = item, position = position)
             isRetryVisible(false)
             val category =
                 adapter.dataset.categoryList.find { it.id == item.baseModelOfItem.category?.id }
+                    ?: return
 
-            if (category != null) {
-                if (item.baseModelOfItem.state == State.NOT_LOADING) {
-                    if (category.id != -1) {
-                        if (!item.baseModelOfItem.isLoadMoreClicked) {
-                            callApiAndMarkItemsAsLoading(
-                                adapter = adapter,
-                                id = category.id,
-                                offset = (item.baseModelOfItem.categoryBasedPosition.plus(
-                                    1
-                                )).toString(),
-                                limit = category.initialCount,
-                                item = item,
-                                isLoadMoreClicked = false
-                            )
-                        } else if (item.baseModelOfItem.isLoadMoreClicked) {
-                            callApiAndMarkItemsAsLoading(
-                                adapter = adapter,
-                                id = category.id,
-                                offset = (item.baseModelOfItem.categoryBasedPosition.plus(
-                                    1
-                                )).toString(),
-                                limit = category.itemsToLoadAfterViewMore,
-                                item = item,
-                                isLoadMoreClicked = true
-                            )
-                        }
-                    }
-
-                } else if (item.baseModelOfItem.state == State.ERROR) {
-                    Log.i("bindItem", "here")
-                    isRetryVisible(true)
-                    setRetryListener(item = item)
-                    retryView.setOnClickListener {
-                        isRetryVisible(false)
-                        callApiAndMarkItemsAsLoading(
-                            adapter = adapter,
-                            id = category.id,
-                            offset = (item.baseModelOfItem.categoryBasedPosition.plus(
-                                1
-                            )).toString(),
-                            limit = category.initialCount,
-                            item = item,
-                            isLoadMoreClicked = false
-                        )
-                    }
+            if (item.baseModelOfItem.state == State.NOT_LOADING && category.id >= 0) {
+                callApiAndMarkItemsAsLoading(
+                    adapter = adapter,
+                    id = category.id,
+                    offset = item.baseModelOfItem.offset,
+                    limit = if (item.baseModelOfItem.isLoadMoreClicked)
+                        category.itemsToLoadAfterViewMore else category.initialCount,
+                    item = item,
+                    isLoadMoreClicked = false
+                )
+            } else if (item.baseModelOfItem.state == State.ERROR) {
+                Log.i("bindItem", "here")
+                isRetryVisible(true)
+                setRetryListener(item = item)
+                retryView.setOnClickListener {
+                    isRetryVisible(false)
+                    callApiAndMarkItemsAsLoading(
+                        adapter = adapter,
+                        id = category.id,
+                        offset = item.baseModelOfItem.offset,
+                        limit = category.initialCount,
+                        item = item,
+                        isLoadMoreClicked = false
+                    )
                 }
             }
         } else if (item.baseModelOfItem.state == State.LOADED) {
             isRetryVisible(false)
-            showItem(item)
+            showItem(item = item, position = position)
         }
     }
 
-    /**
-     * sets the retry button as visible or not visible
-     */
     abstract fun isRetryVisible(isVisible: Boolean)
 
-    /**
-     * a function the user can override to set the retry button click listener
-     */
     abstract fun setRetryListener(
         item: UiModel.Item<T>
     )
@@ -149,7 +122,7 @@ abstract class ItemViewHolder<T>(binding: ViewBinding, private val scope: Corout
                 items.isLoadMoreClicked = isLoadMoreClicked
             }
         }
-        var res: List<T>?
+        var res: BaseModel<T>?
         scope.launch {
             res = adapter.apiInterface.getItemsWithOffset(
                 id,
@@ -163,8 +136,9 @@ abstract class ItemViewHolder<T>(binding: ViewBinding, private val scope: Corout
     }
 
     abstract fun showPlaceholder(
-        item: UiModel.Item<T>
+        item: UiModel.Item<T>,
+        position: Int
     )
 
-    abstract fun showItem(item: UiModel.Item<T>)
+    abstract fun showItem(item: UiModel.Item<T>, position: Int)
 }

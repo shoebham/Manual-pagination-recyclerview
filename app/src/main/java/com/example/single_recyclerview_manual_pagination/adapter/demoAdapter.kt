@@ -22,10 +22,8 @@ class demoAdapter(
         private var createCount = AtomicInteger(0)
 
     }
-
     override lateinit var differ: AsyncListDiffer<UiModel<Sticker>>
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<Sticker> {
-        Log.i("createcount", "createcount: ${createCount.incrementAndGet()}")
         return when (viewType) {
             -1 -> Viewholders.StickerHeaderViewHolder.from(parent)
             0 -> Viewholders.loadmoreviewholder.from(parent)
@@ -40,5 +38,4 @@ class demoAdapter(
             else -> 1
         }
     }
-
 }

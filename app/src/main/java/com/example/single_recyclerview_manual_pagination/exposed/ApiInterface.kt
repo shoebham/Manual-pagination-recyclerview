@@ -13,5 +13,5 @@ interface ApiInterface<T> {
      * @param limit number of items to return
      * @return List of T where T is a generic item
      */
-    suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): List<T>?
+    suspend fun getItemsWithOffset(id: Int, offset: String, limit: Int): BaseModel<T>?
 }

@@ -8,7 +8,9 @@ package com.example.single_recyclerview_manual_pagination.exposed
  */
 class PagingListWrapperClass<T>(var categoryList: List<Category<T>>) {
 
+
     var uiModelList = listOf<UiModel<T>>()
+
 
     /**
      * Converts the current category list to UiModelList which is shown in the recyclerview
@@ -69,19 +71,19 @@ class PagingListWrapperClass<T>(var categoryList: List<Category<T>>) {
         offset: String,
     ) {
 
-        val category = categoryList.find { it.id == id }
-        val itemList = category?.baseModelOfItemList?.toMutableList()
-        if (itemList != null && itemList[0].item == null) {
-            categoryList.find { it.id == id }?.baseModelOfItemList = listOfBaseModelOfItemFromAPI
+        val category = categoryList.find { it.id == id } ?: return
+        val itemList = category.baseModelOfItemList.toMutableList()
+        if (itemList[0].item == null) {
+            category.baseModelOfItemList = listOfBaseModelOfItemFromAPI
         } else {
-            if (itemList != null && listOfBaseModelOfItemFromAPI.isNotEmpty()) {
+            if (listOfBaseModelOfItemFromAPI.isNotEmpty()) {
                 for ((i, item) in listOfBaseModelOfItemFromAPI.withIndex()) {
                     itemList[offset.toInt() + i - 1] = item
                 }
                 itemList.removeAll { it.item == null }
                 category.baseModelOfItemList = itemList
-                if (listOfBaseModelOfItemFromAPI.isEmpty()) category.baseModelOfItemList.last().isLastItem =
-                    true
+                if (listOfBaseModelOfItemFromAPI.isEmpty())
+                    category.baseModelOfItemList.last().isLastItem = true
             }
         }
     }
@@ -99,38 +101,36 @@ class PagingListWrapperClass<T>(var categoryList: List<Category<T>>) {
      * @param limit the limit passed in the API call
      */
     fun mapListToBaseModelOfItem(
-        response: List<T>?, id: Int, offset: String,
+        response: BaseModel<T>?, id: Int, offset: String,
         limit: Int
     ) {
         val tempBaseModelItemList =
             mutableListOf<BaseModelOfItem<T>>()
-        val category = categoryList.find { it.id == id }
-        if (category != null) {
-            if (response != null && response.isNotEmpty() && response[0] != null) {
-                for ((i, item) in response.withIndex()) {
-                    tempBaseModelItemList.add(
-                        BaseModelOfItem(
-                            item,
-                            categoryBasedPosition = offset.toInt() + i,
-                            state = State.LOADED,
-                            isLastItem = response.size < limit,
-                            category = category
-                        )
+        val category = categoryList.find { it.id == id } ?: return
+        if (response != null && response.items.isNotEmpty() && response.items[0] != null) {
+            for ((i, item) in response.items.withIndex()) {
+                tempBaseModelItemList.add(
+                    BaseModelOfItem(
+                        item,
+                        categoryBasedPosition = offset.toInt() + i,
+                        state = State.LOADED,
+                        isLastItem = if (i == response.items.lastIndex) response.items.size < limit else false,
+                        category = category,
+                        offset = response.offset
                     )
-                }
-            } else if (response == null) {
-                for (i in 0 until limit) {
-                    tempBaseModelItemList.add(
-                        BaseModelOfItem(
-                            null,
-                            state = State.ERROR,
-                            category = category
-                        )
+                )
+            }
+        } else if (response == null) {
+            for (i in 0 until limit) {
+                tempBaseModelItemList.add(
+                    BaseModelOfItem(
+                        null,
+                        state = State.ERROR,
+                        category = category
                     )
-                }
+                )
             }
         }
-
         replacePlaceholders(
             listOfBaseModelOfItemFromAPI = tempBaseModelItemList,
             id = id,
