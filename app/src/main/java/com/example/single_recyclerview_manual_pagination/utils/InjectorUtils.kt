@@ -1,7 +1,7 @@
-package com.example.***REMOVED***_vertical_scroll_stickers.utils
+package com.example.single_recyclerview_manual_pagination.utils
 
 import android.app.Application
-import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
+import com.example.single_recyclerview_manual_pagination.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.repository.Repository
 
 object InjectorUtils {

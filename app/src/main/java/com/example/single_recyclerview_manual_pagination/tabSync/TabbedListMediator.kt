@@ -1,13 +1,11 @@
-package com.example.***REMOVED***_vertical_scroll_stickers.tabSync
+package com.example.single_recyclerview_manual_pagination.tabSync
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
-import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
+import com.example.single_recyclerview_manual_pagination.viewModel.MainActivityViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 

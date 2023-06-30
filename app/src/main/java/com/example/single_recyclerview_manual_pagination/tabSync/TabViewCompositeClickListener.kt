@@ -1,4 +1,4 @@
-package com.example.***REMOVED***_vertical_scroll_stickers.tabSync
+package com.example.single_recyclerview_manual_pagination.tabSync
 
 import com.google.android.material.tabs.TabLayout
 import java.util.ArrayList

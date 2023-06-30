@@ -1,7 +1,6 @@
-package com.example.***REMOVED***_vertical_scroll_stickers.viewModel
+package com.example.single_recyclerview_manual_pagination.viewModel
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.single_recyclerview_manual_pagination.repository.Repository

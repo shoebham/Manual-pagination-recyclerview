@@ -27,18 +27,6 @@ class Repository private constructor() {
         private val count = AtomicInteger(0)
 
     }
-
-    //    private var _stickerPacks = MutableLiveData<StickerPacks>()
-//    val stickerPacks = _stickerPacks
-//
-//    private var _categoryList = MutableLiveData<List<Category>>()
-//    val categoryList = _categoryList
-//
-//    private var _count = MutableLiveData<Int>()
-//    val count = _count
-//    private var _individualCount = MutableLiveData<LinkedHashMap<String, Int>>()
-//    val individualCount = _individualCount
-//
     val tempHashMap = MutableLiveData<LinkedHashMap<String, Int>>()
     val listOfCategory = MutableLiveData<MutableList<CategoryInheritingAbstractClass>>()
 
@@ -50,8 +38,7 @@ class Repository private constructor() {
         listOfCategory.postValue(MutableList(10) { CategoryInheritingAbstractClass() })
         tempHashMap.postValue(LinkedHashMap<String, Int>())
     }
-//    private var _tabPosition = MutableLiveData<Int>()
-//    val tabPosition = _tabPosition
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     suspend fun getStickerPacks(): StickerPacks {
@@ -83,16 +70,15 @@ class Repository private constructor() {
     ): Stickers? {
         var listOfT: Stickers? = null
         withContext(Dispatchers.IO) {
-//            val tempBaseModelItemList =
-//                mutableListOf<BaseModelOfItemInheritingAbstractClass>()
+
             try {
-//                delay(3000)
+
                 val res = NetworkLayer.retrofitService.getStickers(
                     id = id,
                     limit = limit,
                     offset = offset
                 )
-//                if (id == 405 && count.getAndIncrement() == 0) throw(Exception())
+
                 listOfT = res
 
             } catch (exception: Exception) {
@@ -102,11 +88,10 @@ class Repository private constructor() {
         return listOfT
     }
 
-    //    lateinit var res:Stickers
+
     suspend fun getStickersWithOffset(id: Int, offset: String?, limit: Int?): Stickers {
         var res = Stickers(emptyList(), "1")
         try {
-//            if(id==405)throw(Exception())
             res = NetworkLayer.retrofitService.getStickers(id = id, limit = limit, offset = offset)
         } catch (exception: Exception) {
             res = Stickers(emptyList(), "error")
@@ -119,38 +104,16 @@ class Repository private constructor() {
     suspend fun getCount(category: StickerPacks): Int {
         var total = 0
         for ((i, c) in category.stickerPacks.withIndex()) {
-//            if(c.id==405)continue
             val cnt = NetworkLayer.retrofitService.getStickers(id = c.id)
-//            delay(3000)
-
             Log.i("repository", "$cnt")
-
             c.total = (cnt.items.size)
             tempHashMap.value!!.put(c.name, cnt.items.size)
             tempHashMap.postValue(tempHashMap.value)
             total += cnt.items.size
-
-//            listOfCategory.add(
-//                Category(
-//                    id = c.id,
-//                    name = c.name!!,
-//                    isViewMoreVisible = false,
-//                    initialCount = category.stickerPacks.size,
-//                    itemList = getStickers(c.id)
-//
         }
-//        categoryList.postValue(listOfCategory)
-//        individualCount.postValue(tempHashMap)
-//        count.postValue(total)
+
         return total
     }
 
-//    fun getListOfCategory():List<Category>{
-//        return listOfCategory
-//    }
-//    init {
-//        getStickerPacks()
-//        getCount(stickerPacks.value)
-//    }
 
 }

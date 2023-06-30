@@ -10,10 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.***REMOVED***_vertical_scroll_stickers.tabSync.TabbedListMediator
-import com.example.***REMOVED***_vertical_scroll_stickers.utils.InjectorUtils
-import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModel
-import com.example.***REMOVED***_vertical_scroll_stickers.viewModel.MainActivityViewModelFactory
+import com.example.single_recyclerview_manual_pagination.tabSync.TabbedListMediator
+import com.example.single_recyclerview_manual_pagination.utils.InjectorUtils
+import com.example.single_recyclerview_manual_pagination.viewModel.MainActivityViewModel
+import com.example.single_recyclerview_manual_pagination.viewModel.MainActivityViewModelFactory
 import com.example.single_recyclerview_manual_pagination.adapter.DiffCallBack
 import com.example.single_recyclerview_manual_pagination.adapter.demoAdapter
 import com.example.single_recyclerview_manual_pagination.databinding.ActivityMainBinding

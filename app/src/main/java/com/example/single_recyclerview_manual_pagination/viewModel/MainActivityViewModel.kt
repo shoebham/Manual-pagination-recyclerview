@@ -1,4 +1,4 @@
-package com.example.***REMOVED***_vertical_scroll_stickers.viewModel
+package com.example.single_recyclerview_manual_pagination.viewModel
 
 import android.app.Application
 import android.os.Build
