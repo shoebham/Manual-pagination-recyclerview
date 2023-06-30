@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 
 private const val BASE_URL =
-    "https://api.***REMOVED***.ai/"
+    "https://api.<redacted>.ai/"
 
 object NetworkLayer {
     private val moshi = Moshi.Builder()
