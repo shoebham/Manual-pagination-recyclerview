@@ -9,17 +9,7 @@ data class StickerPacks(
 data class StickerPack(
     var id: Int,
     var name: String = "",
-    
-    
-    
-    
-    
-    
     var total: Int = 0
 )
 
-data class Icon(
-    val height: Int,
-    val png: Png,
-    val width: Int
-)
+

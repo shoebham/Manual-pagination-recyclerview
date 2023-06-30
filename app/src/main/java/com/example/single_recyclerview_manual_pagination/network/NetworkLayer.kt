@@ -1,4 +1,4 @@
-package com.example.single_recyclerview_manual_pagination.Network
+package com.example.single_recyclerview_manual_pagination.network
 
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor

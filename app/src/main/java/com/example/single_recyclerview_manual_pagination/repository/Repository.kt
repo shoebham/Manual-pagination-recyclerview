@@ -4,13 +4,9 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
-import com.example.single_recyclerview_manual_pagination.Network.NetworkLayer
-import com.example.single_recyclerview_manual_pagination.exposed.State
+import com.example.single_recyclerview_manual_pagination.network.NetworkLayer
 import com.example.single_recyclerview_manual_pagination.models.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicInteger
